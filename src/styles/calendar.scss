@@ -1,5 +1,4 @@
 @import 'colors';
-@import 'mixins/mixins';
 @import 'icons/style';
 
 .cal-md,
@@ -18,10 +17,10 @@
 .cal-year,
 .cal-ft,
 .cal-today {
-  position: relative;
-  z-index: 1;
   margin: 0;
   overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
 .cal-hd,
@@ -48,8 +47,8 @@
 .cal-next,
 .cal-date,
 .cal-day {
-  width: 30px;
   text-align: center;
+  width: 30px;
 }
 
 .cal-prev,
@@ -73,12 +72,12 @@
 }
 
 .cal-md {
-  width: 210px;
-  padding:9px;
+  background-color: $white;
   border: 1px solid $border-color;
   font-size: 14px;
-  background-color: $white;
+  padding: 9px;
   user-select: none;
+  width: 210px;
 }
 
 .cal-hd {
@@ -86,11 +85,11 @@
 }
 
 .cal-title {
+  color: $gray;
+  font: normal 16px 'Arial', sans-serif;
+  line-height: 30px;
   margin-right: 60px;
   padding-left: 10px;
-  font: normal 16px "Arial", sans-serif;
-  color: $gray;
-  line-height: 30px;
 
   &:hover {
     color: $blue;
@@ -98,13 +97,13 @@
 }
 
 .cal-switcher {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
-  width: 60px;
   font-size: 22px;
   overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 60px;
+  z-index: 2;
 }
 
 .cal-prev,
@@ -112,8 +111,8 @@
   color: $light-gray;
 
   &:hover {
-    color: $gray;
     background-color: $background-color-hover;
+    color: $gray;
   }
 }
 
@@ -130,10 +129,10 @@
 
 .cal-year,
 .cal-month {
-  width: calc(210px / 4);
   height: calc(210px / 4);
   line-height: calc(210px / 4);
   text-align: center;
+  width: calc(210px / 4);
 }
 
 .cal-year-prev,
@@ -159,6 +158,14 @@
     background-color: $primary;
     color: $white;
   }
+
+  &.cal-current {
+    background-color: $light-purple;
+
+    &:hover {
+      background-color: $light-purple;
+    }
+  }
 }
 
 .cal-picked-range {
@@ -182,14 +189,6 @@
   }
 }
 
-.cal-picked.cal-current {
-  background-color: $light-purple;
-
-  &:hover {
-    background-color: $light-purple;
-  }
-}
-
 .cal-ft {
   border-top: 1px solid $border-color;
   font-size: 13px;
@@ -201,14 +200,14 @@
 }
 
 .cal-time {
-  position: absolute;
-  z-index: 2;
-  top: 0;
-  right: 0;
   margin: 0;
-  width: 70px;
-  text-align: center;
   overflow: hidden;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  width: 70px;
+  z-index: 2;
 }
 
 .cal-today,

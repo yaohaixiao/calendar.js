@@ -4,8 +4,13 @@
   "description": "A calendar",
   "main": "calendar.js",
   "scripts": {
+    "build": "gulp build",
     "clean": "gulp clean",
+    "connect": "gulp connect",
     "compile": "gulp compile",
+    "dev": "gulp dev",
+    "lint": "gulp lint",
+    "start": "gulp start",
     "watch": "gulp watch"
   },
   "keywords": [
@@ -23,11 +28,13 @@
     "gulp-babel": "^8.0.0",
     "gulp-clean": "^0.4.0",
     "gulp-connect": "^5.7.0",
-    "gulp-csslint": "^1.0.1",
     "gulp-eslint": "^5.0.0",
+    "gulp-html-beautify": "^1.0.1",
     "gulp-pug": "^4.0.1",
+    "gulp-pug-lint": "^0.1.6",
     "gulp-rename": "^1.4.0",
     "gulp-sass": "^4.0.2",
+    "gulp-sass-lint": "^1.4.0",
     "gulp-sourcemaps": "^2.6.5",
     "gulp-uglify": "^3.0.2",
     "gulp-umd": "^2.0.0",
