@@ -1,0 +1,37 @@
+{
+  "name": "calendar",
+  "version": "1.0.0",
+  "description": "A calendar",
+  "main": "calendar.js",
+  "scripts": {
+    "clean": "gulp clean",
+    "compile": "gulp compile",
+    "watch": "gulp watch"
+  },
+  "keywords": [
+    "javascript",
+    "calendar"
+  ],
+  "author": "Robert Yao",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.4.5",
+    "@babel/preset-env": "^7.4.5",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^6.1.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean": "^0.4.0",
+    "gulp-connect": "^5.7.0",
+    "gulp-csslint": "^1.0.1",
+    "gulp-eslint": "^5.0.0",
+    "gulp-pug": "^4.0.1",
+    "gulp-rename": "^1.4.0",
+    "gulp-sass": "^4.0.2",
+    "gulp-sourcemaps": "^2.6.5",
+    "gulp-uglify": "^3.0.2",
+    "gulp-umd": "^2.0.0",
+    "node-sass": "^4.12.0",
+    "pump": "^3.0.0"
+  }
+}

@@ -1,0 +1,223 @@
+@import 'colors';
+@import 'mixins/mixins';
+@import 'icons/style';
+
+.cal-md,
+.cal-hd,
+.cal-title,
+.cal-prev,
+.cal-next,
+.cal-bd,
+.cal-week,
+.cal-day,
+.cal-dates,
+.cal-date,
+.cal-months,
+.cal-month,
+.cal-years,
+.cal-year,
+.cal-ft,
+.cal-today {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  overflow: hidden;
+}
+
+.cal-hd,
+.cal-title,
+.cal-switcher,
+.cal-week,
+.cal-day,
+.cal-date,
+.cal-ft,
+.cal-today,
+.cal-time {
+  height: 30px;
+  line-height: 30px;
+}
+
+.cal-hd,
+.cal-ft,
+.cal-today,
+.cal-time {
+  box-sizing: border-box;
+}
+
+.cal-prev,
+.cal-next,
+.cal-date,
+.cal-day {
+  width: 30px;
+  text-align: center;
+}
+
+.cal-prev,
+.cal-next,
+.cal-year,
+.cal-month,
+.cal-date,
+.cal-day {
+  float: left;
+}
+
+.cal-title,
+.cal-prev,
+.cal-next,
+.cal-year,
+.cal-month,
+.cal-date,
+.cal-today,
+.cal-time {
+  cursor: pointer;
+}
+
+.cal-md {
+  width: 210px;
+  padding:9px;
+  border: 1px solid $border-color;
+  font-size: 14px;
+  background-color: $white;
+  user-select: none;
+}
+
+.cal-hd {
+  border-bottom: 1px solid $border-color;
+}
+
+.cal-title {
+  margin-right: 60px;
+  padding-left: 10px;
+  font: normal 16px "Arial", sans-serif;
+  color: $gray;
+  line-height: 30px;
+
+  &:hover {
+    color: $blue;
+  }
+}
+
+.cal-switcher {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  width: 60px;
+  font-size: 22px;
+  overflow: hidden;
+}
+
+.cal-prev,
+.cal-next {
+  color: $light-gray;
+
+  &:hover {
+    color: $gray;
+    background-color: $background-color-hover;
+  }
+}
+
+.cal-year,
+.cal-month,
+.cal-date {
+  color: $light-black;
+
+  &:hover {
+    background-color: $background-color-hover;
+    color: $black;
+  }
+}
+
+.cal-year,
+.cal-month {
+  width: calc(210px / 4);
+  height: calc(210px / 4);
+  line-height: calc(210px / 4);
+  text-align: center;
+}
+
+.cal-year-prev,
+.cal-year-next,
+.cal-month-next,
+.cal-date-prev,
+.cal-date-next {
+  background-color: $background-color;
+  color: $light-gray;
+
+  &:hover {
+    background-color: $background-color-hover;
+    color: $gray;
+  }
+}
+
+.cal-picked {
+  background-color: $primary;
+  color: $white;
+  font-weight: bold;
+
+  &:hover {
+    background-color: $primary;
+    color: $white;
+  }
+}
+
+.cal-picked-range {
+  background-color: $light-blue;
+  color: $primary;
+  font-weight: normal;
+
+  &:hover {
+    background-color: $light-blue;
+    color: $primary;
+  }
+}
+
+.cal-current {
+  background-color: $green;
+  color: $white;
+
+  &:hover {
+    background-color: $green;
+    color: $white;
+  }
+}
+
+.cal-picked.cal-current {
+  background-color: $light-purple;
+
+  &:hover {
+    background-color: $light-purple;
+  }
+}
+
+.cal-ft {
+  border-top: 1px solid $border-color;
+  font-size: 13px;
+}
+
+.cal-today {
+  margin-right: 70px;
+  text-align: center;
+}
+
+.cal-time {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  right: 0;
+  margin: 0;
+  width: 70px;
+  text-align: center;
+  overflow: hidden;
+}
+
+.cal-today,
+.cal-time {
+  &:hover {
+    color: $primary;
+  }
+}
+
+.cal-hidden {
+  display: none;
+}

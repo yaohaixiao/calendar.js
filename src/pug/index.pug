@@ -1,0 +1,39 @@
+doctype html
+html(lang="en")
+head
+  meta(charset="UTF-8")
+  title Calendar
+  link(href="css/calendar.css" rel="stylesheet" type="text/css")
+  style.
+    *{
+      margin:0;
+      padding:0;
+    }
+
+    html,
+    body{
+      height:100%;
+      font-size:13px;
+      overflow:hidden;
+    }
+
+    .calendar{
+      position:relative;
+      z-index:1;
+      margin:0 auto;
+      padding:2em;
+      height:100%;
+      box-sizing: border-box;
+      overflow:hidden;
+    }
+body
+  div#calendar.calendar
+  script(src="js/calendar.js" type="text/javascript")
+  script.
+    (function () {
+      new Calendar({
+        parent: 'calendar',
+        time: '2019-6-11',
+        pickMode: 'week'
+      })
+    })()
