@@ -11,7 +11,8 @@ const sass = require('gulp-sass')
 gulp.task('clean:fonts', (cb) => {
   pump(
     [
-      gulp.src('dist/css/fonts/*.*'),
+      gulp.src('docs/css/fonts/*.*'),
+      gulp.src('dist/fonts/*.*'),
       clean({force: true})
     ],
     cb
@@ -22,7 +23,8 @@ gulp.task('clean:fonts', (cb) => {
 gulp.task('clean:styles', (cb) => {
   pump(
     [
-      gulp.src('dist/css/*.css'),
+      gulp.src('docs/css/*.css'),
+      gulp.src('dist/*.css'),
       clean({force: true})
     ],
     cb
@@ -33,7 +35,8 @@ gulp.task('clean:styles', (cb) => {
 gulp.task('clean:scripts', (cb) => {
   pump(
     [
-      gulp.src('dist/js/*.js'),
+      gulp.src('docs/js/*.js'),
+      gulp.src('dist/*.js'),
       clean({force: true})
     ],
     cb
@@ -44,7 +47,7 @@ gulp.task('clean:scripts', (cb) => {
 gulp.task('clean:html', (cb) => {
   pump(
     [
-      gulp.src('dist/*.html'),
+      gulp.src('docs/*.html'),
       clean({force: true})
     ],
     cb
@@ -64,7 +67,8 @@ gulp.task('copy:fonts', (cb) => {
   pump(
     [
       gulp.src('src/styles/icons/fonts/*.*'),
-      gulp.dest('dist/css/fonts')
+      gulp.dest('docs/css/fonts'),
+      gulp.dest('dist/fonts')
     ],
     cb
   )
@@ -78,7 +82,7 @@ gulp.task('compile:html', (cb) => {
       pug({
         verbose: true
       }),
-      gulp.dest('dist')
+      gulp.dest('docs')
     ],
     cb
   )
@@ -95,7 +99,8 @@ gulp.task('compile:styles', (cb) => {
         outputStyle: 'compressed'
       }).on('error', sass.logError),
       autoprefixer(),
-      gulp.dest('dist/css')
+      gulp.dest('docs/css'),
+      gulp.dest('dist')
     ],
     cb
   )
@@ -109,7 +114,8 @@ gulp.task('compile:scripts', (cb) => {
       babel({
         presets: ['@babel/env']
       }),
-      gulp.dest('dist/js')
+      gulp.dest('docs/js'),
+      gulp.dest('dist')
     ],
     cb
   )
