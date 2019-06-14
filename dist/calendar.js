@@ -122,8 +122,6 @@ function () {
         // 星期几
         day: 0,
         // 日期的英文表示（格式：2019-6-2）
-        value: '',
-        // 日期中文表示（格式：2019年6月2日）
         text: '',
         // 日期的完整中文表示（格式：2019年6月2日 星期日）
         fullText: ''
@@ -154,12 +152,43 @@ function () {
     key: "initialize",
     value: function initialize(options) {
       var year = Calendar.getYear().value;
-      var time; // 初始化配置
+      var pickMode;
+      var time;
+      var month;
+      var monthText;
+      var dateRanges;
+      var startDate;
+      var endDate; // 初始化配置
 
       this.set(Calendar.defaults).set(options);
-      time = this.get('time'); // 初始化数据
+      time = this.get('time');
+      pickMode = this.get('pickMode');
+      month = Calendar.getMonth(time);
+      monthText = month.text; // 初始化数据
 
-      this.setYear(time).setMonth(time).setDate(time)._setYears(time);
+      this.setYear(time).setMonth(time).setDate(time)._setYears(time); // 初始化（多选模式）选中的时间
+
+
+      switch (pickMode) {
+        case 'multiple':
+          this.data.picked.push(this.getDate().text);
+          break;
+
+        case 'range':
+          startDate = monthText + '-' + 1;
+          endDate = monthText + '-' + this.get('DATES')[month.value - 1];
+          this.data.picked.push(startDate);
+          this.data.picked.push(endDate);
+          break;
+
+        case 'week':
+          dateRanges = Calendar.getWeekRanges(time);
+          startDate = dateRanges[0];
+          endDate = dateRanges[dateRanges.length - 1];
+          this.data.picked.push(startDate);
+          this.data.picked.push(endDate);
+          break;
+      }
 
       this.data.minYear = year - 100;
       this.data.maxYear = year + 100; // 创建控件相关的 DOM 节点
@@ -386,7 +415,6 @@ function () {
           month: 0,
           date: 0,
           day: 0,
-          value: '',
           text: '',
           fullText: ''
         },
@@ -802,7 +830,8 @@ function () {
       var pickMode = this.get('pickMode');
       var elements = this.getEls();
       var time = $date.getAttribute('data-date');
-      var $picked = null; // 选择了选中状态的日期
+      var $picked = null;
+      var pickedDates; // 选择了选中状态的日期
 
       if (hasClass($date, CLS_PICKED)) {
         switch (pickMode) {
@@ -818,13 +847,16 @@ function () {
 
             this._removePicked(time);
 
+            pickedDates = this.getPicked();
+            this.setDate(pickedDates[pickedDates.length - 1]);
             break;
 
           case 'range':
             // 清除之前选中的数据
             this.data.picked = []; // 将当前选中的日期数据保存起来
 
-            this.data.picked.push(time); // 绘制选中样式
+            this.data.picked.push(time);
+            this.setDate(time); // 绘制选中样式
 
             elements.date = $date;
 
@@ -833,7 +865,8 @@ function () {
             break;
         }
       } else {
-        // 选择了未选中状态的日期
+        this.setYear(time).setMonth(time); // 选择了未选中状态的日期
+
         switch (pickMode) {
           case 'single':
             $picked = elements.date;
@@ -844,15 +877,19 @@ function () {
 
             addClass($date, CLS_PICKED);
             elements.date = $date;
+            this.setDate(time);
             break;
 
           case 'multiple':
             this.data.picked.push(time);
+            this.data.picked.sort();
+            pickedDates = this.getPicked();
+            this.setDate(pickedDates[pickedDates.length - 1]);
             addClass($date, CLS_PICKED);
             break;
 
           case 'range':
-            switch (this.getPicked().length) {
+            switch (this.data.picked.length) {
               case 0:
               case 1:
                 this.data.picked.push(time);
@@ -861,7 +898,8 @@ function () {
                   this.data.picked.sort();
                 }
 
-                console.log('range', this.data.picked.length);
+                pickedDates = this.getPicked();
+                this.setDate(pickedDates[pickedDates.length - 1]);
                 elements.date = $date;
 
                 this._renderDateRanges();
@@ -885,14 +923,13 @@ function () {
             this.data.picked = [];
             this.data.picked.push(ranges[0]);
             this.data.picked.push(ranges[ranges.length - 1]);
+            this.setDate(ranges[ranges.length - 1]);
             elements.date = $date;
 
             this._renderWeekRanges();
 
             break;
         }
-
-        this.setYear(time).setMonth(time).setDate(time);
       }
 
       return this;
@@ -1425,7 +1462,7 @@ function () {
         switch (pickMode) {
           // 单选模式
           case 'single':
-            var pickedDate = _this.getDate().value;
+            var pickedDate = _this.getDate().text;
 
             var isPickedDate = isDatesEqual(fullDate, pickedDate);
 
@@ -1455,14 +1492,15 @@ function () {
             if (pickedDates.length === 2) {
               dateRanges = Calendar.getRanges(pickedDates[0], pickedDates[1]);
               dateRanges.forEach(function (picked, i) {
-                var isEqual = isDatesEqual(fullDate, picked);
+                var isPicked = isDatesEqual(fullDate, picked);
 
-                if (!isEqual) {
+                if (!isPicked) {
                   return false;
                 } // 设置中间日期的样式
 
 
                 if (i !== 0 && i !== dateRanges.length - 1) {
+                  className += SPACE + CLS_PICKED;
                   className += SPACE + CLS_PICKED_RANGE;
                 } else {
                   if (i === 0 || i === dateRanges.length - 1) {
@@ -1510,9 +1548,8 @@ function () {
       var $date = this.elements.date;
       var $dates = elements.dates;
       var $pickedDates = $dates.querySelectorAll('.' + CLS_PICKED);
-      var picked = this.getPicked();
 
-      switch (picked.length) {
+      switch (this.data.picked.length) {
         case 1:
           $pickedDates.forEach(function ($picked) {
             removeClass($picked, CLS_PICKED);
@@ -1525,7 +1562,7 @@ function () {
           break;
 
         case 2:
-          var ranges = Calendar.getRanges(picked[0], picked[1]);
+          var ranges = Calendar.getRanges(this.data.picked[0], this.data.picked[1]);
           ranges.forEach(function (picked, i) {
             var $picked = $dates.querySelector('[data-date="' + picked + '"]');
 
@@ -1969,10 +2006,10 @@ function () {
       return this;
     }
     /**
-     * 获得日期信息
+     * 获得年份信息
      * ========================================================================
      * @param {String|Number} [val] - 表示年份的字符串或者数字（默认值：今年）
-     * @returns {{value: (Number|{value, text}), text: string}}
+     * @returns {{value: (Number|{value, text, fullText}), text: string, fullText: string}}
      */
 
   }], [{
@@ -1987,7 +2024,8 @@ function () {
 
       return {
         value: year,
-        text: year + '年'
+        text: year.toString(),
+        fullText: year + '年'
       };
     }
     /**
@@ -2006,15 +2044,15 @@ function () {
       month += 1;
       return {
         value: month,
-        text: month + '月',
-        fullText: year.text + month + '月'
+        text: year.text + '-' + month,
+        fullText: year.fullText + month + '月'
       };
     }
     /**
      * 获取日期信息
      * ========================================================================
      * @param {String|Number} [val] - 表示日期的字符串或者数字（默认值：今天）
-     * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, value: string, text: string, fullText: string}}
+     * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
      */
 
   }, {
@@ -2031,8 +2069,7 @@ function () {
         month: month.value,
         date: date,
         day: day.value,
-        value: year.value + '-' + month.value + '-' + date,
-        text: text,
+        text: year.value + '-' + month.value + '-' + date,
         fullText: text + ' ' + day.fullText
       };
     }
@@ -2058,7 +2095,7 @@ function () {
     /**
      * 获取今天的日期信息
      * ========================================================================
-     * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, value: string, text: string, fullText: string}}
+     * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
      */
 
   }, {
@@ -2185,7 +2222,7 @@ function () {
       timeNumber = beginNumber;
 
       for (; timeNumber <= endNumber; timeNumber += ONE_DAY_TO_SECONDS) {
-        ranges.push(Calendar.getDate(timeNumber).value);
+        ranges.push(Calendar.getDate(timeNumber).text);
       }
 
       return ranges;
@@ -2226,7 +2263,7 @@ function () {
     key: "isDatesEqual",
     value: function isDatesEqual(dateOne, dateTwo) {
       var getDate = Calendar.getDate;
-      return Calendar.isEqual(getDate(dateOne).value, getDate(dateTwo).value);
+      return Calendar.isEqual(getDate(dateOne).text, getDate(dateTwo).text);
     }
     /**
      * 判断两个时间是否相等

@@ -101,8 +101,6 @@ class Calendar {
         // 星期几
         day: 0,
         // 日期的英文表示（格式：2019-6-2）
-        value: '',
-        // 日期中文表示（格式：2019年6月2日）
         text: '',
         // 日期的完整中文表示（格式：2019年6月2日 星期日）
         fullText: ''
@@ -134,19 +132,53 @@ class Calendar {
    */
   initialize (options) {
     let year = Calendar.getYear().value
+    let pickMode
     let time
+    let month
+    let monthText
+    let dateRanges
+    let startDate
+    let endDate
 
     // 初始化配置
     this.set(Calendar.defaults)
         .set(options)
 
     time = this.get('time')
+    pickMode = this.get('pickMode')
+    month = Calendar.getMonth(time)
+    monthText = month.text
 
     // 初始化数据
     this.setYear(time)
         .setMonth(time)
         .setDate(time)
         ._setYears(time)
+
+    // 初始化（多选模式）选中的时间
+    switch (pickMode) {
+      case 'multiple':
+        this.data.picked.push(this.getDate().text)
+
+        break
+      case 'range':
+        startDate = monthText + '-' + 1
+        endDate = monthText + '-' + this.get('DATES')[month.value - 1]
+
+        this.data.picked.push(startDate)
+        this.data.picked.push(endDate)
+
+        break
+      case 'week':
+        dateRanges = Calendar.getWeekRanges(time)
+        startDate = dateRanges[0]
+        endDate = dateRanges[dateRanges.length - 1]
+
+        this.data.picked.push(startDate)
+        this.data.picked.push(endDate)
+
+        break
+    }
 
     this.data.minYear = year - 100
     this.data.maxYear = year + 100
@@ -373,7 +405,6 @@ class Calendar {
         month: 0,
         date: 0,
         day: 0,
-        value: '',
         text: '',
         fullText: ''
       },
@@ -774,6 +805,7 @@ class Calendar {
     let elements = this.getEls()
     let time = $date.getAttribute('data-date')
     let $picked = null
+    let pickedDates
 
     // 选择了选中状态的日期
     if (hasClass($date, CLS_PICKED)) {
@@ -789,12 +821,18 @@ class Calendar {
           // 移除选中的日期信息
           this._removePicked(time)
 
+          pickedDates = this.getPicked()
+
+          this.setDate(pickedDates[pickedDates.length-1])
+
           break
         case 'range':
           // 清除之前选中的数据
           this.data.picked = []
           // 将当前选中的日期数据保存起来
           this.data.picked.push(time)
+
+          this.setDate(time)
 
           // 绘制选中样式
           elements.date = $date
@@ -803,6 +841,9 @@ class Calendar {
           break
       }
     } else {
+      this.setYear(time)
+          .setMonth(time)
+
       // 选择了未选中状态的日期
       switch (pickMode) {
         case 'single':
@@ -815,14 +856,22 @@ class Calendar {
           addClass($date, CLS_PICKED)
           elements.date = $date
 
+          this.setDate(time)
+
           break
         case 'multiple':
           this.data.picked.push(time)
+          this.data.picked.sort()
+
+          pickedDates = this.getPicked()
+
+          this.setDate(pickedDates[pickedDates.length-1])
+
           addClass($date, CLS_PICKED)
 
           break
         case 'range':
-          switch (this.getPicked().length) {
+          switch (this.data.picked.length) {
             case 0:
             case 1:
               this.data.picked.push(time)
@@ -831,7 +880,8 @@ class Calendar {
                 this.data.picked.sort()
               }
 
-              console.log('range', this.data.picked.length)
+              pickedDates = this.getPicked()
+              this.setDate(pickedDates[pickedDates.length-1])
 
               elements.date = $date
               this._renderDateRanges()
@@ -855,15 +905,13 @@ class Calendar {
           this.data.picked.push(ranges[0])
           this.data.picked.push(ranges[ranges.length - 1])
 
+          this.setDate(ranges[ranges.length - 1])
+
           elements.date = $date
           this._renderWeekRanges()
 
           break
       }
-
-      this.setYear(time)
-          .setMonth(time)
-          .setDate(time)
     }
 
     return this
@@ -1083,17 +1131,17 @@ class Calendar {
       case 0:
         monthsClassName += SPACE + CLS_HIDDEN
         yearsClassName += SPACE + CLS_HIDDEN
-        break;
+        break
       case 1:
         weekClassName += SPACE + CLS_HIDDEN
         datesClassName += SPACE + CLS_HIDDEN
         yearsClassName += SPACE + CLS_HIDDEN
-        break;
+        break
       case 2:
         weekClassName += SPACE + CLS_HIDDEN
         datesClassName += SPACE + CLS_HIDDEN
         monthsClassName += SPACE + CLS_HIDDEN
-        break;
+        break
     }
 
     elements.parent = document.getElementById(this.get('parent'))
@@ -1411,7 +1459,7 @@ class Calendar {
       switch (pickMode) {
         // 单选模式
         case 'single':
-          let pickedDate = this.getDate().value
+          let pickedDate = this.getDate().text
           let isPickedDate = isDatesEqual(fullDate, pickedDate)
 
           if (isPickedDate) {
@@ -1440,14 +1488,15 @@ class Calendar {
             dateRanges = Calendar.getRanges(pickedDates[0], pickedDates[1])
 
             dateRanges.forEach((picked, i) => {
-              let isEqual = isDatesEqual(fullDate, picked)
+              let isPicked = isDatesEqual(fullDate, picked)
 
-              if (!isEqual) {
+              if (!isPicked) {
                 return false
               }
 
               // 设置中间日期的样式
               if (i !== 0 && i !== (dateRanges.length - 1)) {
+                className += (SPACE + CLS_PICKED)
                 className += (SPACE + CLS_PICKED_RANGE)
               } else {
                 if (i === 0 || i === dateRanges.length - 1) {
@@ -1490,9 +1539,8 @@ class Calendar {
     let $date = this.elements.date
     let $dates = elements.dates
     let $pickedDates = $dates.querySelectorAll('.' + CLS_PICKED)
-    let picked = this.getPicked()
 
-    switch (picked.length) {
+    switch (this.data.picked.length) {
       case 1:
         $pickedDates.forEach(($picked) => {
           removeClass($picked, CLS_PICKED)
@@ -1506,7 +1554,7 @@ class Calendar {
 
         break
       case 2:
-        let ranges = Calendar.getRanges(picked[0], picked[1])
+        let ranges = Calendar.getRanges(this.data.picked[0], this.data.picked[1])
 
         ranges.forEach((picked, i) => {
           let $picked = $dates.querySelector('[data-date="' + picked + '"]')
@@ -1794,8 +1842,8 @@ class Calendar {
     const STYLES = this.get('STYLES')
     const CLS_TEXT = STYLES.TEXT
     let elements = this.getEls()
-    let $today = elements.today.querySelector('.'+CLS_TEXT)
-    let $time = elements.time.querySelector('.'+CLS_TEXT)
+    let $today = elements.today.querySelector('.' + CLS_TEXT)
+    let $time = elements.time.querySelector('.' + CLS_TEXT)
     let today = Calendar.getToday()
     let timer = null
 
@@ -1960,10 +2008,10 @@ class Calendar {
   }
 
   /**
-   * 获得日期信息
+   * 获得年份信息
    * ========================================================================
    * @param {String|Number} [val] - 表示年份的字符串或者数字（默认值：今年）
-   * @returns {{value: (Number|{value, text}), text: string}}
+   * @returns {{value: (Number|{value, text, fullText}), text: string, fullText: string}}
    */
   static getYear (val) {
     let time = !val ? new Date() : new Date(val)
@@ -1975,7 +2023,8 @@ class Calendar {
 
     return {
       value: year,
-      text: year + '年'
+      text: year.toString(),
+      fullText: year + '年'
     }
   }
 
@@ -1994,8 +2043,8 @@ class Calendar {
 
     return {
       value: month,
-      text: month + '月',
-      fullText: year.text + month + '月'
+      text: year.text + '-' + month,
+      fullText: year.fullText + month + '月'
     }
   }
 
@@ -2003,7 +2052,7 @@ class Calendar {
    * 获取日期信息
    * ========================================================================
    * @param {String|Number} [val] - 表示日期的字符串或者数字（默认值：今天）
-   * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, value: string, text: string, fullText: string}}
+   * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
    */
   static getDate (val) {
     let time = !val ? new Date() : new Date(val)
@@ -2018,8 +2067,7 @@ class Calendar {
       month: month.value,
       date: date,
       day: day.value,
-      value: year.value + '-' + month.value + '-' + date,
-      text: text,
+      text: year.value + '-' + month.value + '-' + date,
       fullText: text + ' ' + day.fullText
     }
   }
@@ -2045,7 +2093,7 @@ class Calendar {
   /**
    * 获取今天的日期信息
    * ========================================================================
-   * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, value: string, text: string, fullText: string}}
+   * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
    */
   static getToday () {
     return Calendar.getDate()
@@ -2167,7 +2215,7 @@ class Calendar {
     timeNumber = beginNumber
 
     for (; timeNumber <= endNumber; timeNumber += ONE_DAY_TO_SECONDS) {
-      ranges.push(Calendar.getDate(timeNumber).value)
+      ranges.push(Calendar.getDate(timeNumber).text)
     }
 
     return ranges
@@ -2203,7 +2251,7 @@ class Calendar {
   static isDatesEqual (dateOne, dateTwo) {
     const getDate = Calendar.getDate
 
-    return Calendar.isEqual(getDate(dateOne).value, getDate(dateTwo).value)
+    return Calendar.isEqual(getDate(dateOne).text, getDate(dateTwo).text)
   }
 
   /**
