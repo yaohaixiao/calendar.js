@@ -46,29 +46,16 @@
   z-index: 1; }
 
 .cal-hd,
-.cal-title,
-.cal-switcher,
-.cal-week,
-.cal-day,
-.cal-date,
-.cal-ft,
-.cal-today,
-.cal-time {
-  height: 30px;
-  line-height: 30px; }
-
-.cal-hd,
-.cal-ft,
-.cal-today,
-.cal-time {
+.cal-ft {
   box-sizing: border-box; }
 
 .cal-prev,
 .cal-next,
 .cal-date,
-.cal-day {
-  text-align: center;
-  width: 30px; }
+.cal-day,
+.cal-month,
+.cal-year {
+  text-align: center; }
 
 .cal-prev,
 .cal-next,
@@ -90,14 +77,66 @@
 
 .cal-md {
   background-color: #fff;
-  border: 1px solid #e9ebee;
   font-size: 14px;
-  padding: 9px;
+  width: 100%;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
-          user-select: none;
-  width: 210px; }
+          user-select: none; }
+
+.cal-md,
+.cal-switcher,
+.cal-title,
+.cal-prev,
+.cal-next,
+.cal-day,
+.cal-today,
+.cal-time,
+.cal-months,
+.cal-years,
+.cal-ft-date,
+.cal-ft-time {
+  height: 100%; }
+
+.cal-hd,
+.cal-ft {
+  height: calc(100% / 9); }
+
+.cal-bd {
+  height: calc((100% / 9) * 7); }
+
+.cal-week {
+  height: calc(100% / 7); }
+
+.cal-dates {
+  height: calc((100% / 7) * 6); }
+
+.cal-day,
+.cal-date {
+  width: calc(100% / 7); }
+
+.cal-date {
+  height: calc(100% / 6); }
+
+.cal-month,
+.cal-year {
+  height: 25%;
+  width: 25%; }
+
+.cal-title,
+.cal-prev,
+.cal-next,
+.cal-day,
+.cal-date,
+.cal-month,
+.cal-year,
+.cal-today,
+.cal-time {
+  display: table; }
+
+.cal-text {
+  display: table-cell;
+  vertical-align: middle; }
 
 .cal-hd {
   border-bottom: 1px solid #e9ebee; }
@@ -105,7 +144,6 @@
 .cal-title {
   color: #666;
   font: normal 16px 'Arial', sans-serif;
-  line-height: 30px;
   margin-right: 60px;
   padding-left: 10px; }
   .cal-title:hover {
@@ -122,6 +160,7 @@
 
 .cal-prev,
 .cal-next {
+  width: 30px;
   color: #999; }
   .cal-prev:hover,
   .cal-next:hover {
@@ -137,13 +176,6 @@
   .cal-date:hover {
     background-color: #e8e8e8;
     color: #333; }
-
-.cal-year,
-.cal-month {
-  height: calc(210px / 4);
-  line-height: calc(210px / 4);
-  text-align: center;
-  width: calc(210px / 4); }
 
 .cal-year-prev,
 .cal-year-next,
@@ -191,11 +223,11 @@
   border-top: 1px solid #e9ebee;
   font-size: 13px; }
 
-.cal-today {
+.cal-ft-date {
   margin-right: 70px;
   text-align: center; }
 
-.cal-time {
+.cal-ft-time {
   margin: 0;
   overflow: hidden;
   position: absolute;
@@ -205,9 +237,12 @@
   width: 70px;
   z-index: 2; }
 
-.cal-today:hover,
-.cal-time:hover {
-  color: #34a6f8; }
+.cal-today,
+.cal-time {
+  text-align: center; }
+  .cal-today:hover,
+  .cal-time:hover {
+    color: #34a6f8; }
 
 .cal-hidden {
   display: none; }

@@ -785,7 +785,7 @@ class Calendar {
         // 多选模式
         case 'multiple':
           // 取消选中样式
-          removeClass($el, CLS_PICKED)
+          removeClass($date, CLS_PICKED)
           // 移除选中的日期信息
           this._removePicked(time)
 
@@ -797,7 +797,7 @@ class Calendar {
           this.data.picked.push(time)
 
           // 绘制选中样式
-          elements.date = $el
+          elements.date = $date
           this._renderDateRanges()
 
           break
@@ -830,6 +830,8 @@ class Calendar {
               if (this.data.picked.length === 2) {
                 this.data.picked.sort()
               }
+
+              console.log('range', this.data.picked.length)
 
               elements.date = $date
               this._renderDateRanges()
@@ -1063,11 +1065,36 @@ class Calendar {
     const CLS_MONTHS = STYLES.MONTHS
     const CLS_YEARS = STYLES.YEARS
     const CLS_FOOTER = STYLES.FOOTER
+    const CLS_FOOTER_DATE = STYLES.FOOTER_DATE
     const CLS_TODAY = STYLES.TODAY
+    const CLS_FOOTER_TIME = STYLES.FOOTER_TIME
     const CLS_TIME = STYLES.TIME
+    const CLS_TEXT = STYLES.TEXT
     const CLS_HIDDEN = STYLES.HIDDEN
+    const SPACE = ' '
     let elements = this.getEls()
     let createElement = Calendar.DOM.createElement
+    let weekClassName = CLS_WEEK
+    let datesClassName = CLS_DATES
+    let monthsClassName = CLS_MONTHS
+    let yearsClassName = CLS_YEARS
+
+    switch (this.get('viewMode')) {
+      case 0:
+        monthsClassName += SPACE + CLS_HIDDEN
+        yearsClassName += SPACE + CLS_HIDDEN
+        break;
+      case 1:
+        weekClassName += SPACE + CLS_HIDDEN
+        datesClassName += SPACE + CLS_HIDDEN
+        yearsClassName += SPACE + CLS_HIDDEN
+        break;
+      case 2:
+        weekClassName += SPACE + CLS_HIDDEN
+        datesClassName += SPACE + CLS_HIDDEN
+        monthsClassName += SPACE + CLS_HIDDEN
+        break;
+    }
 
     elements.parent = document.getElementById(this.get('parent'))
 
@@ -1082,50 +1109,78 @@ class Calendar {
     })
     elements.title = createElement('h4', {
       className: CLS_TITLE
-    })
+    }, [
+      createElement('span', {
+        className: CLS_TEXT
+      })
+    ])
     elements.switcher = createElement('div', {
       className: CLS_SWITCHER
     })
     elements.prev = createElement('div', {
       className: CLS_PREV
     }, [
-      createElement('i', {
-        className: CLS_ICON_PREV
-      })
+      createElement('span', {
+        className: CLS_TEXT
+      }, [
+        createElement('i', {
+          className: CLS_ICON_PREV
+        })
+      ])
     ])
     elements.next = createElement('div', {
       className: CLS_NEXT
     }, [
-      createElement('i', {
-        className: CLS_ICON_NEXT
-      })
+      createElement('span', {
+        className: CLS_TEXT
+      }, [
+        createElement('i', {
+          className: CLS_ICON_NEXT
+        })
+      ])
     ])
     // body
     elements.body = createElement('div', {
       className: CLS_BODY
     })
     elements.week = createElement('div', {
-      className: CLS_WEEK
+      className: weekClassName
     })
     elements.dates = createElement('div', {
-      className: CLS_DATES
+      className: datesClassName
     })
     elements.months = createElement('div', {
-      className: CLS_MONTHS + ' ' + CLS_HIDDEN
+      className: monthsClassName
     })
     elements.years = createElement('div', {
-      className: CLS_YEARS + ' ' + CLS_HIDDEN
+      className: yearsClassName
     })
     // footer
     elements.footer = createElement('div', {
       className: CLS_FOOTER
     })
-    elements.today = createElement('p', {
-      className: CLS_TODAY
-    })
-    elements.time = createElement('p', {
-      className: CLS_TIME
-    })
+    elements.today = createElement('div', {
+      className: CLS_FOOTER_DATE
+    }, [
+      createElement('p', {
+        className: CLS_TODAY
+      }, [
+        createElement('span', {
+          className: CLS_TEXT
+        })
+      ])
+    ])
+    elements.time = createElement('div', {
+      className: CLS_FOOTER_TIME
+    }, [
+      createElement('p', {
+        className: CLS_TIME
+      }, [
+        createElement('span', {
+          className: CLS_TEXT
+        })
+      ])
+    ])
 
     return this
   }
@@ -1137,7 +1192,7 @@ class Calendar {
    * @private
    */
   _renderTitle () {
-    let $title = this.getEls().title
+    let $title = this.getEls().title.querySelector('.' + this.get('STYLES').TEXT)
     let years = this.getYears()
     let year = this.getYear()
     let value = ''
@@ -1169,15 +1224,21 @@ class Calendar {
     const STYLES = this.get('STYLES')
     const CLS_DAY = STYLES.DAY
     const CLS_WEEKEND = STYLES.WEEKEND
+    const CLS_TEXT = STYLES.TEXT
     const DAYS = this.get('DAYS')
+    const createElement = Calendar.DOM.createElement
     let fragment = document.createDocumentFragment()
 
     DAYS.forEach((day, i) => {
       let className = i === 0 || i === DAYS.length - 1 ? CLS_DAY + ' ' + CLS_WEEKEND : CLS_DAY
-      let $day = Calendar.DOM.createElement('div', {
+      let $day = createElement('div', {
         className: className
       }, [
-        day
+        createElement('span', {
+          className: CLS_TEXT
+        }, [
+          day
+        ])
       ])
 
       fragment.appendChild($day)
@@ -1303,6 +1364,8 @@ class Calendar {
     const CLS_PICKED = STYLES.PICKED
     const CLS_PICKED_RANGE = STYLES.PICKED_RANGE
     const CLS_WEEKEND = STYLES.WEEKEND
+    const CLS_TEXT = STYLES.TEXT
+    const createElement = Calendar.DOM.createElement
     const isDatesEqual = Calendar.isDatesEqual
     let fragment = document.createDocumentFragment()
     let elements = this.getEls()
@@ -1313,10 +1376,14 @@ class Calendar {
     for (; date <= end; date += 1) {
       let fullDate = year + '-' + month + '-' + date
       let isCurrent = Calendar.isToday(fullDate)
-      let $date = Calendar.DOM.createElement('div', {
+      let $date = createElement('div', {
         'data-date': fullDate
       }, [
-        date
+        createElement('span', {
+          className: CLS_TEXT
+        }, [
+          date
+        ])
       ])
       let day = Calendar.getDay(fullDate)
       let className = ''
@@ -1510,6 +1577,7 @@ class Calendar {
     const CLS_PICKED = STYLES.PICKED
     const CLS_MONTH = STYLES.MONTH
     const CLS_MONTH_NEXT = STYLES.MONTH_NEXT
+    const CLS_TEXT = STYLES.TEXT
     const MONTHS = this.get('MONTHS')
     const DOM = Calendar.DOM
     const createElement = DOM.createElement
@@ -1528,7 +1596,11 @@ class Calendar {
       let $month = createElement('div', {
         'data-month': year + '-' + MONTH
       }, [
-        MONTH
+        createElement('span', {
+          className: CLS_TEXT
+        }, [
+          MONTH
+        ])
       ])
 
       // 当前（今天）的年份
@@ -1659,6 +1731,7 @@ class Calendar {
     const CLS_CURRENT = STYLES.CURRENT
     const CLS_PICKED = STYLES.PICKED
     const CLS_DISABLED = STYLES.DISABLED
+    const CLS_TEXT = STYLES.TEXT
     const DOM = Calendar.DOM
     const createElement = DOM.createElement
     let fragment = document.createDocumentFragment()
@@ -1675,7 +1748,11 @@ class Calendar {
       let $year = createElement('div', {
         'data-year': year
       }, [
-        year
+        createElement('span', {
+          className: CLS_TEXT
+        }, [
+          year
+        ])
       ])
 
       if (isPrev) {
@@ -1714,9 +1791,11 @@ class Calendar {
    * @private
    */
   _renderFooter () {
+    const STYLES = this.get('STYLES')
+    const CLS_TEXT = STYLES.TEXT
     let elements = this.getEls()
-    let $today = elements.today
-    let $time = elements.time
+    let $today = elements.today.querySelector('.'+CLS_TEXT)
+    let $time = elements.time.querySelector('.'+CLS_TEXT)
     let today = Calendar.getToday()
     let timer = null
 
@@ -2221,8 +2300,11 @@ Calendar.defaults = {
     YEAR_PREV: 'cal-year-prev',
     YEAR_NEXT: 'cal-year-next',
     FOOTER: 'cal-ft',
+    FOOTER_DATE: 'cal-ft-date',
     TODAY: 'cal-today',
+    FOOTER_TIME: 'cal-ft-time',
     TIME: 'cal-time',
+    TEXT: 'cal-text',
     CURRENT: 'cal-current',
     PICKED: 'cal-picked',
     PICKED_RANGE: 'cal-picked-range',

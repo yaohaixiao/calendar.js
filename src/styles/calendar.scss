@@ -24,31 +24,17 @@
 }
 
 .cal-hd,
-.cal-title,
-.cal-switcher,
-.cal-week,
-.cal-day,
-.cal-date,
-.cal-ft,
-.cal-today,
-.cal-time {
-  height: 30px;
-  line-height: 30px;
-}
-
-.cal-hd,
-.cal-ft,
-.cal-today,
-.cal-time {
+.cal-ft {
   box-sizing: border-box;
 }
 
 .cal-prev,
 .cal-next,
 .cal-date,
-.cal-day {
+.cal-day,
+.cal-month,
+.cal-year {
   text-align: center;
-  width: 30px;
 }
 
 .cal-prev,
@@ -73,11 +59,73 @@
 
 .cal-md {
   background-color: $white;
-  border: 1px solid $border-color;
   font-size: 14px;
-  padding: 9px;
+  width: 100%;
   user-select: none;
-  width: 210px;
+}
+
+.cal-md,
+.cal-switcher,
+.cal-title,
+.cal-prev,
+.cal-next,
+.cal-day,
+.cal-today,
+.cal-time,
+.cal-months,
+.cal-years,
+.cal-ft-date,
+.cal-ft-time {
+  height: 100%;
+}
+
+.cal-hd,
+.cal-ft {
+  height: calc(100% / 9);
+}
+
+.cal-bd {
+  height: calc((100% / 9) * 7);
+}
+
+.cal-week {
+  height: calc(100% / 7);
+}
+
+.cal-dates {
+  height: calc((100% / 7) * 6);
+}
+
+.cal-day,
+.cal-date {
+  width: calc(100% / 7);
+}
+
+.cal-date {
+  height: calc(100% / 6);
+}
+
+.cal-month,
+.cal-year {
+  height: 25%;
+  width: 25%;
+}
+
+.cal-title,
+.cal-prev,
+.cal-next,
+.cal-day,
+.cal-date,
+.cal-month,
+.cal-year,
+.cal-today,
+.cal-time {
+  display: table;
+}
+
+.cal-text {
+  display: table-cell;
+  vertical-align: middle;
 }
 
 .cal-hd {
@@ -87,7 +135,6 @@
 .cal-title {
   color: $gray;
   font: normal 16px 'Arial', sans-serif;
-  line-height: 30px;
   margin-right: 60px;
   padding-left: 10px;
 
@@ -108,6 +155,7 @@
 
 .cal-prev,
 .cal-next {
+  width: 30px;
   color: $light-gray;
 
   &:hover {
@@ -125,14 +173,6 @@
     background-color: $background-color-hover;
     color: $black;
   }
-}
-
-.cal-year,
-.cal-month {
-  height: calc(210px / 4);
-  line-height: calc(210px / 4);
-  text-align: center;
-  width: calc(210px / 4);
 }
 
 .cal-year-prev,
@@ -194,12 +234,12 @@
   font-size: 13px;
 }
 
-.cal-today {
+.cal-ft-date {
   margin-right: 70px;
   text-align: center;
 }
 
-.cal-time {
+.cal-ft-time {
   margin: 0;
   overflow: hidden;
   position: absolute;
@@ -212,6 +252,8 @@
 
 .cal-today,
 .cal-time {
+  text-align:center;
+
   &:hover {
     color: $primary;
   }

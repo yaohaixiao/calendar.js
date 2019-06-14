@@ -814,7 +814,7 @@ function () {
 
           case 'multiple':
             // 取消选中样式
-            removeClass($el, CLS_PICKED); // 移除选中的日期信息
+            removeClass($date, CLS_PICKED); // 移除选中的日期信息
 
             this._removePicked(time);
 
@@ -826,7 +826,7 @@ function () {
 
             this.data.picked.push(time); // 绘制选中样式
 
-            elements.date = $el;
+            elements.date = $date;
 
             this._renderDateRanges();
 
@@ -861,6 +861,7 @@ function () {
                   this.data.picked.sort();
                 }
 
+                console.log('range', this.data.picked.length);
                 elements.date = $date;
 
                 this._renderDateRanges();
@@ -1093,11 +1094,39 @@ function () {
       var CLS_MONTHS = STYLES.MONTHS;
       var CLS_YEARS = STYLES.YEARS;
       var CLS_FOOTER = STYLES.FOOTER;
+      var CLS_FOOTER_DATE = STYLES.FOOTER_DATE;
       var CLS_TODAY = STYLES.TODAY;
+      var CLS_FOOTER_TIME = STYLES.FOOTER_TIME;
       var CLS_TIME = STYLES.TIME;
+      var CLS_TEXT = STYLES.TEXT;
       var CLS_HIDDEN = STYLES.HIDDEN;
+      var SPACE = ' ';
       var elements = this.getEls();
       var createElement = Calendar.DOM.createElement;
+      var weekClassName = CLS_WEEK;
+      var datesClassName = CLS_DATES;
+      var monthsClassName = CLS_MONTHS;
+      var yearsClassName = CLS_YEARS;
+
+      switch (this.get('viewMode')) {
+        case 0:
+          monthsClassName += SPACE + CLS_HIDDEN;
+          yearsClassName += SPACE + CLS_HIDDEN;
+          break;
+
+        case 1:
+          weekClassName += SPACE + CLS_HIDDEN;
+          datesClassName += SPACE + CLS_HIDDEN;
+          yearsClassName += SPACE + CLS_HIDDEN;
+          break;
+
+        case 2:
+          weekClassName += SPACE + CLS_HIDDEN;
+          datesClassName += SPACE + CLS_HIDDEN;
+          monthsClassName += SPACE + CLS_HIDDEN;
+          break;
+      }
+
       elements.parent = document.getElementById(this.get('parent')); // wrap
 
       elements.wrap = createElement('div', {
@@ -1110,46 +1139,60 @@ function () {
       });
       elements.title = createElement('h4', {
         className: CLS_TITLE
-      });
+      }, [createElement('span', {
+        className: CLS_TEXT
+      })]);
       elements.switcher = createElement('div', {
         className: CLS_SWITCHER
       });
       elements.prev = createElement('div', {
         className: CLS_PREV
+      }, [createElement('span', {
+        className: CLS_TEXT
       }, [createElement('i', {
         className: CLS_ICON_PREV
-      })]);
+      })])]);
       elements.next = createElement('div', {
         className: CLS_NEXT
+      }, [createElement('span', {
+        className: CLS_TEXT
       }, [createElement('i', {
         className: CLS_ICON_NEXT
-      })]); // body
+      })])]); // body
 
       elements.body = createElement('div', {
         className: CLS_BODY
       });
       elements.week = createElement('div', {
-        className: CLS_WEEK
+        className: weekClassName
       });
       elements.dates = createElement('div', {
-        className: CLS_DATES
+        className: datesClassName
       });
       elements.months = createElement('div', {
-        className: CLS_MONTHS + ' ' + CLS_HIDDEN
+        className: monthsClassName
       });
       elements.years = createElement('div', {
-        className: CLS_YEARS + ' ' + CLS_HIDDEN
+        className: yearsClassName
       }); // footer
 
       elements.footer = createElement('div', {
         className: CLS_FOOTER
       });
-      elements.today = createElement('p', {
+      elements.today = createElement('div', {
+        className: CLS_FOOTER_DATE
+      }, [createElement('p', {
         className: CLS_TODAY
-      });
-      elements.time = createElement('p', {
+      }, [createElement('span', {
+        className: CLS_TEXT
+      })])]);
+      elements.time = createElement('div', {
+        className: CLS_FOOTER_TIME
+      }, [createElement('p', {
         className: CLS_TIME
-      });
+      }, [createElement('span', {
+        className: CLS_TEXT
+      })])]);
       return this;
     }
     /**
@@ -1162,7 +1205,7 @@ function () {
   }, {
     key: "_renderTitle",
     value: function _renderTitle() {
-      var $title = this.getEls().title;
+      var $title = this.getEls().title.querySelector('.' + this.get('STYLES').TEXT);
       var years = this.getYears();
       var year = this.getYear();
       var value = '';
@@ -1197,13 +1240,17 @@ function () {
       var STYLES = this.get('STYLES');
       var CLS_DAY = STYLES.DAY;
       var CLS_WEEKEND = STYLES.WEEKEND;
+      var CLS_TEXT = STYLES.TEXT;
       var DAYS = this.get('DAYS');
+      var createElement = Calendar.DOM.createElement;
       var fragment = document.createDocumentFragment();
       DAYS.forEach(function (day, i) {
         var className = i === 0 || i === DAYS.length - 1 ? CLS_DAY + ' ' + CLS_WEEKEND : CLS_DAY;
-        var $day = Calendar.DOM.createElement('div', {
+        var $day = createElement('div', {
           className: className
-        }, [day]);
+        }, [createElement('span', {
+          className: CLS_TEXT
+        }, [day])]);
         fragment.appendChild($day);
       });
       this.getEls().week.appendChild(fragment);
@@ -1336,6 +1383,8 @@ function () {
       var CLS_PICKED = STYLES.PICKED;
       var CLS_PICKED_RANGE = STYLES.PICKED_RANGE;
       var CLS_WEEKEND = STYLES.WEEKEND;
+      var CLS_TEXT = STYLES.TEXT;
+      var createElement = Calendar.DOM.createElement;
       var isDatesEqual = Calendar.isDatesEqual;
       var fragment = document.createDocumentFragment();
       var elements = this.getEls();
@@ -1346,9 +1395,11 @@ function () {
       var _loop = function _loop() {
         var fullDate = year + '-' + month + '-' + date;
         var isCurrent = Calendar.isToday(fullDate);
-        var $date = Calendar.DOM.createElement('div', {
+        var $date = createElement('div', {
           'data-date': fullDate
-        }, [date]);
+        }, [createElement('span', {
+          className: CLS_TEXT
+        }, [date])]);
         var day = Calendar.getDay(fullDate);
         var className = '';
         className += CLS_DATE;
@@ -1546,6 +1597,7 @@ function () {
       var CLS_PICKED = STYLES.PICKED;
       var CLS_MONTH = STYLES.MONTH;
       var CLS_MONTH_NEXT = STYLES.MONTH_NEXT;
+      var CLS_TEXT = STYLES.TEXT;
       var MONTHS = this.get('MONTHS');
       var DOM = Calendar.DOM;
       var createElement = DOM.createElement;
@@ -1563,7 +1615,9 @@ function () {
         var className = CLS_MONTH;
         var $month = createElement('div', {
           'data-month': year + '-' + MONTH
-        }, [MONTH]); // 当前（今天）的年份
+        }, [createElement('span', {
+          className: CLS_TEXT
+        }, [MONTH])]); // 当前（今天）的年份
 
         if (isCurrent) {
           className += ' ' + CLS_CURRENT;
@@ -1694,6 +1748,7 @@ function () {
       var CLS_CURRENT = STYLES.CURRENT;
       var CLS_PICKED = STYLES.PICKED;
       var CLS_DISABLED = STYLES.DISABLED;
+      var CLS_TEXT = STYLES.TEXT;
       var DOM = Calendar.DOM;
       var createElement = DOM.createElement;
       var fragment = document.createDocumentFragment();
@@ -1709,7 +1764,9 @@ function () {
         var className = CLS_YEAR;
         var $year = createElement('div', {
           'data-year': year
-        }, [year]);
+        }, [createElement('span', {
+          className: CLS_TEXT
+        }, [year])]);
 
         if (isPrev) {
           className += ' ' + CLS_YEAR_PREV;
@@ -1748,9 +1805,11 @@ function () {
   }, {
     key: "_renderFooter",
     value: function _renderFooter() {
+      var STYLES = this.get('STYLES');
+      var CLS_TEXT = STYLES.TEXT;
       var elements = this.getEls();
-      var $today = elements.today;
-      var $time = elements.time;
+      var $today = elements.today.querySelector('.' + CLS_TEXT);
+      var $time = elements.time.querySelector('.' + CLS_TEXT);
       var today = Calendar.getToday();
       var timer = null;
 
@@ -2232,8 +2291,11 @@ Calendar.defaults = {
     YEAR_PREV: 'cal-year-prev',
     YEAR_NEXT: 'cal-year-next',
     FOOTER: 'cal-ft',
+    FOOTER_DATE: 'cal-ft-date',
     TODAY: 'cal-today',
+    FOOTER_TIME: 'cal-ft-time',
     TIME: 'cal-time',
+    TEXT: 'cal-text',
     CURRENT: 'cal-current',
     PICKED: 'cal-picked',
     PICKED_RANGE: 'cal-picked-range',
