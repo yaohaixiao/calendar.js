@@ -26,6 +26,7 @@
 .cal-hd,
 .cal-ft {
   box-sizing: border-box;
+  height: calc(100% / 9);
 }
 
 .cal-prev,
@@ -60,8 +61,8 @@
 .cal-md {
   background-color: $white;
   font-size: 14px;
-  width: 100%;
   user-select: none;
+  width: 100%;
 }
 
 .cal-md,
@@ -77,11 +78,6 @@
 .cal-ft-date,
 .cal-ft-time {
   height: 100%;
-}
-
-.cal-hd,
-.cal-ft {
-  height: calc(100% / 9);
 }
 
 .cal-bd {
@@ -155,8 +151,8 @@
 
 .cal-prev,
 .cal-next {
-  width: 30px;
   color: $light-gray;
+  width: 30px;
 
   &:hover {
     background-color: $background-color-hover;
@@ -252,7 +248,7 @@
 
 .cal-today,
 .cal-time {
-  text-align:center;
+  text-align: center;
 
   &:hover {
     color: $primary;

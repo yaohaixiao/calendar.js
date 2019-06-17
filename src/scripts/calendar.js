@@ -30,6 +30,10 @@ class Calendar {
       // range - 范围选择模式
       // week - 星期选择模式
       pickMode: 'single',
+      onDatePick: null,
+      onMonthPick: null,
+      onYearPick: null,
+      onTodayPick: null,
       // 月份常量
       MONTHS: [],
       // 星期常量
@@ -431,9 +435,9 @@ class Calendar {
    * @returns {Calendar}
    */
   set (options = {}) {
-    let config = JSON.parse(JSON.stringify(options))
+    // let config = JSON.parse(JSON.stringify(options))
 
-    Object.assign(this.attributes, config)
+    Object.assign(this.attributes, options)
 
     return this
   }
@@ -801,9 +805,11 @@ class Calendar {
     const hasClass = DOM.hasClass
     const addClass = DOM.addClass
     const removeClass = DOM.removeClass
+    const isFunction = Calendar.Utils.isFunction
     let pickMode = this.get('pickMode')
     let elements = this.getEls()
     let time = $date.getAttribute('data-date')
+    let callback = this.get('onDatePick')
     let $picked = null
     let pickedDates
 
@@ -823,7 +829,11 @@ class Calendar {
 
           pickedDates = this.getPicked()
 
-          this.setDate(pickedDates[pickedDates.length-1])
+          this.setDate(pickedDates[pickedDates.length - 1])
+
+          if (isFunction(callback)) {
+            callback(pickedDates, $date, this)
+          }
 
           break
         case 'range':
@@ -837,6 +847,10 @@ class Calendar {
           // 绘制选中样式
           elements.date = $date
           this._renderDateRanges()
+
+          if (isFunction(callback)) {
+            callback(this.getPicked(), $date, this)
+          }
 
           break
       }
@@ -858,6 +872,10 @@ class Calendar {
 
           this.setDate(time)
 
+          if (isFunction(callback)) {
+            callback(time, $date, this)
+          }
+
           break
         case 'multiple':
           this.data.picked.push(time)
@@ -865,9 +883,13 @@ class Calendar {
 
           pickedDates = this.getPicked()
 
-          this.setDate(pickedDates[pickedDates.length-1])
+          this.setDate(pickedDates[pickedDates.length - 1])
 
           addClass($date, CLS_PICKED)
+
+          if (isFunction(callback)) {
+            callback(this.getPicked(), $date, this)
+          }
 
           break
         case 'range':
@@ -881,10 +903,14 @@ class Calendar {
               }
 
               pickedDates = this.getPicked()
-              this.setDate(pickedDates[pickedDates.length-1])
+              this.setDate(pickedDates[pickedDates.length - 1])
 
               elements.date = $date
               this._renderDateRanges()
+
+              if (isFunction(callback)) {
+                callback(pickedDates, $date, this)
+              }
 
               break
             case 2:
@@ -910,6 +936,10 @@ class Calendar {
           elements.date = $date
           this._renderWeekRanges()
 
+          if (isFunction(callback)) {
+            callback(this.getPicked(), $date, this)
+          }
+
           break
       }
     }
@@ -933,6 +963,7 @@ class Calendar {
     let elements = this.getEls()
     let $picked = elements.month
     let time = $month.getAttribute('data-month')
+    let callback = this.get('onMonthPick')
 
     // 点击已经选中的年份
     if (DOM.hasClass($month, CLS_PICKED)) {
@@ -951,6 +982,10 @@ class Calendar {
       this.setYear(time)
           .setMonth(time)
           .update()
+    }
+
+    if (Calendar.Utils.isFunction(callback)) {
+      callback(time, $month, this)
     }
 
     return this
@@ -972,6 +1007,7 @@ class Calendar {
     let elements = this.getEls()
     let $picked = elements.year
     let time = $year.getAttribute('data-year')
+    let callback = this.get('onYearPick')
 
     // 点击已经选中的月份
     if (DOM.hasClass($year, CLS_PICKED)) {
@@ -992,6 +1028,10 @@ class Calendar {
           .update(1)
     }
 
+    if (Calendar.Utils.isFunction(callback)) {
+      callback(time, $year, this)
+    }
+
     return this
   }
 
@@ -1004,11 +1044,16 @@ class Calendar {
    */
   pickToday () {
     let time = Calendar.getToday().value
+    let callback = this.get('onTodayPick')
 
     this.setYear(time)
         .setMonth(time)
         .setDate(time)
         .update()
+
+    if (Calendar.Utils.isFunction(callback)) {
+      callback(time, this.getEls().dates.querySelector('[data-date=' + time + ']'), this)
+    }
 
     return this
   }
@@ -1960,10 +2005,10 @@ class Calendar {
    * @private
    */
   _monthClick (evt) {
-    let $el = evt.delegateTarget
-    let time = $el.getAttribute('data-month')
+    let $month = evt.delegateTarget
+    let time = $month.getAttribute('data-month')
 
-    this.pickMonth($el)
+    this.pickMonth($month)
 
     console.log('------------- _monthClick -------------')
     console.log(time)
@@ -1997,9 +2042,13 @@ class Calendar {
    * @private
    */
   _todayClick () {
-    let time = Calendar.getToday().value
+    let elements = this.getEls()
+    let time = Calendar.getToday().text
 
     this.pickToday()
+
+    // 触发日期选择逻辑
+    this.pickDate(elements.dates.querySelector('[data-date="' + time + '"]'))
 
     console.log('------------- _todayClick -------------')
     console.log(time)
@@ -2282,6 +2331,14 @@ Calendar.defaults = {
   // range - 范围多选
   // week - 整个星期选择
   pickMode: 'single',
+  onDatePick: (time, $el, calendar) => {
+  },
+  onMonthPick: (time, $el, calendar) => {
+  },
+  onYearPick: (time, $el, calendar) => {
+  },
+  onTodayPick: (time, $el, calendar) => {
+  },
   MONTHS: [
     1,
     2,
@@ -2380,6 +2437,9 @@ Calendar.Utils = {
     } else {
       return Object.prototype.toString.apply(o) === '[object Array]'
     }
+  },
+  isFunction: (o) => {
+    return (typeof o === 'function') || Object.prototype.toString.apply(o) === '[object Function]'
   },
   isElement: (o) => {
     return o && o.nodeName && o.tagName && o.nodeType === 1

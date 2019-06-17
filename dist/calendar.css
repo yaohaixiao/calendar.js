@@ -47,7 +47,8 @@
 
 .cal-hd,
 .cal-ft {
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  height: calc(100% / 9); }
 
 .cal-prev,
 .cal-next,
@@ -78,11 +79,11 @@
 .cal-md {
   background-color: #fff;
   font-size: 14px;
-  width: 100%;
   -webkit-user-select: none;
      -moz-user-select: none;
       -ms-user-select: none;
-          user-select: none; }
+          user-select: none;
+  width: 100%; }
 
 .cal-md,
 .cal-switcher,
@@ -97,10 +98,6 @@
 .cal-ft-date,
 .cal-ft-time {
   height: 100%; }
-
-.cal-hd,
-.cal-ft {
-  height: calc(100% / 9); }
 
 .cal-bd {
   height: calc((100% / 9) * 7); }
@@ -160,8 +157,8 @@
 
 .cal-prev,
 .cal-next {
-  width: 30px;
-  color: #999; }
+  color: #999;
+  width: 30px; }
   .cal-prev:hover,
   .cal-next:hover {
     background-color: #e8e8e8;

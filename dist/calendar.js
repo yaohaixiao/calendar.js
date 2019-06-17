@@ -51,6 +51,10 @@ function () {
       // range - 范围选择模式
       // week - 星期选择模式
       pickMode: 'single',
+      onDatePick: null,
+      onMonthPick: null,
+      onYearPick: null,
+      onTodayPick: null,
       // 月份常量
       MONTHS: [],
       // 星期常量
@@ -445,8 +449,8 @@ function () {
     key: "set",
     value: function set() {
       var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var config = JSON.parse(JSON.stringify(options));
-      Object.assign(this.attributes, config);
+      // let config = JSON.parse(JSON.stringify(options))
+      Object.assign(this.attributes, options);
       return this;
     }
     /**
@@ -827,9 +831,11 @@ function () {
       var hasClass = DOM.hasClass;
       var addClass = DOM.addClass;
       var removeClass = DOM.removeClass;
+      var isFunction = Calendar.Utils.isFunction;
       var pickMode = this.get('pickMode');
       var elements = this.getEls();
       var time = $date.getAttribute('data-date');
+      var callback = this.get('onDatePick');
       var $picked = null;
       var pickedDates; // 选择了选中状态的日期
 
@@ -849,6 +855,11 @@ function () {
 
             pickedDates = this.getPicked();
             this.setDate(pickedDates[pickedDates.length - 1]);
+
+            if (isFunction(callback)) {
+              callback(pickedDates, $date, this);
+            }
+
             break;
 
           case 'range':
@@ -861,6 +872,10 @@ function () {
             elements.date = $date;
 
             this._renderDateRanges();
+
+            if (isFunction(callback)) {
+              callback(this.getPicked(), $date, this);
+            }
 
             break;
         }
@@ -878,6 +893,11 @@ function () {
             addClass($date, CLS_PICKED);
             elements.date = $date;
             this.setDate(time);
+
+            if (isFunction(callback)) {
+              callback(time, $date, this);
+            }
+
             break;
 
           case 'multiple':
@@ -886,6 +906,11 @@ function () {
             pickedDates = this.getPicked();
             this.setDate(pickedDates[pickedDates.length - 1]);
             addClass($date, CLS_PICKED);
+
+            if (isFunction(callback)) {
+              callback(this.getPicked(), $date, this);
+            }
+
             break;
 
           case 'range':
@@ -903,6 +928,10 @@ function () {
                 elements.date = $date;
 
                 this._renderDateRanges();
+
+                if (isFunction(callback)) {
+                  callback(pickedDates, $date, this);
+                }
 
                 break;
 
@@ -928,6 +957,10 @@ function () {
 
             this._renderWeekRanges();
 
+            if (isFunction(callback)) {
+              callback(this.getPicked(), $date, this);
+            }
+
             break;
         }
       }
@@ -952,7 +985,8 @@ function () {
       var DOM = Calendar.DOM;
       var elements = this.getEls();
       var $picked = elements.month;
-      var time = $month.getAttribute('data-month'); // 点击已经选中的年份
+      var time = $month.getAttribute('data-month');
+      var callback = this.get('onMonthPick'); // 点击已经选中的年份
 
       if (DOM.hasClass($month, CLS_PICKED)) {
         // 切换到月份试图模式
@@ -967,6 +1001,10 @@ function () {
         DOM.addClass($month, CLS_PICKED);
         elements.month = $month;
         this.setYear(time).setMonth(time).update();
+      }
+
+      if (Calendar.Utils.isFunction(callback)) {
+        callback(time, $month, this);
       }
 
       return this;
@@ -989,7 +1027,8 @@ function () {
       var DOM = Calendar.DOM;
       var elements = this.getEls();
       var $picked = elements.year;
-      var time = $year.getAttribute('data-year'); // 点击已经选中的月份
+      var time = $year.getAttribute('data-year');
+      var callback = this.get('onYearPick'); // 点击已经选中的月份
 
       if (DOM.hasClass($year, CLS_PICKED)) {
         // 切换到日期试图模式
@@ -1007,6 +1046,10 @@ function () {
         this.setYear(time).update(1);
       }
 
+      if (Calendar.Utils.isFunction(callback)) {
+        callback(time, $year, this);
+      }
+
       return this;
     }
     /**
@@ -1021,7 +1064,13 @@ function () {
     key: "pickToday",
     value: function pickToday() {
       var time = Calendar.getToday().value;
+      var callback = this.get('onTodayPick');
       this.setYear(time).setMonth(time).setDate(time).update();
+
+      if (Calendar.Utils.isFunction(callback)) {
+        callback(time, this.getEls().dates.querySelector('[data-date=' + time + ']'), this);
+      }
+
       return this;
     }
     /**
@@ -1964,9 +2013,9 @@ function () {
   }, {
     key: "_monthClick",
     value: function _monthClick(evt) {
-      var $el = evt.delegateTarget;
-      var time = $el.getAttribute('data-month');
-      this.pickMonth($el);
+      var $month = evt.delegateTarget;
+      var time = $month.getAttribute('data-month');
+      this.pickMonth($month);
       console.log('------------- _monthClick -------------');
       console.log(time);
       return this;
@@ -1999,8 +2048,11 @@ function () {
   }, {
     key: "_todayClick",
     value: function _todayClick() {
-      var time = Calendar.getToday().value;
-      this.pickToday();
+      var elements = this.getEls();
+      var time = Calendar.getToday().text;
+      this.pickToday(); // 触发日期选择逻辑
+
+      this.pickDate(elements.dates.querySelector('[data-date="' + time + '"]'));
       console.log('------------- _todayClick -------------');
       console.log(time);
       return this;
@@ -2300,6 +2352,10 @@ Calendar.defaults = {
   // range - 范围多选
   // week - 整个星期选择
   pickMode: 'single',
+  onDatePick: function onDatePick(time, $el, calendar) {},
+  onMonthPick: function onMonthPick(time, $el, calendar) {},
+  onYearPick: function onYearPick(time, $el, calendar) {},
+  onTodayPick: function onTodayPick(time, $el, calendar) {},
   MONTHS: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4],
   DAYS: ['日', '一', '二', '三', '四', '五', '六'],
   DATES: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
@@ -2360,6 +2416,9 @@ Calendar.Utils = {
     } else {
       return Object.prototype.toString.apply(o) === '[object Array]';
     }
+  },
+  isFunction: function isFunction(o) {
+    return typeof o === 'function' || Object.prototype.toString.apply(o) === '[object Function]';
   },
   isElement: function isElement(o) {
     return o && o.nodeName && o.tagName && o.nodeType === 1;
