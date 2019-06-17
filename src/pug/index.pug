@@ -111,6 +111,30 @@ head
             font-size: 14px;
             font-family: 'Courier New', Consolas, 'Microsoft YaHei UI', Arial, sans-serif;
         }
+
+        .table {
+            margin: 1.5em auto;
+            width: 100%;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .th {
+            border-bottom: 1px solid #ddd;
+        }
+
+        .th,
+        .td {
+            text-align: center;
+            padding: 10px;
+            border-right: 1px solid #ddd;
+        }
+
+        .th:last-child,
+        .td:last-child {
+            border-right: none;
+        }
 body
     h1.title
         | Calendar.js
@@ -126,6 +150,42 @@ body
             li.feature-item 简洁大方的 UI 界面，清爽耐看；
             li.feature-item 配置灵活方便，简单易用；
             li.feature-item 代码遵循 UML 规范；
+        h2.feature 浏览器支持
+        table.table
+            thead.thead
+                tr
+                    th.th
+                        a(href='https://yaohaixiao.github.io/calendar.js/')
+                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png', alt='IE / Edge', width='24px', height='24px')
+                        br
+                        | IE / Edge
+                    th.th
+                        a(href='https://yaohaixiao.github.io/calendar.js/')
+                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png', alt='Firefox', width='24px', height='24px')
+                        br
+                        | Firefox
+                    th.th
+                        a(href='https://yaohaixiao.github.io/calendar.js/')
+                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png', alt='Chrome', width='24px', height='24px')
+                        br
+                        | Chrome
+                    th.th
+                        a(href='https://yaohaixiao.github.io/calendar.js/')
+                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png', alt='Safari', width='24px', height='24px')
+                        br
+                        | Safari
+                    th.th
+                        a(href='https://yaohaixiao.github.io/calendar.js/')
+                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png', alt='Opera', width='24px', height='24px')
+                        br
+                        | Opera
+            tbody.tbody
+                tr
+                    td.td IE9, IE10, IE11, Edge
+                    td.td last 10 versions
+                    td.td last 10 versions
+                    td.td last 10 versions
+                    td.td last 10 versions
         h2.feature 日期试图模式
         div.demo
             div#dates-view.demo-example
