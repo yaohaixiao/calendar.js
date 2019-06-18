@@ -1,5 +1,6 @@
 # calendar.js
 
+[![GitHub release](https://img.shields.io/github/release/yaohaixiao/calendar.js.svg)](https://github.com/yaohaixiao/calendar.js/releases)
 [![Github file size](https://img.shields.io/github/size/yaohaixiao/calendar.js/dist/calendar.min.js.svg)](https://github.com/yaohaixiao/calendar.js/blob/master/dist/calendar.min.js)
 [![David](https://img.shields.io/david/yaohaixiao/calendar.js.svg)](https://david-dm.org/yaohaixiao/calendar.js)
 [![David](https://img.shields.io/david/dev/yaohaixiao/calendar.js.svg)](https://david-dm.org/yaohaixiao/calendar.js?type=dev)
