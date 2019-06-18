@@ -1,4 +1,10 @@
 # calendar.js
+
+[![Github file size](https://img.shields.io/github/size/yaohaixiao/calendar.js/dist/calendar.min.js.svg)](https://github.com/yaohaixiao/calendar.js/blob/master/dist/calendar.min.js)
+[![David](https://img.shields.io/david/yaohaixiao/calendar.js.svg)](https://david-dm.org/yaohaixiao/calendar.js)
+[![David](https://img.shields.io/david/dev/yaohaixiao/calendar.js.svg)](https://david-dm.org/yaohaixiao/calendar.js?type=dev)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/yaohaixiao/calendar.js/master/LICENSE)
+
 一个简单实用的 JavaScript 日历控件！原生 JavaScript 编写，不依赖任何第三方库。支持日期、月份和年份试图切换；支持单选、多选、范围和星期选择模式；界面简介、配置简单、使用方便！
 
 ## Features
