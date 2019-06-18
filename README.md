@@ -30,7 +30,7 @@
 
 ## Usage
 
-### 日期试图模式
+### 日期视图模式
 
 ```js
 new Calendar({
@@ -53,7 +53,7 @@ new Calendar({
 })
 ```
 
-### 月份试图模式
+### 月份视图模式
 
 ```js
 new Calendar({
@@ -75,7 +75,7 @@ new Calendar({
 })
 ```
 
-### 年代试图模式
+### 年代视图模式
 
 ```js
 new Calendar({
