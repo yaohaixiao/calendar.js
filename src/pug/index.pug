@@ -49,17 +49,6 @@ head
             overflow: hidden;
         }
 
-        .features {
-            margin: 1em auto;
-            padding: 0 15px;
-            overflow: hidden;
-        }
-
-        .feature-item {
-            line-height: 150%;
-            font-size: 14px;
-        }
-
         .demo {
             position: relative;
             z-index: 1;
@@ -111,81 +100,12 @@ head
             font-size: 14px;
             font-family: 'Courier New', Consolas, 'Microsoft YaHei UI', Arial, sans-serif;
         }
-
-        .table {
-            margin: 1.5em auto;
-            width: 100%;
-            border: 1px solid #ddd;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        .th {
-            border-bottom: 1px solid #ddd;
-        }
-
-        .th,
-        .td {
-            text-align: center;
-            padding: 10px;
-            border-right: 1px solid #ddd;
-        }
-
-        .th:last-child,
-        .td:last-child {
-            border-right: none;
-        }
 body
     h1.title
         | Calendar.js
         sup.version v0.0.1
 
     div.calendar
-        h2.feature 特点
-        ol.features
-            li.feature-item 原生 JavaScript 代码，无任何第三方库的依赖；
-            li.feature-item 支持单选、多选、范围和星期选择 4 种选择方式；
-            li.feature-item 支持年代、月份、日期 3 中不同视图的切换；
-            li.feature-item 弹性布局，适应各种不同尺寸大小；
-            li.feature-item 简洁大方的 UI 界面，清爽耐看；
-            li.feature-item 配置灵活方便，简单易用；
-            li.feature-item 代码遵循 UML 规范；
-        h2.feature 浏览器支持
-        table.table
-            thead.thead
-                tr
-                    th.th
-                        a(href='https://yaohaixiao.github.io/calendar.js/')
-                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/edge/edge_48x48.png', alt='IE / Edge', width='24px', height='24px')
-                        br
-                        | IE / Edge
-                    th.th
-                        a(href='https://yaohaixiao.github.io/calendar.js/')
-                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/firefox/firefox_48x48.png', alt='Firefox', width='24px', height='24px')
-                        br
-                        | Firefox
-                    th.th
-                        a(href='https://yaohaixiao.github.io/calendar.js/')
-                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/chrome/chrome_48x48.png', alt='Chrome', width='24px', height='24px')
-                        br
-                        | Chrome
-                    th.th
-                        a(href='https://yaohaixiao.github.io/calendar.js/')
-                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/safari/safari_48x48.png', alt='Safari', width='24px', height='24px')
-                        br
-                        | Safari
-                    th.th
-                        a(href='https://yaohaixiao.github.io/calendar.js/')
-                            img(src='https://raw.githubusercontent.com/alrra/browser-logos/master/src/opera/opera_48x48.png', alt='Opera', width='24px', height='24px')
-                        br
-                        | Opera
-            tbody.tbody
-                tr
-                    td.td IE9, IE10, IE11, Edge
-                    td.td last 10 versions
-                    td.td last 10 versions
-                    td.td last 10 versions
-                    td.td last 10 versions
         h2.feature 日期试图模式
         div.demo
             div#dates-view.demo-example
@@ -200,14 +120,14 @@ body
                           // viewMode：
                           // 0 - 日期模式（默认值）
                           viewMode: 0,
-                          // 设置日期选择的自定义的事件处理器
-                          // time - 选中的日期（范围）时间
+                          // 配置日期选择的事件处理器 onDatePick，参数如下：
+                          // time - 选中的日期时间
                           // $el - 点击的 DOM 节点
                           // calendar - 日历控件的实例
                           onDatePick: function (time, $el, calendar) {
-                            alert('选择时间：' + time)
-                            alert('选择的 DOM 节点：' + $el)
-                            alert('日历实例：' + calendar)
+                            console.log('选择时间：', time)
+                            console.log('选择DOM：', $el)
+                            console.log('日历实例：', calendar)
                           }
                         })
         h2.feature 月份试图模式
@@ -218,19 +138,19 @@ body
                     code.demo-code.
                         new Calendar({
                           parent: 'months-view',
-                          // 不设置 time 默认显示今天的日期
-                          // time: '2019-6-11',
+                          // 设置月份
+                          time: '2019-7',
                           // viewMode：
                           // 1 - 月份模式
                           viewMode: 1,
-                          // 设置月份选择的自定义的事件处理器
-                          // time - 选中的月份时间
+                          // 配置月份选择的事件处理器 onMonthPick，参数如下：
+                          // time - 选中的日期时间
                           // $el - 点击的 DOM 节点
                           // calendar - 日历控件的实例
                           onMonthPick: function (time, $el, calendar) {
-                            console.log('选择时间：' + time)
-                            console.log('选择的 DOM 节点：' + $el)
-                            console.log('日历实例：' + calendar)
+                            console.log('选择时间：', time)
+                            console.log('选择DOM：', $el)
+                            console.log('日历实例：', calendar)
                           }
                         })
         h2.feature 年代试图模式
@@ -241,18 +161,19 @@ body
                     code.demo-code.
                         new Calendar({
                           parent: 'years-view',
-                          time: '2019-6-17',
+                          // 设置年份
+                          time: '2021',
                           // viewMode：
                           // 1 - 年代模式
                           viewMode: 2,
-                          // 设置年份份选择的自定义的事件处理器
-                          // time - 选中的年份时间
+                          // 配置月份选择的事件处理器 onYearPick，参数如下：
+                          // time - 选中的日期时间
                           // $el - 点击的 DOM 节点
                           // calendar - 日历控件的实例
                           onYearPick: function (time, $el, calendar) {
-                            console.log('选择时间：' + time)
-                            console.log('选择的 DOM 节点：' + $el)
-                            console.log('日历实例：' + calendar)
+                            console.log('选择时间：', time)
+                            console.log('选择DOM：', $el)
+                            console.log('日历实例：', calendar)
                           }
                         })
         h2.feature 单选模式
@@ -272,13 +193,22 @@ body
                           // pickMode：
                           // single - 单选模式
                           pickMode: 'single',
+                          // 配置日期选择的事件处理器 onDatePick，参数如下：
                           // time - 选中的日期时间
                           // $el - 点击的 DOM 节点
                           // calendar - 日历控件的实例
                           onDatePick: function (time, $el, calendar) {
-                            console.log('选择时间：' + time)
-                            console.log('选择的 DOM 节点：' + $el)
-                            console.log('日历实例：' + calendar)
+                            console.log('选择时间：', time)
+                            console.log('选择的 DOM 节点：', $el)
+                            console.log('日历实例：', calendar)
+                          },
+                          // 配置今天选择的事件处理器 onTodayPick，参数如下：
+                          // 1. 先切换到日期试图模式；
+                          // 2. 触发日期选择的业务逻辑；
+                          onTodayPick: function (time, $el, calendar) {
+                            console.log('选择时间：', time)
+                            console.log('选择的 DOM 节点：', $el)
+                            console.log('日历实例：', calendar)
                           }
                         })
         h2.feature 多选模式
@@ -298,6 +228,7 @@ body
                           // pickMode：
                           // multiple - 多选模式
                           pickMode: 'multiple',
+                          // 配置日期选择的事件处理器 onDatePick，参数如下：
                           // time - 选中的多个日期（已排序）时间
                           // $el - 点击的 DOM 节点
                           // calendar - 日历控件的实例
@@ -305,6 +236,14 @@ body
                             console.log('选择时间：' + time)
                             console.log('选择的 DOM 节点：' + $el)
                             console.log('日历实例：' + calendar)
+                          },
+                          // 配置今天选择的事件处理器 onTodayPick，参数如下：
+                          // 1. 先切换到日期试图模式；
+                          // 2. 触发日期选择的业务逻辑；
+                          onTodayPick: function (time, $el, calendar) {
+                            console.log('选择时间：', time)
+                            console.log('选择的 DOM 节点：', $el)
+                            console.log('日历实例：', calendar)
                           }
                         })
         h2.feature 范围选择模式
@@ -324,6 +263,7 @@ body
                           // pickMode：
                           // range - 多选模式
                           pickMode: 'range',
+                          // 配置日期选择的事件处理器 onDatePick，参数如下：
                           // time - 选中的日期时间范围
                           // $el - 点击的 DOM 节点
                           // calendar - 日历控件的实例
@@ -332,13 +272,13 @@ body
                             console.log('选择的 DOM 节点：' + $el)
                             console.log('日历实例：' + calendar)
                           },
-                          // 设置点击今天的事件处理器：
+                          // 配置今天选择的事件处理器 onTodayPick，参数如下：
                           // 1. 先切换到日期试图模式；
                           // 2. 触发日期选择的业务逻辑；
                           onTodayPick: function (time, $el, calendar) {
-                            console.log('选择时间：' + time)
-                            console.log('选择的 DOM 节点：' + $el)
-                            console.log('日历实例：' + calendar)
+                            console.log('选择时间：', time)
+                            console.log('选择的 DOM 节点：', $el)
+                            console.log('日历实例：', calendar)
                           }
                         })
         h2.feature 星期选择模式
@@ -358,6 +298,7 @@ body
                           // pickMode：
                           // week - 多选模式
                           pickMode: 'week',
+                          // 配置日期选择的事件处理器 onDatePick，参数如下：
                           // time - 选中的日期时间范围
                           // $el - 点击的 DOM 节点
                           // calendar - 日历控件的实例
@@ -365,42 +306,71 @@ body
                             console.log('选择时间：' + time)
                             console.log('选择的 DOM 节点：' + $el)
                             console.log('日历实例：' + calendar)
+                          },
+                          // 配置今天选择的事件处理器 onTodayPick，参数如下：
+                          // 1. 先切换到日期试图模式；
+                          // 2. 触发日期选择的业务逻辑；
+                          onTodayPick: function (time, $el, calendar) {
+                            console.log('选择时间：', time)
+                            console.log('选择的 DOM 节点：', $el)
+                            console.log('日历实例：', calendar)
                           }
                         })
     script(src="js/calendar.js" type="text/javascript")
     script.
       (function () {
         let calDates = new Calendar({
+          // 设置显示位置
           parent: 'dates-view',
+          // 初始化显示时间
           time: '2019-6-11',
+          // viewMode：
+          // 0 - 日期模式（默认值）
+          viewMode: 0,
+          // 配置日期选择的事件处理器 onDatePick，参数如下：
+          // time - 选中的日期时间
+          // $el - 点击的 DOM 节点
+          // calendar - 日历控件的实例
           onDatePick: function (time, $el, calendar) {
-            console.log('选择时间：' + time)
-            console.log('选择DOM：' + $el)
-            console.log('日历实例：' + calendar)
+            console.log('选择时间：', time)
+            console.log('选择DOM：', $el)
+            console.log('日历实例：', calendar)
           }
         })
 
         let calMonths = new Calendar({
           parent: 'months-view',
+          // 设置月份
+          time: '2019-7',
+          // viewMode：
+          // 1 - 月份模式
           viewMode: 1,
+          // 配置月份选择的事件处理器 onMonthPick，参数如下：
+          // time - 选中的日期时间
+          // $el - 点击的 DOM 节点
+          // calendar - 日历控件的实例
           onMonthPick: function (time, $el, calendar) {
-            console.log('选择时间：' + time)
-            console.log('选择DOM：' + $el)
-            console.log('日历实例：' + calendar)
+            console.log('选择时间：', time)
+            console.log('选择DOM：', $el)
+            console.log('日历实例：', calendar)
           }
         })
 
         let calYears = new Calendar({
           parent: 'years-view',
-          time: '2019-6-17',
+          // 设置年份
+          time: '2021',
+          // viewMode：
+          // 1 - 年代模式
           viewMode: 2,
-          // time - 选中的年份时间
+          // 配置月份选择的事件处理器 onYearPick，参数如下：
+          // time - 选中的日期时间
           // $el - 点击的 DOM 节点
           // calendar - 日历控件的实例
           onYearPick: function (time, $el, calendar) {
-            console.log('选择时间：' + time)
-            console.log('选择DOM：' + $el)
-            console.log('日历实例：' + calendar)
+            console.log('选择时间：', time)
+            console.log('选择DOM：', $el)
+            console.log('日历实例：', calendar)
           }
         })
 
@@ -415,51 +385,82 @@ body
           // pickMode：
           // single - 单选模式
           pickMode: 'single',
+          // 配置日期选择的事件处理器 onDatePick，参数如下：
+          // time - 选中的日期时间
+          // $el - 点击的 DOM 节点
+          // calendar - 日历控件的实例
           onDatePick: function (time, $el, calendar) {
-            console.log('选择时间：' + time)
-            console.log('选择DOM：' + $el)
-            console.log('日历实例：' + calendar)
+            console.log('选择时间：', time)
+            console.log('选择的 DOM 节点：', $el)
+            console.log('日历实例：', calendar)
+          },
+          // 配置今天选择的事件处理器 onTodayPick，参数如下：
+          // 1. 先切换到日期试图模式；
+          // 2. 触发日期选择的业务逻辑；
+          onTodayPick: function (time, $el, calendar) {
+            console.log('选择时间：', time)
+            console.log('选择的 DOM 节点：', $el)
+            console.log('日历实例：', calendar)
           }
         })
 
         let calMultiple = new Calendar({
           // 设置显示位置
           parent: 'multiple-pick',
-          // 初始化显示时间
+          // 初始化显示时间（默认选中时间）
           time: '2019-6-19',
           // viewMode：
           // 0 - 日期模式（默认值）
           viewMode: 0,
           // pickMode：
-          // multiple - 单选模式
+          // multiple - 多选模式
           pickMode: 'multiple',
+          // 配置日期选择的事件处理器 onDatePick，参数如下：
+          // time - 选中的多个日期（已排序）时间
+          // $el - 点击的 DOM 节点
+          // calendar - 日历控件的实例
           onDatePick: function (time, $el, calendar) {
             console.log('选择时间：' + time)
-            console.log('选择DOM：' + $el)
+            console.log('选择的 DOM 节点：' + $el)
             console.log('日历实例：' + calendar)
+          },
+          // 配置今天选择的事件处理器 onTodayPick，参数如下：
+          // 1. 先切换到日期试图模式；
+          // 2. 触发日期选择的业务逻辑；
+          onTodayPick: function (time, $el, calendar) {
+            console.log('选择时间：', time)
+            console.log('选择的 DOM 节点：', $el)
+            console.log('日历实例：', calendar)
           }
         })
 
         let calRange = new Calendar({
           // 设置显示位置
           parent: 'range-pick',
-          // 初始化显示时间
+          // 初始化显示时间（默认选中时间）
           time: '2019-6-20',
           // viewMode：
           // 0 - 日期模式（默认值）
           viewMode: 0,
           // pickMode：
-          // range - 单选模式
+          // range - 多选模式
           pickMode: 'range',
+          // 配置日期选择的事件处理器 onDatePick，参数如下：
+          // time - 选中的日期时间范围
+          // $el - 点击的 DOM 节点
+          // calendar - 日历控件的实例
           onDatePick: function (time, $el, calendar) {
-            console.log('选择时间：' + time)
-            console.log('选择DOM：' + $el)
-            console.log('日历实例：' + calendar)
-          },
-          onTodayPick: function (time, $el, calendar) {
             console.log('选择时间：' + time)
             console.log('选择的 DOM 节点：' + $el)
             console.log('日历实例：' + calendar)
+          },
+          // 配置今天选择的事件处理器 onTodayPick，参数如下：
+          // 1. 先切换到日期试图模式；
+          // 2. 触发日期选择的业务逻辑；
+          onTodayPick: function (time, $el, calendar) {
+            console.log('选择时间：', time)
+            console.log('选择的 DOM 节点：', $el)
+            console.log('日历实例：', calendar)
           }
         })
 
@@ -474,10 +475,22 @@ body
           // pickMode：
           // week - 多选模式
           pickMode: 'week',
+          // 配置日期选择的事件处理器 onDatePick，参数如下：
+          // time - 选中的日期时间范围
+          // $el - 点击的 DOM 节点
+          // calendar - 日历控件的实例
           onDatePick: function (time, $el, calendar) {
             console.log('选择时间：' + time)
-            console.log('选择DOM：' + $el)
+            console.log('选择的 DOM 节点：' + $el)
             console.log('日历实例：' + calendar)
+          },
+          // 配置今天选择的事件处理器 onTodayPick，参数如下：
+          // 1. 先切换到日期试图模式；
+          // 2. 触发日期选择的业务逻辑；
+          onTodayPick: function (time, $el, calendar) {
+            console.log('选择时间：', time)
+            console.log('选择的 DOM 节点：', $el)
+            console.log('日历实例：', calendar)
           }
         })
       })()

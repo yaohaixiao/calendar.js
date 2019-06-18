@@ -2352,10 +2352,10 @@ Calendar.defaults = {
   // range - 范围多选
   // week - 整个星期选择
   pickMode: 'single',
-  onDatePick: function onDatePick(time, $el, calendar) {},
-  onMonthPick: function onMonthPick(time, $el, calendar) {},
-  onYearPick: function onYearPick(time, $el, calendar) {},
-  onTodayPick: function onTodayPick(time, $el, calendar) {},
+  onDatePick: null,
+  onMonthPick: null,
+  onYearPick: null,
+  onTodayPick: null,
   MONTHS: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 1, 2, 3, 4],
   DAYS: ['日', '一', '二', '三', '四', '五', '六'],
   DATES: [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
