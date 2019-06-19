@@ -13,6 +13,7 @@
 - 原生 JavaScript 代码，无任何第三方库的依赖；
 - 支持单选、多选、范围和星期选择 4 种选择方式；
 - 支持年代、月份、日期 3 中不同视图的切换；
+- 支持显示农历日期；
 - 弹性布局，适应各种不同尺寸大小；
 - 简洁大方的 UI 界面，清爽耐看；
 - 配置灵活方便，简单易用；
@@ -233,6 +234,44 @@ new Calendar({
 })
 ```
 
+### 显示农历日期
+
+```js
+new Calendar({
+    // 设置显示位置
+    parent: 'lunar-calendar',
+    // 初始化显示时间（默认选中时间）
+    time: '2019-6-22',
+    // viewMode：
+    // 0 - 日期模式（默认值）
+    viewMode: 0,
+    // pickMode：
+    // single - 单选模式
+    pickMode: 'single',
+    // 是否显示农历日期
+    // true - 显示
+    // false - 不现实
+    isLunarCalendar: true,
+    // 配置日期选择的事件处理器 onDatePick，参数如下：
+    // time - 选中的日期时间
+    // $el - 点击的 DOM 节点
+    // calendar - 日历控件的实例
+    onDatePick: function (time, $el, calendar) {
+      console.log('选择时间：', time)
+      console.log('选择的 DOM 节点：', $el)
+      console.log('日历实例：', calendar)
+    },
+    // 配置今天选择的事件处理器 onTodayPick，参数如下：
+    // 1. 先切换到日期试图模式；
+    // 2. 触发日期选择的业务逻辑；
+    onTodayPick: function (time, $el, calendar) {
+      console.log('选择时间：', time)
+      console.log('选择的 DOM 节点：', $el)
+      console.log('日历实例：', calendar)
+    }
+})
+```
+
 ## API 
 
 ### Options
@@ -267,10 +306,19 @@ Type: `String`
 Default: `single`
 
 可选，用来指定日历控件的选择模式：
-* 'single' - 单选模式；
+* 'single' - 单选模式（默认值）；
 * 'multiple' - 多选模式；
 * 'range' - 范围选择模式；
 * 'week' - 星期模式； 
+
+#### isLunarCalendar
+Type: `Boolean`
+
+Default: `false`
+
+可选，用来指定日历控件是否显示农历日期：
+* false - 不显示；
+* true - 显示；
 
 #### onDatePick
 Type: `Function`

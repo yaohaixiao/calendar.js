@@ -135,6 +135,16 @@
   display: table-cell;
   vertical-align: middle; }
 
+.cal-lunar-text {
+  color: #999;
+  bottom: 0;
+  font-size: 12px;
+  margin: 0;
+  padding: 5px;
+  position: absolute;
+  right: 0;
+  z-index: 2; }
+
 .cal-hd {
   border-bottom: 1px solid #e9ebee; }
 
@@ -196,10 +206,14 @@
   .cal-picked:hover {
     background-color: #34a6f8;
     color: #fff; }
+  .cal-picked .cal-lunar-text {
+    color: #fff; }
   .cal-picked.cal-current {
     background-color: #b0e16a; }
     .cal-picked.cal-current:hover {
       background-color: #b0e16a; }
+    .cal-picked.cal-current .cal-lunar-text {
+      color: #fff; }
 
 .cal-picked-range {
   background-color: #e1f2fa;
@@ -214,6 +228,8 @@
   color: #fff; }
   .cal-current:hover {
     background-color: #00c35a;
+    color: #fff; }
+  .cal-current .cal-lunar-text {
     color: #fff; }
 
 .cal-ft {

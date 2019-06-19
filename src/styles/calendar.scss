@@ -124,6 +124,17 @@
   vertical-align: middle;
 }
 
+.cal-lunar-text {
+  color: $light-gray;
+  bottom: 0;
+  font-size: 12px;
+  margin: 0;
+  padding:5px;
+  position: absolute;
+  right: 0;
+  z-index: 2;
+}
+
 .cal-hd {
   border-bottom: 1px solid $border-color;
 }
@@ -195,11 +206,19 @@
     color: $white;
   }
 
+  .cal-lunar-text {
+    color: $white;
+  }
+
   &.cal-current {
     background-color: $light-grass;
 
     &:hover {
       background-color: $light-grass;
+    }
+
+    .cal-lunar-text {
+      color: $white;
     }
   }
 }
@@ -221,6 +240,10 @@
 
   &:hover {
     background-color: $green;
+    color: $white;
+  }
+
+  .cal-lunar-text {
     color: $white;
   }
 }

@@ -51,6 +51,10 @@ function () {
       // range - 范围选择模式
       // week - 星期选择模式
       pickMode: 'single',
+      // 是否显示农历日期
+      // false - 不显示（默认值）
+      // true - 显示
+      isLunarCalendar: false,
       onDatePick: null,
       onMonthPick: null,
       onYearPick: null,
@@ -380,6 +384,7 @@ function () {
         time: '',
         viewMode: 0,
         pickMode: 'single',
+        isLunarCalendar: false,
         MONTHS: [],
         DAYS: [],
         DATES: [],
@@ -1470,8 +1475,10 @@ function () {
       var CLS_PICKED_RANGE = STYLES.PICKED_RANGE;
       var CLS_WEEKEND = STYLES.WEEKEND;
       var CLS_TEXT = STYLES.TEXT;
+      var CLS_LUNAR_TEXT = STYLES.LUNAR_TEXT;
       var createElement = Calendar.DOM.createElement;
       var isDatesEqual = Calendar.isDatesEqual;
+      var isLunarCalendar = this.get('isLunarCalendar');
       var fragment = document.createDocumentFragment();
       var elements = this.getEls();
       var date = start;
@@ -1481,13 +1488,22 @@ function () {
       var _loop = function _loop() {
         var fullDate = year + '-' + month + '-' + date;
         var isCurrent = Calendar.isToday(fullDate);
-        var $date = createElement('div', {
-          'data-date': fullDate
-        }, [createElement('span', {
-          className: CLS_TEXT
-        }, [date])]);
         var day = Calendar.getDay(fullDate);
-        var className = '';
+        var $children = [createElement('span', {
+          className: CLS_TEXT
+        }, [date])];
+        var $date = void 0;
+        var className = ''; // 显示农历日期
+
+        if (isLunarCalendar) {
+          $children.push(createElement('span', {
+            className: CLS_LUNAR_TEXT
+          }, [Calendar.getLunarDate(fullDate)]));
+        }
+
+        $date = createElement('div', {
+          'data-date': fullDate
+        }, $children);
         className += CLS_DATE;
 
         if (isPrev) {
@@ -2113,15 +2129,16 @@ function () {
       var time = !val ? new Date() : new Date(val);
       var year = Calendar.getYear(val);
       var month = Calendar.getMonth(val);
-      var day = Calendar.getDay(val);
       var date = time.getDate();
+      var day = Calendar.getDay(val);
+      var fullDate = year.value + '-' + month.value + '-' + date;
       var text = month.fullText + date + '日';
       return {
         year: year.value,
         month: month.value,
         date: date,
         day: day.value,
-        text: year.value + '-' + month.value + '-' + date,
+        text: fullDate,
         fullText: text + ' ' + day.fullText
       };
     }
@@ -2280,6 +2297,98 @@ function () {
       return ranges;
     }
     /**
+     * 获取公历日期的农历日期
+     * ========================================================================
+     * 算法公式：
+     * 设：公元年数 － 1977（或1901）＝ 4Q ＋ R
+     * 则：阴历日期 = 14Q + 10.6(R+1) + 年内日期序数 - 29.5n
+     * （注:式中Q、R、n均为自然数，R<4）
+     * 例：1994年5月7日的阴历日期为：
+     * 1994 － 1977 ＝ 17 ＝ 4×4＋1
+     * 故：Q ＝ 4，R ＝ 1 则：5月7日的阴历日期为：
+     * 14 × 4 + 10.6(1 + 1) + (31 + 28 + 31 + 30 + 7) - 29.5n
+     * = 204.2- 29.5n
+     * 然后用 204.2 去除 29.5 得商数 6 余 27.2，6 即是 n 值，余数 27 即是阴历二十七日
+     * ========================================================================
+     * @param time
+     */
+
+  }, {
+    key: "getLunarDate",
+    value: function getLunarDate(time) {
+      var ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000;
+      var DATES = {
+        PREFIX: ['初', '十', '廿'],
+        NUMBERS: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
+      };
+
+      var getDuringDays = function getDuringDays(time) {
+        var DATES = Calendar.defaults.DATES;
+        var solar = Calendar.getDate(time);
+        var year = solar.year;
+        var month = solar.month;
+        var total = solar.date;
+        DATES.forEach(function (days, i) {
+          if (i < month - 1) {
+            if (Calendar.isLeapYear(year) && i === 1) {
+              days += 1;
+            }
+
+            total += days;
+          }
+        });
+        return total;
+      };
+
+      var toLunarDate = function toLunarDate(time) {
+        var solar = Calendar.getDate(time);
+        var year = solar.year;
+        var Q = Math.floor((year - 1977) / 4);
+        var R = (year - 1977) % 4;
+        var days = 14 * Q + 10.6 * (R + 1) + getDuringDays(time);
+        var date = Math.floor(days % 29.5);
+
+        if (date === 0) {
+          var dateBefore = new Date(time).getTime() - ONE_DAY_TO_SECONDS; // 农历只有 29 和 30 两种月份最大值
+
+          switch (toLunarDate(dateBefore)) {
+            case 28:
+              date = 29;
+              break;
+
+            case 29:
+              date = 30;
+              break;
+          }
+        }
+
+        return date;
+      };
+
+      var date = toLunarDate(time);
+      var text = '';
+
+      switch (date) {
+        case 10:
+          text = '初十';
+          break;
+
+        case 20:
+          text = '二十';
+          break;
+
+        case 30:
+          text = '三十';
+          break;
+
+        default:
+          text = DATES.PREFIX[Math.floor(date / 10)] + DATES.NUMBERS[(date - 1) % 10] || date;
+          break;
+      }
+
+      return text;
+    }
+    /**
      * 判断是否为闰年
      * ========================================================================
      * @param {Number} year - 年份数值
@@ -2352,6 +2461,8 @@ Calendar.defaults = {
   // range - 范围多选
   // week - 整个星期选择
   pickMode: 'single',
+  // 是否显示农历日期
+  isLunarCalendar: false,
   onDatePick: null,
   onMonthPick: null,
   onYearPick: null,
@@ -2389,6 +2500,7 @@ Calendar.defaults = {
     FOOTER_TIME: 'cal-ft-time',
     TIME: 'cal-time',
     TEXT: 'cal-text',
+    LUNAR_TEXT: 'cal-lunar-text',
     CURRENT: 'cal-current',
     PICKED: 'cal-picked',
     PICKED_RANGE: 'cal-picked-range',
