@@ -325,6 +325,15 @@ Default: `false`
 * false - 不显示；
 * true - 显示；
 
+#### isFestivalsDisplay
+Type: `Boolean`
+
+Default: `false`
+
+可选，用来指定日历控件是否显示节假日：
+* false - 不显示；
+* true - 显示；
+
 #### onDatePick
 Type: `Function`
 
