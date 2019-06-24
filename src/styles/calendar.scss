@@ -124,15 +124,20 @@
   vertical-align: middle;
 }
 
+.cal-festival-text,
 .cal-lunar-text {
-  color: $light-gray;
   bottom: 0;
+  color: $light-gray;
   font-size: 12px;
   margin: 0;
-  padding:5px;
+  padding: 5px;
   position: absolute;
   right: 0;
   z-index: 2;
+}
+
+.cal-festival-text {
+  color: $green;
 }
 
 .cal-hd {
@@ -196,6 +201,18 @@
   }
 }
 
+.cal-weekend {
+  color: $dark-red;
+
+  .cal-lunar-text {
+    color: $dark-red;
+  }
+
+  &:hover {
+    color: $dark-red;
+  }
+}
+
 .cal-picked {
   background-color: $primary;
   color: $white;
@@ -206,6 +223,7 @@
     color: $white;
   }
 
+  .cal-festival-text,
   .cal-lunar-text {
     color: $white;
   }
@@ -217,6 +235,7 @@
       background-color: $light-grass;
     }
 
+    .cal-festival-text,
     .cal-lunar-text {
       color: $white;
     }
@@ -243,6 +262,7 @@
     color: $white;
   }
 
+  .cal-festival-text,
   .cal-lunar-text {
     color: $white;
   }

@@ -34,6 +34,9 @@ class Calendar {
       // false - 不显示（默认值）
       // true - 显示
       isLunarCalendar: false,
+      // 是否显示节日（国际节日和农历节气）
+      // 目前只支持国际节日
+      isFestivalsDisplay: false,
       onDatePick: null,
       onMonthPick: null,
       onYearPick: null,
@@ -1464,9 +1467,11 @@ class Calendar {
     const CLS_WEEKEND = STYLES.WEEKEND
     const CLS_TEXT = STYLES.TEXT
     const CLS_LUNAR_TEXT = STYLES.LUNAR_TEXT
+    const CLS_FESTIVAL_TEXT = STYLES.FESTIVAL_TEXT
     const createElement = Calendar.DOM.createElement
     const isDatesEqual = Calendar.isDatesEqual
     const isLunarCalendar = this.get('isLunarCalendar')
+    const isFestivalsDisplay = this.get('isFestivalsDisplay')
     let fragment = document.createDocumentFragment()
     let elements = this.getEls()
     let date = start
@@ -1477,6 +1482,7 @@ class Calendar {
       let fullDate = year + '-' + month + '-' + date
       let isCurrent = Calendar.isToday(fullDate)
       let day = Calendar.getDay(fullDate)
+      let festival = isFestivalsDisplay ? Calendar.getFestival(month, date) : ''
       let $children = [
         createElement('span', {
           className: CLS_TEXT
@@ -1487,13 +1493,23 @@ class Calendar {
       let $date
       let className = ''
 
-      // 显示农历日期
-      if(isLunarCalendar) {
+      // 显示节日
+      if(festival) {
+        // 显示节日时，就不显示该日的农历日期了
         $children.push(createElement('span', {
-          className: CLS_LUNAR_TEXT
+          className: CLS_FESTIVAL_TEXT
         }, [
-          Calendar.getLunarDate(fullDate)
+          festival
         ]))
+      } else {
+        // 显示农历日期
+        if (isLunarCalendar) {
+          $children.push(createElement('span', {
+            className: CLS_LUNAR_TEXT
+          }, [
+            festival ? festival : Calendar.getLunarDate(fullDate)
+          ]))
+        }
       }
 
       $date = createElement('div', {
@@ -2291,6 +2307,22 @@ class Calendar {
   }
 
   /**
+   * 获取日期的节日文本
+   * ========================================================================
+   * todo：稍后需要支持农历节气
+   * ========================================================================
+   * @param {Number} month - 月份的数值
+   * @param {Number} date - 日期的数值
+   * @returns {String}
+   */
+  static getFestival (month, date) {
+    let monthProp = month < 10 ? '0' + month : month.toString()
+    let dateProp = date < 10 ? '0' + date : date.toString()
+
+    return Calendar.defaults.FESTIVALS[monthProp + dateProp] || ''
+  }
+
+  /**
    * 获取公历日期的农历日期
    * ========================================================================
    * 算法公式：
@@ -2460,10 +2492,56 @@ Calendar.defaults = {
   pickMode: 'single',
   // 是否显示农历日期
   isLunarCalendar: false,
+  // 是否显示节日（国际节日和农历节气）
+  // 目前只支持国际节日
+  isFestivalsDisplay: false,
   onDatePick: null,
   onMonthPick: null,
   onYearPick: null,
   onTodayPick: null,
+  TERMS: [
+    '小寒',
+    '大寒',
+    '立春',
+    '雨水',
+    '惊蛰',
+    '春分',
+    '清明',
+    '谷雨',
+    '立夏',
+    '小满',
+    '芒种',
+    '夏至',
+    '小暑',
+    '大暑',
+    '立秋',
+    '处暑',
+    '白露',
+    '秋分',
+    '寒露',
+    '霜降',
+    '立冬',
+    '小雪',
+    '大雪',
+    '冬至'
+  ],
+  FESTIVALS: {
+    '0101': '元旦',
+    '0214': '情人节',
+    '0308': '妇女节',
+    '0312': '植树节',
+    '0401': '愚人节',
+    '0501': '劳动节',
+    '0504': '青年节',
+    '0512': '护士节',
+    '0601': '儿童节',
+    '0701': '建党节',
+    '0801': '建军节',
+    '0910': '教师节',
+    '1001': '国庆节',
+    '1224': '平安夜',
+    '1225': '圣诞节'
+  },
   MONTHS: [
     1,
     2,
@@ -2536,6 +2614,7 @@ Calendar.defaults = {
     TIME: 'cal-time',
     TEXT: 'cal-text',
     LUNAR_TEXT: 'cal-lunar-text',
+    FESTIVAL_TEXT: 'cal-festival-text',
     CURRENT: 'cal-current',
     PICKED: 'cal-picked',
     PICKED_RANGE: 'cal-picked-range',

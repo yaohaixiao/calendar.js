@@ -1,6 +1,6 @@
 {
   "name": "calendar",
-  "version": "0.1.1",
+  "version": "0.2.1",
   "description": "一个简单实用的日历控件！支持日期、月份和年份试图切换；支持单选、多选、范围和星期选择模式；界面简介、配置简单、使用方便！",
   "main": "calendar.js",
   "scripts": {

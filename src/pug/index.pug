@@ -337,6 +337,10 @@ body
                           // true - 显示
                           // false - 不现实
                           isLunarCalendar: true,
+                          // 是否显示节日（目前还不支持农历节气）
+                          // true - 显示
+                          // false - 不显示（默认值）
+                          isFestivalsDisplay: true,
                           // 配置日期选择的事件处理器 onDatePick，参数如下：
                           // time - 选中的日期时间
                           // $el - 点击的 DOM 节点
@@ -545,6 +549,7 @@ body
           // single - 单选模式
           pickMode: 'single',
           isLunarCalendar: true,
+          isFestivalsDisplay: true,
           // 配置日期选择的事件处理器 onDatePick，参数如下：
           // time - 选中的日期时间
           // $el - 点击的 DOM 节点

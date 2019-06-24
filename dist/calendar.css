@@ -135,15 +135,19 @@
   display: table-cell;
   vertical-align: middle; }
 
+.cal-festival-text,
 .cal-lunar-text {
-  color: #999;
   bottom: 0;
+  color: #999;
   font-size: 12px;
   margin: 0;
   padding: 5px;
   position: absolute;
   right: 0;
   z-index: 2; }
+
+.cal-festival-text {
+  color: #00c35a; }
 
 .cal-hd {
   border-bottom: 1px solid #e9ebee; }
@@ -199,6 +203,13 @@
     background-color: #e8e8e8;
     color: #666; }
 
+.cal-weekend {
+  color: #e24144; }
+  .cal-weekend .cal-lunar-text {
+    color: #e24144; }
+  .cal-weekend:hover {
+    color: #e24144; }
+
 .cal-picked {
   background-color: #34a6f8;
   color: #fff;
@@ -206,12 +217,14 @@
   .cal-picked:hover {
     background-color: #34a6f8;
     color: #fff; }
+  .cal-picked .cal-festival-text,
   .cal-picked .cal-lunar-text {
     color: #fff; }
   .cal-picked.cal-current {
     background-color: #b0e16a; }
     .cal-picked.cal-current:hover {
       background-color: #b0e16a; }
+    .cal-picked.cal-current .cal-festival-text,
     .cal-picked.cal-current .cal-lunar-text {
       color: #fff; }
 
@@ -229,6 +242,7 @@
   .cal-current:hover {
     background-color: #00c35a;
     color: #fff; }
+  .cal-current .cal-festival-text,
   .cal-current .cal-lunar-text {
     color: #fff; }
 
