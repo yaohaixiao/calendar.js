@@ -570,6 +570,22 @@ function () {
       return this.data.picked;
     }
     /**
+     * 获取某个年份的所有农历节气信息
+     * @param {Number} year - 年份数值
+     * @returns {Array}
+     */
+
+  }, {
+    key: "getLunarSolarTerms",
+    value: function getLunarSolarTerms(year) {
+      var TERMS = this.get('TERMS');
+      var terms = [];
+      TERMS.forEach(function (term, i) {
+        terms.push(Calendar.getLunarSolarTerm(year, i));
+      });
+      return terms;
+    }
+    /**
      * 根据试图显示模式，切换日历控件的显示模式和显示内容
      * ========================================================================
      * @param {Number} viewMode - 显示模式的值：
@@ -1498,8 +1514,10 @@ function () {
         var $children = [createElement('span', {
           className: CLS_TEXT
         }, [date])];
-        var $date = void 0;
-        var className = ''; // 显示节日
+        var className = '';
+        var lunarText = Calendar.getLunarDate(fullDate);
+        var solarTerm = void 0;
+        var $date = void 0; // 显示节日
 
         if (festival) {
           // 显示节日时，就不显示该日的农历日期了
@@ -1509,9 +1527,22 @@ function () {
         } else {
           // 显示农历日期
           if (isLunarCalendar) {
+            solarTerm = _this.getLunarSolarTerms(year).filter(function (term) {
+              return Calendar.isEqual(term.value, fullDate);
+            }); // 有公历的节日，显示公历节日
+
+            if (festival) {
+              lunarText = festival;
+            } // 有农历节气，显示农历节气（如果公历节日和农历节气在同一天，目前显示农历节气）
+
+
+            if (solarTerm.length > 0) {
+              lunarText = solarTerm[0].text;
+            }
+
             $children.push(createElement('span', {
               className: CLS_LUNAR_TEXT
-            }, [festival ? festival : Calendar.getLunarDate(fullDate)]));
+            }, [lunarText]));
           }
         }
 
@@ -2313,8 +2344,6 @@ function () {
     /**
      * 获取日期的节日文本
      * ========================================================================
-     * todo：稍后需要支持农历节气
-     * ========================================================================
      * @param {Number} month - 月份的数值
      * @param {Number} date - 日期的数值
      * @returns {String}
@@ -2326,6 +2355,35 @@ function () {
       var monthProp = month < 10 ? '0' + month : month.toString();
       var dateProp = date < 10 ? '0' + date : date.toString();
       return Calendar.defaults.FESTIVALS[monthProp + dateProp] || '';
+    }
+    /**
+     * 获取某年的第几个农历节气信息
+     * ========================================================================
+     * @param {Number} year - 年份信息
+     * @param {Number} i - 第几个节气（0 ~ 23）
+     * @returns {{value: string, text: *}}
+     */
+
+  }, {
+    key: "getLunarSolarTerm",
+    value: function getLunarSolarTerm(year, i) {
+      var TERMS = Calendar.defaults.TERMS; // 已知 1900年 小寒时刻为 1 月 6 日 02:05:00
+
+      var BASE = Date.UTC(1900, 0, 6, 2, 5);
+      var time = new Date(31556925974.7 * (year - 1900) + TERMS[i].diff * 60000 + BASE);
+      var fullYear = time.getFullYear();
+      var fullMonth = time.getMonth();
+      var fullDate = time.getDate();
+
+      if (fullYear < 100) {
+        fullYear += 1900;
+      }
+
+      fullMonth += 1;
+      return {
+        value: fullYear + '-' + fullMonth + '-' + fullDate,
+        text: TERMS[i].text
+      };
     }
     /**
      * 获取公历日期的农历日期
@@ -2501,7 +2559,79 @@ Calendar.defaults = {
   onMonthPick: null,
   onYearPick: null,
   onTodayPick: null,
-  TERMS: ['小寒', '大寒', '立春', '雨水', '惊蛰', '春分', '清明', '谷雨', '立夏', '小满', '芒种', '夏至', '小暑', '大暑', '立秋', '处暑', '白露', '秋分', '寒露', '霜降', '立冬', '小雪', '大雪', '冬至'],
+  TERMS: [{
+    text: '小寒',
+    diff: 0
+  }, {
+    text: '大寒',
+    diff: 21208
+  }, {
+    text: '立春',
+    diff: 42467
+  }, {
+    text: '雨水',
+    diff: 63836
+  }, {
+    text: '惊蛰',
+    diff: 85337
+  }, {
+    text: '春分',
+    diff: 107014
+  }, {
+    text: '清明',
+    diff: 128867
+  }, {
+    text: '谷雨',
+    diff: 150921
+  }, {
+    text: '立夏',
+    diff: 173149
+  }, {
+    text: '小满',
+    diff: 195551
+  }, {
+    text: '芒种',
+    diff: 218072
+  }, {
+    text: '夏至',
+    diff: 240693
+  }, {
+    text: '小暑',
+    diff: 263343
+  }, {
+    text: '大暑',
+    diff: 285989
+  }, {
+    text: '立秋',
+    diff: 308563
+  }, {
+    text: '处暑',
+    diff: 331033
+  }, {
+    text: '白露',
+    diff: 353350
+  }, {
+    text: '秋分',
+    diff: 375494
+  }, {
+    text: '寒露',
+    diff: 397447
+  }, {
+    text: '霜降',
+    diff: 419210
+  }, {
+    text: '立冬',
+    diff: 440795
+  }, {
+    text: '小雪',
+    diff: 462224
+  }, {
+    text: '大雪',
+    diff: 483532
+  }, {
+    text: '冬至',
+    diff: 504758
+  }],
   FESTIVALS: {
     '0101': '元旦',
     '0214': '情人节',
