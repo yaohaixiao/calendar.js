@@ -1507,12 +1507,12 @@ class Calendar {
         ])
       ]
       let className = ''
-      let lunarText = Calendar.getLunarDate(fullDate)
+      let lunarText = Calendar.getDate(fullDate).lunar.text
       let solarTerm
       let $date
 
       // 显示节日
-      if(festival) {
+      if (festival) {
         // 显示节日时，就不显示该日的农历日期了
         $children.push(createElement('span', {
           className: CLS_FESTIVAL_TEXT
@@ -2131,11 +2131,7 @@ class Calendar {
    */
   static getYear (val) {
     let time = !val ? new Date() : new Date(val)
-    let year = time.getYear()
-
-    if (year < 1900) {
-      year += 1900
-    }
+    let year = time.getFullYear()
 
     return {
       value: year,
@@ -2185,7 +2181,8 @@ class Calendar {
       date: date,
       day: day.value,
       text: fullDate,
-      fullText: text + ' ' + day.fullText
+      fullText: text + ' ' + day.fullText,
+      lunar: Calendar.getLunarDate(fullDate)
     }
   }
 
@@ -2383,21 +2380,9 @@ class Calendar {
   /**
    * 获取公历日期的农历日期
    * ========================================================================
-   * 算法公式：
-   * 设：公元年数 － 1977（或1901）＝ 4Q ＋ R
-   * 则：阴历日期 = 14Q + 10.6(R+1) + 年内日期序数 - 29.5n
-   * （注:式中Q、R、n均为自然数，R<4）
-   * 例：1994年5月7日的阴历日期为：
-   * 1994 － 1977 ＝ 17 ＝ 4×4＋1
-   * 故：Q ＝ 4，R ＝ 1 则：5月7日的阴历日期为：
-   * 14 × 4 + 10.6(1 + 1) + (31 + 28 + 31 + 30 + 7) - 29.5n
-   * = 204.2- 29.5n
-   * 然后用 204.2 去除 29.5 得商数 6 余 27.2，6 即是 n 值，余数 27 即是阴历二十七日
-   * ========================================================================
    * @param time
    */
   static getLunarDate (time) {
-    const ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000
     const DATES = {
       PREFIX: [
         '初',
@@ -2417,12 +2402,62 @@ class Calendar {
         '十'
       ]
     }
-    const getDuringDays = (time) => {
+    const toLuanrZodiac = (time) => {
+      const ZODIAC = [
+        '鼠',
+        '牛',
+        '虎',
+        '兔',
+        '龙',
+        '蛇',
+        '马',
+        '羊',
+        '猴',
+        '鸡',
+        '狗',
+        '猪'
+      ]
+      let diff = new Date(time).getFullYear() - 1864
+
+      return ZODIAC[diff % 12]
+    }
+    const toLunarYear = (time) => {
+      const HEAVENLY_STEMS = [
+        '甲',
+        '乙',
+        '丙',
+        '丁',
+        '戊',
+        '己',
+        '庚',
+        '辛',
+        '壬',
+        '癸'
+      ]
+      const EARTHLY_BRANCHES = [
+        '子',
+        '丑',
+        '寅',
+        '卯',
+        '辰',
+        '巳',
+        '午',
+        '未',
+        '申',
+        '酉',
+        '戌',
+        '亥'
+      ]
+      let diff = new Date(time).getFullYear() - 1864
+
+      return HEAVENLY_STEMS[diff % 10] + EARTHLY_BRANCHES[diff % 12]
+    }
+    const getDuringDays = (date) => {
       const DATES = Calendar.defaults.DATES
-      let solar = Calendar.getDate(time)
-      let year = solar.year
-      let month = solar.month
-      let total = solar.date
+      let time = new Date(date)
+      let year = time.getFullYear()
+      let month = time.getMonth() + 1
+      let total = time.getDate()
 
       DATES.forEach((days, i) => {
         if (i < month - 1) {
@@ -2436,55 +2471,105 @@ class Calendar {
 
       return total
     }
-    const toLunarDate = (time) => {
-      let solar = Calendar.getDate(time)
-      let year = solar.year
+    /**
+     * 算法公式：
+     * ========================================================================
+     * 设：公元年数 － 1977（或1901）＝ 4Q ＋ R
+     * 则：阴历日期 = 14Q + 10.6(R+1) + 年内日期序数 - 29.5n
+     * （注:式中Q、R、n均为自然数，R<4）
+     * 例：1994年5月7日的阴历日期为：
+     * 1994 － 1977 ＝ 17 ＝ 4×4＋1
+     * 故：Q ＝ 4，R ＝ 1 则：5月7日的阴历日期为：
+     * 14 × 4 + 10.6(1 + 1) + (31 + 28 + 31 + 30 + 7) - 29.5n
+     * = 204.2- 29.5n
+     * 然后用 204.2 去除 29.5 得商数 6 余 27.2，6 即是 n 值，余数 27 即是阴历二十七日
+     * ========================================================================
+     * @param date
+     * @returns {number}
+     */
+    const toLunarDate = (date) => {
+      const ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000
+      let time = new Date(date)
+      let year = time.getFullYear()
       let Q = Math.floor((year - 1977) / 4)
       let R = (year - 1977) % 4
-      let days = (14 * Q) + (10.6 * (R + 1)) + getDuringDays(time)
-      let date = Math.floor(days % 29.5)
+      let days = (14 * Q) + (10.6 * (R + 1)) + getDuringDays(date)
+      let lunarDate = Math.floor(days % 29.5)
 
-      if(date === 0) {
-        let dateBefore = new Date(time).getTime() - ONE_DAY_TO_SECONDS
+      if (lunarDate === 0) {
+        let dateBefore = new Date(date).getTime() - ONE_DAY_TO_SECONDS
 
         // 农历只有 29 和 30 两种月份最大值
         switch (toLunarDate(dateBefore)) {
           case 28:
-            date = 29
+            lunarDate = 29
 
             break
           case 29:
-            date = 30
+            lunarDate = 30
 
             break
         }
       }
 
-      return date
+      return lunarDate
+    }
+    // todo: 初略计算月份，没有处理农历闰月
+    const toLunarMonth = (time) => {
+      const MONTHS = [
+        '正',
+        '二',
+        '三',
+        '四',
+        '五',
+        '六',
+        '七',
+        '八',
+        '九',
+        '十',
+        '冬',
+        '腊'
+      ]
+
+      return MONTHS[new Date(time).getMonth() - 1] + '月'
     }
     let date = toLunarDate(time)
+    let lunarYear = toLunarYear(time)
+    let lunarMonth = toLunarMonth(time)
+    let lunarDate = ''
+    let lunarZodiac = toLuanrZodiac(time)
     let text = ''
 
     switch (date) {
       case 10:
-        text = '初十'
+        lunarDate = text = '初十'
 
         break
       case 20:
-        text = '二十'
+        lunarDate = text = '二十'
 
         break
       case 30:
-        text = '三十'
+        lunarDate = text = '三十'
 
         break
       default:
-        text = DATES.PREFIX[Math.floor(date / 10)] + DATES.NUMBERS[(date - 1) % 10] || date
+        lunarDate = text = DATES.PREFIX[Math.floor(date / 10)] + DATES.NUMBERS[(date - 1) % 10] || date
+
+        if (Math.floor(date / 10) === 0 && ((date - 1) % 10) === 0) {
+          text = lunarMonth
+        }
 
         break
     }
 
-    return text
+    return {
+      year: lunarYear,
+      month: lunarMonth,
+      date: lunarDate,
+      zodiac: lunarZodiac,
+      text: text
+    }
   }
 
   /**

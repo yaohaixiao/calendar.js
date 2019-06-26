@@ -1515,7 +1515,7 @@ function () {
           className: CLS_TEXT
         }, [date])];
         var className = '';
-        var lunarText = Calendar.getLunarDate(fullDate);
+        var lunarText = Calendar.getDate(fullDate).lunar.text;
         var solarTerm = void 0;
         var $date = void 0; // 显示节日
 
@@ -2129,12 +2129,7 @@ function () {
     key: "getYear",
     value: function getYear(val) {
       var time = !val ? new Date() : new Date(val);
-      var year = time.getYear();
-
-      if (year < 1900) {
-        year += 1900;
-      }
-
+      var year = time.getFullYear();
       return {
         value: year,
         text: year.toString(),
@@ -2184,7 +2179,8 @@ function () {
         date: date,
         day: day.value,
         text: fullDate,
-        fullText: text + ' ' + day.fullText
+        fullText: text + ' ' + day.fullText,
+        lunar: Calendar.getLunarDate(fullDate)
       };
     }
     /**
@@ -2388,35 +2384,36 @@ function () {
     /**
      * 获取公历日期的农历日期
      * ========================================================================
-     * 算法公式：
-     * 设：公元年数 － 1977（或1901）＝ 4Q ＋ R
-     * 则：阴历日期 = 14Q + 10.6(R+1) + 年内日期序数 - 29.5n
-     * （注:式中Q、R、n均为自然数，R<4）
-     * 例：1994年5月7日的阴历日期为：
-     * 1994 － 1977 ＝ 17 ＝ 4×4＋1
-     * 故：Q ＝ 4，R ＝ 1 则：5月7日的阴历日期为：
-     * 14 × 4 + 10.6(1 + 1) + (31 + 28 + 31 + 30 + 7) - 29.5n
-     * = 204.2- 29.5n
-     * 然后用 204.2 去除 29.5 得商数 6 余 27.2，6 即是 n 值，余数 27 即是阴历二十七日
-     * ========================================================================
      * @param time
      */
 
   }, {
     key: "getLunarDate",
     value: function getLunarDate(time) {
-      var ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000;
       var DATES = {
         PREFIX: ['初', '十', '廿'],
         NUMBERS: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
       };
 
-      var getDuringDays = function getDuringDays(time) {
+      var toLuanrZodiac = function toLuanrZodiac(time) {
+        var ZODIAC = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
+        var diff = new Date(time).getFullYear() - 1864;
+        return ZODIAC[diff % 12];
+      };
+
+      var toLunarYear = function toLunarYear(time) {
+        var HEAVENLY_STEMS = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+        var EARTHLY_BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+        var diff = new Date(time).getFullYear() - 1864;
+        return HEAVENLY_STEMS[diff % 10] + EARTHLY_BRANCHES[diff % 12];
+      };
+
+      var getDuringDays = function getDuringDays(date) {
         var DATES = Calendar.defaults.DATES;
-        var solar = Calendar.getDate(time);
-        var year = solar.year;
-        var month = solar.month;
-        var total = solar.date;
+        var time = new Date(date);
+        var year = time.getFullYear();
+        var month = time.getMonth() + 1;
+        var total = time.getDate();
         DATES.forEach(function (days, i) {
           if (i < month - 1) {
             if (Calendar.isLeapYear(year) && i === 1) {
@@ -2428,54 +2425,93 @@ function () {
         });
         return total;
       };
+      /**
+       * 算法公式：
+       * ========================================================================
+       * 设：公元年数 － 1977（或1901）＝ 4Q ＋ R
+       * 则：阴历日期 = 14Q + 10.6(R+1) + 年内日期序数 - 29.5n
+       * （注:式中Q、R、n均为自然数，R<4）
+       * 例：1994年5月7日的阴历日期为：
+       * 1994 － 1977 ＝ 17 ＝ 4×4＋1
+       * 故：Q ＝ 4，R ＝ 1 则：5月7日的阴历日期为：
+       * 14 × 4 + 10.6(1 + 1) + (31 + 28 + 31 + 30 + 7) - 29.5n
+       * = 204.2- 29.5n
+       * 然后用 204.2 去除 29.5 得商数 6 余 27.2，6 即是 n 值，余数 27 即是阴历二十七日
+       * ========================================================================
+       * @param date
+       * @returns {number}
+       */
 
-      var toLunarDate = function toLunarDate(time) {
-        var solar = Calendar.getDate(time);
-        var year = solar.year;
+
+      var toLunarDate = function toLunarDate(date) {
+        var ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000;
+        var time = new Date(date);
+        var year = time.getFullYear();
         var Q = Math.floor((year - 1977) / 4);
         var R = (year - 1977) % 4;
-        var days = 14 * Q + 10.6 * (R + 1) + getDuringDays(time);
-        var date = Math.floor(days % 29.5);
+        var days = 14 * Q + 10.6 * (R + 1) + getDuringDays(date);
+        var lunarDate = Math.floor(days % 29.5);
 
-        if (date === 0) {
-          var dateBefore = new Date(time).getTime() - ONE_DAY_TO_SECONDS; // 农历只有 29 和 30 两种月份最大值
+        if (lunarDate === 0) {
+          var dateBefore = new Date(date).getTime() - ONE_DAY_TO_SECONDS; // 农历只有 29 和 30 两种月份最大值
 
           switch (toLunarDate(dateBefore)) {
             case 28:
-              date = 29;
+              lunarDate = 29;
               break;
 
             case 29:
-              date = 30;
+              lunarDate = 30;
               break;
           }
         }
 
-        return date;
+        return lunarDate;
+      }; // todo: 初略计算月份，没有处理农历闰月
+
+
+      var toLunarMonth = function toLunarMonth(time) {
+        var MONTHS = ['正', '二', '三', '四', '五', '六', '七', '八', '九', '十', '冬', '腊'];
+        return MONTHS[new Date(time).getMonth() - 1] + '月';
       };
 
       var date = toLunarDate(time);
+      var lunarYear = toLunarYear(time);
+      var lunarMonth = toLunarMonth(time);
+      var lunarDate = '';
+      var lunarZodiac = toLuanrZodiac(time);
       var text = '';
 
       switch (date) {
         case 10:
-          text = '初十';
+          lunarDate = text = '初十';
           break;
 
         case 20:
-          text = '二十';
+          lunarDate = text = '二十';
           break;
 
         case 30:
-          text = '三十';
+          lunarDate = text = '三十';
           break;
 
         default:
-          text = DATES.PREFIX[Math.floor(date / 10)] + DATES.NUMBERS[(date - 1) % 10] || date;
+          lunarDate = text = DATES.PREFIX[Math.floor(date / 10)] + DATES.NUMBERS[(date - 1) % 10] || date;
+
+          if (Math.floor(date / 10) === 0 && (date - 1) % 10 === 0) {
+            text = lunarMonth;
+          }
+
           break;
       }
 
-      return text;
+      return {
+        year: lunarYear,
+        month: lunarMonth,
+        date: lunarDate,
+        zodiac: lunarZodiac,
+        text: text
+      };
     }
     /**
      * 判断是否为闰年
