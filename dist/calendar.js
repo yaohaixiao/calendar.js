@@ -2395,7 +2395,7 @@ function () {
         NUMBERS: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '十']
       };
 
-      var toLuanrZodiac = function toLuanrZodiac(time) {
+      var toLunarZodiac = function toLunarZodiac(time) {
         var ZODIAC = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'];
         var diff = new Date(time).getFullYear() - 1864;
         return ZODIAC[diff % 12];
@@ -2472,14 +2472,20 @@ function () {
 
       var toLunarMonth = function toLunarMonth(time) {
         var MONTHS = ['正', '二', '三', '四', '五', '六', '七', '八', '九', '十', '冬', '腊'];
-        return MONTHS[new Date(time).getMonth() - 1] + '月';
+        var month = new Date(time).getMonth() - 1; // 到了上一年的腊月
+
+        if (month < 0) {
+          month = 11;
+        }
+
+        return MONTHS[month] + '月';
       };
 
       var date = toLunarDate(time);
       var lunarYear = toLunarYear(time);
       var lunarMonth = toLunarMonth(time);
       var lunarDate = '';
-      var lunarZodiac = toLuanrZodiac(time);
+      var lunarZodiac = toLunarZodiac(time);
       var text = '';
 
       switch (date) {

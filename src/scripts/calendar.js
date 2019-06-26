@@ -2402,7 +2402,7 @@ class Calendar {
         '十'
       ]
     }
-    const toLuanrZodiac = (time) => {
+    const toLunarZodiac = (time) => {
       const ZODIAC = [
         '鼠',
         '牛',
@@ -2530,14 +2530,20 @@ class Calendar {
         '冬',
         '腊'
       ]
+      let month = new Date(time).getMonth() - 1
 
-      return MONTHS[new Date(time).getMonth() - 1] + '月'
+      // 到了上一年的腊月
+      if (month < 0) {
+        month = 11
+      }
+
+      return MONTHS[month] + '月'
     }
     let date = toLunarDate(time)
     let lunarYear = toLunarYear(time)
     let lunarMonth = toLunarMonth(time)
     let lunarDate = ''
-    let lunarZodiac = toLuanrZodiac(time)
+    let lunarZodiac = toLunarZodiac(time)
     let text = ''
 
     switch (date) {
