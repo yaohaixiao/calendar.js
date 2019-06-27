@@ -549,11 +549,36 @@ class Calendar {
    * @returns {Array}
    */
   getLunarSolarTerms (year) {
-    const TERMS = this.get('TERMS')
+    let TERMS = [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ]
     let terms = []
 
     TERMS.forEach((term, i) => {
-      terms.push(Calendar.getLunarSolarTerm(year, i))
+      terms.push(Calendar.Astronomy.getLunarSolarTerm(year, i))
     })
 
     return terms
@@ -2182,7 +2207,7 @@ class Calendar {
       day: day.value,
       text: fullDate,
       fullText: text + ' ' + day.fullText,
-      lunar: Calendar.getLunarDate(fullDate)
+      lunar: Calendar.Astronomy.getLunarDate(fullDate)
     }
   }
 
@@ -2350,235 +2375,6 @@ class Calendar {
   }
 
   /**
-   * 获取某年的第几个农历节气信息
-   * ========================================================================
-   * @param {Number} year - 年份信息
-   * @param {Number} i - 第几个节气（0 ~ 23）
-   * @returns {{value: string, text: *}}
-   */
-  static getLunarSolarTerm (year, i) {
-    const TERMS = Calendar.defaults.TERMS
-    // 已知 1900年 小寒时刻为 1 月 6 日 02:05:00
-    const BASE = Date.UTC(1900, 0, 6, 2, 5)
-    let time = new Date((31556925974.7 * (year - 1900) + TERMS[i].diff * 60000) + BASE)
-    let fullYear = time.getFullYear()
-    let fullMonth = time.getMonth()
-    let fullDate = time.getDate()
-
-    if (fullYear < 100) {
-      fullYear += 1900
-    }
-
-    fullMonth += 1
-
-    return {
-      value: fullYear + '-' + fullMonth + '-' + fullDate,
-      text: TERMS[i].text
-    }
-  }
-
-  /**
-   * 获取公历日期的农历日期
-   * ========================================================================
-   * @param time
-   */
-  static getLunarDate (time) {
-    const DATES = {
-      PREFIX: [
-        '初',
-        '十',
-        '廿'
-      ],
-      NUMBERS: [
-        '一',
-        '二',
-        '三',
-        '四',
-        '五',
-        '六',
-        '七',
-        '八',
-        '九',
-        '十'
-      ]
-    }
-    const toLunarZodiac = (time) => {
-      const ZODIAC = [
-        '鼠',
-        '牛',
-        '虎',
-        '兔',
-        '龙',
-        '蛇',
-        '马',
-        '羊',
-        '猴',
-        '鸡',
-        '狗',
-        '猪'
-      ]
-      let diff = new Date(time).getFullYear() - 1864
-
-      return ZODIAC[diff % 12]
-    }
-    const toLunarYear = (time) => {
-      const HEAVENLY_STEMS = [
-        '甲',
-        '乙',
-        '丙',
-        '丁',
-        '戊',
-        '己',
-        '庚',
-        '辛',
-        '壬',
-        '癸'
-      ]
-      const EARTHLY_BRANCHES = [
-        '子',
-        '丑',
-        '寅',
-        '卯',
-        '辰',
-        '巳',
-        '午',
-        '未',
-        '申',
-        '酉',
-        '戌',
-        '亥'
-      ]
-      let diff = new Date(time).getFullYear() - 1864
-
-      return HEAVENLY_STEMS[diff % 10] + EARTHLY_BRANCHES[diff % 12]
-    }
-    const getDuringDays = (date) => {
-      const DATES = Calendar.defaults.DATES
-      let time = new Date(date)
-      let year = time.getFullYear()
-      let month = time.getMonth() + 1
-      let total = time.getDate()
-
-      DATES.forEach((days, i) => {
-        if (i < month - 1) {
-          if (Calendar.isLeapYear(year) && i === 1) {
-            days += 1
-          }
-
-          total += days
-        }
-      })
-
-      return total
-    }
-    /**
-     * 算法公式：
-     * ========================================================================
-     * 设：公元年数 － 1977（或1901）＝ 4Q ＋ R
-     * 则：阴历日期 = 14Q + 10.6(R+1) + 年内日期序数 - 29.5n
-     * （注:式中Q、R、n均为自然数，R<4）
-     * 例：1994年5月7日的阴历日期为：
-     * 1994 － 1977 ＝ 17 ＝ 4×4＋1
-     * 故：Q ＝ 4，R ＝ 1 则：5月7日的阴历日期为：
-     * 14 × 4 + 10.6(1 + 1) + (31 + 28 + 31 + 30 + 7) - 29.5n
-     * = 204.2- 29.5n
-     * 然后用 204.2 去除 29.5 得商数 6 余 27.2，6 即是 n 值，余数 27 即是阴历二十七日
-     * ========================================================================
-     * @param date
-     * @returns {number}
-     */
-    const toLunarDate = (date) => {
-      const ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000
-      let time = new Date(date)
-      let year = time.getFullYear()
-      let Q = Math.floor((year - 1977) / 4)
-      let R = (year - 1977) % 4
-      let days = (14 * Q) + (10.6 * (R + 1)) + getDuringDays(date)
-      let lunarDate = Math.floor(days % 29.5)
-
-      if (lunarDate === 0) {
-        let dateBefore = new Date(date).getTime() - ONE_DAY_TO_SECONDS
-
-        // 农历只有 29 和 30 两种月份最大值
-        switch (toLunarDate(dateBefore)) {
-          case 28:
-            lunarDate = 29
-
-            break
-          case 29:
-            lunarDate = 30
-
-            break
-        }
-      }
-
-      return lunarDate
-    }
-    // todo: 初略计算月份，没有处理农历闰月
-    const toLunarMonth = (time) => {
-      const MONTHS = [
-        '正',
-        '二',
-        '三',
-        '四',
-        '五',
-        '六',
-        '七',
-        '八',
-        '九',
-        '十',
-        '冬',
-        '腊'
-      ]
-      let month = new Date(time).getMonth() - 1
-
-      // 到了上一年的腊月
-      if (month < 0) {
-        month = 11
-      }
-
-      return MONTHS[month] + '月'
-    }
-    let date = toLunarDate(time)
-    let lunarYear = toLunarYear(time)
-    let lunarMonth = toLunarMonth(time)
-    let lunarDate = ''
-    let lunarZodiac = toLunarZodiac(time)
-    let text = ''
-
-    switch (date) {
-      case 10:
-        lunarDate = text = '初十'
-
-        break
-      case 20:
-        lunarDate = text = '二十'
-
-        break
-      case 30:
-        lunarDate = text = '三十'
-
-        break
-      default:
-        lunarDate = text = DATES.PREFIX[Math.floor(date / 10)] + DATES.NUMBERS[(date - 1) % 10] || date
-
-        if (Math.floor(date / 10) === 0 && ((date - 1) % 10) === 0) {
-          text = lunarMonth
-        }
-
-        break
-    }
-
-    return {
-      year: lunarYear,
-      month: lunarMonth,
-      date: lunarDate,
-      zodiac: lunarZodiac,
-      text: text
-    }
-  }
-
-  /**
    * 判断是否为闰年
    * ========================================================================
    * @param {Number} year - 年份数值
@@ -2648,104 +2444,6 @@ Calendar.defaults = {
   onMonthPick: null,
   onYearPick: null,
   onTodayPick: null,
-  TERMS: [
-    {
-      text: '小寒',
-      diff: 0
-    },
-    {
-      text: '大寒',
-      diff: 21208
-    },
-    {
-      text: '立春',
-      diff: 42467
-    },
-    {
-      text: '雨水',
-      diff: 63836
-    },
-    {
-      text: '惊蛰',
-      diff: 85337
-    },
-    {
-      text: '春分',
-      diff: 107014
-    },
-    {
-      text: '清明',
-      diff: 128867
-    },
-    {
-      text: '谷雨',
-      diff: 150921
-    },
-    {
-      text: '立夏',
-      diff: 173149
-    },
-    {
-      text: '小满',
-      diff: 195551
-    },
-    {
-      text: '芒种',
-      diff: 218072
-    },
-    {
-      text: '夏至',
-      diff: 240693
-    },
-    {
-      text: '小暑',
-      diff: 263343
-    },
-    {
-      text: '大暑',
-      diff: 285989
-    },
-    {
-      text: '立秋',
-      diff: 308563
-    },
-    {
-      text: '处暑',
-      diff: 331033
-    },
-    {
-      text: '白露',
-      diff: 353350
-    },
-    {
-      text: '秋分',
-      diff: 375494
-    },
-    {
-      text: '寒露',
-      diff: 397447
-    },
-    {
-      text: '霜降',
-      diff: 419210
-    },
-    {
-      text: '立冬',
-      diff: 440795
-    },
-    {
-      text: '小雪',
-      diff: 462224
-    },
-    {
-      text: '大雪',
-      diff: 483532
-    },
-    {
-      text: '冬至',
-      diff: 504758
-    }
-  ],
   FESTIVALS: {
     '0101': '元旦',
     '0214': '情人节',
@@ -2842,6 +2540,347 @@ Calendar.defaults = {
     PICKED_POINT: 'cal-picked-point',
     DISABLED: 'cal-disabled',
     HIDDEN: 'cal-hidden'
+  }
+}
+
+/**
+ * 计算农历相关信息的（天文）算法
+ * ========================================================================
+ */
+Calendar.Astronomy = {
+  getLunarZodiac: (time) => {
+    const ZODIAC = [
+      '鼠',
+      '牛',
+      '虎',
+      '兔',
+      '龙',
+      '蛇',
+      '马',
+      '羊',
+      '猴',
+      '鸡',
+      '狗',
+      '猪'
+    ]
+    let diff = new Date(time).getFullYear() - 1864
+
+    return ZODIAC[diff % 12]
+  },
+
+  getLunarYear: (time) => {
+    const HEAVENLY_STEMS = [
+      '甲',
+      '乙',
+      '丙',
+      '丁',
+      '戊',
+      '己',
+      '庚',
+      '辛',
+      '壬',
+      '癸'
+    ]
+    const EARTHLY_BRANCHES = [
+      '子',
+      '丑',
+      '寅',
+      '卯',
+      '辰',
+      '巳',
+      '午',
+      '未',
+      '申',
+      '酉',
+      '戌',
+      '亥'
+    ]
+    let diff = new Date(time).getFullYear() - 1864
+
+    return HEAVENLY_STEMS[diff % 10] + EARTHLY_BRANCHES[diff % 12]
+  },
+
+  getLunarMonth: (time) => {
+    const MONTHS = [
+      '正',
+      '二',
+      '三',
+      '四',
+      '五',
+      '六',
+      '七',
+      '八',
+      '九',
+      '十',
+      '冬',
+      '腊'
+    ]
+    let month = new Date(time).getMonth() - 1
+
+    // 到了上一年的腊月
+    if (month < 0) {
+      month = 11
+    }
+
+    return MONTHS[month] + '月'
+  },
+
+  /**
+   * 获取公历日期的农历日期
+   * ========================================================================
+   * @param time
+   */
+  getLunarDate: (time) => {
+    const DATES = {
+      PREFIX: [
+        '初',
+        '十',
+        '廿'
+      ],
+      NUMBERS: [
+        '一',
+        '二',
+        '三',
+        '四',
+        '五',
+        '六',
+        '七',
+        '八',
+        '九',
+        '十'
+      ]
+    }
+    /**
+     * 获得年内日期序数
+     * ========================================================================
+     * @param {String} date - 表示日期的字符串
+     * @returns {number}
+     */
+    const getDuringDays = (date) => {
+      const DATES = Calendar.defaults.DATES
+      let time = new Date(date)
+      let year = time.getFullYear()
+      let month = time.getMonth() + 1
+      let total = time.getDate()
+
+      DATES.forEach((days, i) => {
+        if (i < month - 1) {
+          if (Calendar.isLeapYear(year) && i === 1) {
+            days += 1
+          }
+
+          total += days
+        }
+      })
+
+      return total
+    }
+    /**
+     * 算法公式：
+     * ========================================================================
+     * 设：公元年数 － 1977（或1901）＝ 4Q ＋ R
+     * 则：阴历日期 = 14Q + 10.6(R+1) + 年内日期序数 - 29.5n
+     * （注:式中Q、R、n均为自然数，R<4）
+     * 例：1994年5月7日的阴历日期为：
+     * 1994 － 1977 ＝ 17 ＝ 4×4＋1
+     * 故：Q ＝ 4，R ＝ 1 则：5月7日的阴历日期为：
+     * 14 × 4 + 10.6(1 + 1) + (31 + 28 + 31 + 30 + 7) - 29.5n
+     * = 204.2- 29.5n
+     * 然后用 204.2 去除 29.5 得商数 6 余 27.2，6 即是 n 值，余数 27 即是阴历二十七日
+     * ========================================================================
+     * @param date
+     * @returns {number}
+     */
+    const toLunarDate = (date) => {
+      const ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000
+      let time = new Date(date)
+      let year = time.getFullYear()
+      let Q = Math.floor((year - 1977) / 4)
+      let R = (year - 1977) % 4
+      let days = (14 * Q) + (10.6 * (R + 1)) + getDuringDays(date)
+      let lunarDate = Math.floor(days % 29.5)
+
+      if (lunarDate === 0) {
+        let dateBefore = new Date(date).getTime() - ONE_DAY_TO_SECONDS
+
+        // 农历只有 29 和 30 两种月份最大值
+        switch (toLunarDate(dateBefore)) {
+          case 28:
+            lunarDate = 29
+
+            break
+          case 29:
+            lunarDate = 30
+
+            break
+        }
+      }
+
+      return lunarDate
+    }
+    const Astronomy = Calendar.Astronomy
+    let date = toLunarDate(time)
+    let lunarYear = Astronomy.getLunarYear(time)
+    let lunarZodiac = Astronomy.getLunarZodiac(time)
+    let lunarMonth = Astronomy.getLunarMonth(time)
+    let lunarDate = ''
+    let text = ''
+
+    switch (date) {
+      case 10:
+        lunarDate = text = '初十'
+
+        break
+      case 20:
+        lunarDate = text = '二十'
+
+        break
+      case 30:
+        lunarDate = text = '三十'
+
+        break
+      default:
+        lunarDate = text = DATES.PREFIX[Math.floor(date / 10)] + DATES.NUMBERS[(date - 1) % 10] || date
+
+        if (Math.floor(date / 10) === 0 && ((date - 1) % 10) === 0) {
+          text = lunarMonth
+        }
+
+        break
+    }
+
+    return {
+      year: lunarYear,
+      month: lunarMonth,
+      date: lunarDate,
+      zodiac: lunarZodiac,
+      text: text
+    }
+  },
+
+  /**
+   * 获取某年的第几个农历节气信息
+   * ========================================================================
+   * @param {Number} year - 年份信息
+   * @param {Number} i - 第几个节气（0 ~ 23）
+   * @returns {{value: string, text: *}}
+   */
+  getLunarSolarTerm: (year, i) => {
+    const TERMS = [
+      {
+        text: '小寒',
+        diff: 0
+      },
+      {
+        text: '大寒',
+        diff: 21208
+      },
+      {
+        text: '立春',
+        diff: 42467
+      },
+      {
+        text: '雨水',
+        diff: 63836
+      },
+      {
+        text: '惊蛰',
+        diff: 85337
+      },
+      {
+        text: '春分',
+        diff: 107014
+      },
+      {
+        text: '清明',
+        diff: 128867
+      },
+      {
+        text: '谷雨',
+        diff: 150921
+      },
+      {
+        text: '立夏',
+        diff: 173149
+      },
+      {
+        text: '小满',
+        diff: 195551
+      },
+      {
+        text: '芒种',
+        diff: 218072
+      },
+      {
+        text: '夏至',
+        diff: 240693
+      },
+      {
+        text: '小暑',
+        diff: 263343
+      },
+      {
+        text: '大暑',
+        diff: 285989
+      },
+      {
+        text: '立秋',
+        diff: 308563
+      },
+      {
+        text: '处暑',
+        diff: 331033
+      },
+      {
+        text: '白露',
+        diff: 353350
+      },
+      {
+        text: '秋分',
+        diff: 375494
+      },
+      {
+        text: '寒露',
+        diff: 397447
+      },
+      {
+        text: '霜降',
+        diff: 419210
+      },
+      {
+        text: '立冬',
+        diff: 440795
+      },
+      {
+        text: '小雪',
+        diff: 462224
+      },
+      {
+        text: '大雪',
+        diff: 483532
+      },
+      {
+        text: '冬至',
+        diff: 504758
+      }
+    ]
+    // 已知 1900年 小寒时刻为 1 月 6 日 02:05:00
+    const BASE = Date.UTC(1900, 0, 6, 2, 5)
+    let time = new Date((31556925974.7 * (year - 1900) + TERMS[i].diff * 60000) + BASE)
+    let fullYear = time.getFullYear()
+    let fullMonth = time.getMonth()
+    let fullDate = time.getDate()
+
+    if (fullYear < 100) {
+      fullYear += 1900
+    }
+
+    fullMonth += 1
+
+    return {
+      value: fullYear + '-' + fullMonth + '-' + fullDate,
+      text: TERMS[i].text
+    }
   }
 }
 
