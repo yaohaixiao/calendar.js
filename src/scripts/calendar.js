@@ -2598,7 +2598,7 @@ Calendar.Astronomical = {
     D = parseInt(365.25 * C)
     E = parseInt((B - D) / 30.6)
     // 将B-D除以每月平均日数30.6为积月（表达式E），其中整数部分为月数，小数部分为日数（date）
-    date = parseInt(B - D - parseInt(30.6 * E) + F)
+    date = Math.round(B - D - parseInt(30.6 * E) + F)
 
     // 最后调整岁首的情况可得month和year
     if (E < 14) {
