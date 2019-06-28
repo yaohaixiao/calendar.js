@@ -3037,9 +3037,6 @@ Calendar.Utils = {
   isElement: (o) => {
     return o && o.nodeName && o.tagName && o.nodeType === 1
   },
-  isEmpty: (str) => {
-    return Calendar.Utils.isString(str) && str === ''
-  },
   guid: (prefix) => {
     let Utils = Calendar.Utils
 

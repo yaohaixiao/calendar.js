@@ -2888,9 +2888,6 @@ Calendar.Utils = {
   isElement: function isElement(o) {
     return o && o.nodeName && o.tagName && o.nodeType === 1;
   },
-  isEmpty: function isEmpty(str) {
-    return Calendar.Utils.isString(str) && str === '';
-  },
   guid: function guid(prefix) {
     var Utils = Calendar.Utils;
     Utils.uuid += 1;
