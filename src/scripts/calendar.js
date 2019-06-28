@@ -578,7 +578,7 @@ class Calendar {
     let terms = []
 
     TERMS.forEach((term, i) => {
-      terms.push(Calendar.Astronomy.getLunarSolarTerm(year, i))
+      terms.push(Calendar.Astronomical.getLunarSolarTerm(year, i))
     })
 
     return terms
@@ -2207,7 +2207,7 @@ class Calendar {
       day: day.value,
       text: fullDate,
       fullText: text + ' ' + day.fullText,
-      lunar: Calendar.Astronomy.getLunarDate(fullDate)
+      lunar: Calendar.Astronomical.getLunarDate(fullDate)
     }
   }
 
@@ -2547,7 +2547,129 @@ Calendar.defaults = {
  * 计算农历相关信息的（天文）算法
  * ========================================================================
  */
-Calendar.Astronomy = {
+Calendar.Astronomical = {
+  /**
+   * 将儒略日期转化为公历（格里高利历）日期
+   * ========================================================================
+   * @param {Number} JD - 表示儒略日期的数值
+   * @returns {{year: number, month: number, date: number}}
+   */
+  convertJD2CE: (JD) => {
+    let A
+    let B
+    let C
+    let D
+    let E
+    let F
+    let Z
+    let a
+    let year
+    let month
+    let date
+
+    // 由于儒略日的历元为正午12时，公历历元为半夜12时，为统一计算，将儒略历历元前推至0.5日。即为：JD = JD + 0.5
+    JD += 0.5
+
+    // 儒略日整数部分为日数，小数部分为时刻，只对整数部分进行运算
+    // Z即为所求日到-4712年0时的日数
+    Z = Math.floor(JD)
+    F = JD - Z
+
+    // 儒略历
+    // 由于儒略历和格里历的岁长不同，需分别处理。即自1582年10月15日0时前适用儒略历（岁长365.25），
+    // 此后适用格里历（岁长365.2425）。
+    if (Z < 2299161) {
+      A = Z
+    } else {
+      // 格里历
+      // 为统一计算，可将格里历转换为儒略历，即假设自-4712年1月1日0时起一直使用的是儒略历。
+      // 则针对格里历相对儒略历少置闰（400年3闰）的部分给予补上。由于格里历的历元符合新增置闰规则的年份，
+      // 可将历元推至符合400年置闰周期的近距，即1600年1月1日，根据儒略日计算公式，得该日的儒略日为2305447.5。
+      a = Math.floor((Z - 2305447.5) / 36524.25)
+      // 再补上1582年10月4日到10月15日跳过的10天，即为自-4712年1月1日0时到所求日以儒略历计算的总积日
+      A = Z + 10 + a - Math.floor(a / 4)
+    }
+
+    // 为避免对负数取整的情况，将历元前推至-4716年3月1日0时，需补上相差的日数，合1524日
+    B = A + 1524
+    // 对所得的积日（儒略历），除以岁长，即为积年（表达式C）
+    C = parseInt((B - 122.1) / 365.25)
+    // 其中整数部分为年的积日（表达式D）
+    D = parseInt(365.25 * C)
+    E = parseInt((B - D) / 30.6)
+    // 将B-D除以每月平均日数30.6为积月（表达式E），其中整数部分为月数，小数部分为日数（date）
+    date = parseInt(B - D - parseInt(30.6 * E) + F)
+
+    // 最后调整岁首的情况可得month和year
+    if (E < 14) {
+      month = E - 1
+    } else {
+      if (E < 16) {
+        month = E - 13
+      }
+    }
+
+    if (month > 2) {
+      year = C - 4716
+    } else {
+      if ([
+        1,
+        2
+      ].includes(month)) {
+        year = C - 4715
+      }
+    }
+
+    return {
+      year,
+      month,
+      date,
+      value: year + '-' + month + '-' + date,
+      text: year + '年' + month + '月' + date + '日'
+    }
+  },
+  /**
+   * 将公历（格里高利历）日期转化为儒略日期
+   * ========================================================================
+   * @param {String|Number} time - 表示日期的数值
+   * @returns {number}
+   */
+  convertCE2JD: (time) => {
+    let ce = Calendar.getDate(time)
+    let year = ce.year
+    let month = ce.month
+    let date = ce.date
+    let M = 0
+    let Y = 0
+    let B = 0
+    let JD
+
+    if ([
+      1,
+      2
+    ].includes(month)) {
+      M = month + 12
+      Y = year - 1
+    } else {
+      Y = year
+      M = month
+    }
+
+    if (Y > 1582 || (Y === 1582 && M > 10) || (Y === 1582 && M === 10 && date >= 15)) {
+      // 公元1582年10月15日以后每400年减少3闰
+      B = 2 - parseInt(Y / 100) + parseInt(Y / 400)
+    }
+
+    JD = Math.floor(365.25 * (Y + 4716)) + parseInt(30.6 * (M + 1)) + date + B - 1524.5
+
+    return JD
+  },
+  /**
+   * 将公历年份转化为农历对应的生肖年
+   * ========================================================================
+   * @param {String|Number} time - 表示时间的字符串或者数值
+   * @returns {string}
+   */
   getLunarZodiac: (time) => {
     const ZODIAC = [
       '鼠',
@@ -2567,7 +2689,12 @@ Calendar.Astronomy = {
 
     return ZODIAC[diff % 12]
   },
-
+  /**
+   * 将公历年份转化为农历年份
+   * ========================================================================
+   * @param {String|Number} time - 表示时间的字符串或者数值
+   * @returns {string}
+   */
   getLunarYear: (time) => {
     const HEAVENLY_STEMS = [
       '甲',
@@ -2624,7 +2751,6 @@ Calendar.Astronomy = {
 
     return MONTHS[month] + '月'
   },
-
   /**
    * 获取公历日期的农历日期
    * ========================================================================
@@ -2718,11 +2844,11 @@ Calendar.Astronomy = {
 
       return lunarDate
     }
-    const Astronomy = Calendar.Astronomy
+    const Astronomical = Calendar.Astronomical
     let date = toLunarDate(time)
-    let lunarYear = Astronomy.getLunarYear(time)
-    let lunarZodiac = Astronomy.getLunarZodiac(time)
-    let lunarMonth = Astronomy.getLunarMonth(time)
+    let lunarYear = Astronomical.getLunarYear(time)
+    let lunarZodiac = Astronomical.getLunarZodiac(time)
+    let lunarMonth = Astronomical.getLunarMonth(time)
     let lunarDate = ''
     let text = ''
 
@@ -2761,11 +2887,19 @@ Calendar.Astronomy = {
   /**
    * 获取某年的第几个农历节气信息
    * ========================================================================
+   * 这种推算的方法是建立在地球回归年的长度是固定365.2422天、节气的间隔是绝对固定的、
+   * 朔望月长度是平均的29.5305天等假设之上的，由于天体运动的互相影响，这种假设不是绝对
+   * 成立的，因此这种推算方法的误差较大。但我采用的是2001年的小寒数据，所以对最近几十年
+   * 的节气计算还是比较准的，误差应该在2小时之内。
+   * ========================================================================
    * @param {Number} year - 年份信息
    * @param {Number} i - 第几个节气（0 ~ 23）
    * @returns {{value: string, text: *}}
    */
   getLunarSolarTerm: (year, i) => {
+    // 二十四个节气就是黄道上的24各点，由于地球运动受其它天体的影响，
+    // 导致这些节气在每年的时间是不固定的，但是这些节气之间的间隔时间
+    // 基本上可以看作是固定的，下表就是二十四节气的时间间隔表
     const TERMS = [
       {
         text: '小寒',
@@ -2773,112 +2907,106 @@ Calendar.Astronomy = {
       },
       {
         text: '大寒',
-        diff: 21208
+        diff: 1272494.40
       },
       {
         text: '立春',
-        diff: 42467
+        diff: 2548020.60
       },
       {
         text: '雨水',
-        diff: 63836
+        diff: 3830143.80
       },
       {
         text: '惊蛰',
-        diff: 85337
+        diff: 5120226.60
       },
       {
         text: '春分',
-        diff: 107014
+        diff: 6420865.80
       },
       {
         text: '清明',
-        diff: 128867
+        diff: 7732018.80
       },
       {
         text: '谷雨',
-        diff: 150921
+        diff: 9055272.60
       },
       {
         text: '立夏',
-        diff: 173149
+        diff: 10388958.00
       },
       {
         text: '小满',
-        diff: 195551
+        diff: 11733065.40
       },
       {
         text: '芒种',
-        diff: 218072
+        diff: 13084292.40
       },
       {
         text: '夏至',
-        diff: 240693
+        diff: 14441592.00
       },
       {
         text: '小暑',
-        diff: 263343
+        diff: 15800560.80
       },
       {
         text: '大暑',
-        diff: 285989
+        diff: 17159347.20
       },
       {
         text: '立秋',
-        diff: 308563
+        diff: 18513766.20
       },
       {
         text: '处暑',
-        diff: 331033
+        diff: 19862002.20
       },
       {
         text: '白露',
-        diff: 353350
+        diff: 21201005.40
       },
       {
         text: '秋分',
-        diff: 375494
+        diff: 22529659.80
       },
       {
         text: '寒露',
-        diff: 397447
+        diff: 23846845.20
       },
       {
         text: '霜降',
-        diff: 419210
+        diff: 25152606.00
       },
       {
         text: '立冬',
-        diff: 440795
+        diff: 26447687.40
       },
       {
         text: '小雪',
-        diff: 462224
+        diff: 27733451.40
       },
       {
         text: '大雪',
-        diff: 483532
+        diff: 29011921.20
       },
       {
         text: '冬至',
-        diff: 504758
+        diff: 30285477.60
       }
     ]
-    // 已知 1900年 小寒时刻为 1 月 6 日 02:05:00
-    const BASE = Date.UTC(1900, 0, 6, 2, 5)
-    let time = new Date((31556925974.7 * (year - 1900) + TERMS[i].diff * 60000) + BASE)
-    let fullYear = time.getFullYear()
-    let fullMonth = time.getMonth()
-    let fullDate = time.getDate()
-
-    if (fullYear < 100) {
-      fullYear += 1900
-    }
-
-    fullMonth += 1
+    const Astronomical = Calendar.Astronomical
+    // BASE 是 2001年 小寒时刻：1月5日 14:38:00，儒略日数：2451914.5
+    // 该数据是南京紫金山天文台提供的数据
+    const BASE = 2451914.5
+    let JD = (365.24219878 * (year - 2001) + TERMS[i].diff / 86400.0) + BASE
+    let date = Astronomical.convertJD2CE(JD)
 
     return {
-      value: fullYear + '-' + fullMonth + '-' + fullDate,
+      value: date.value,
       text: TERMS[i].text
     }
   }
