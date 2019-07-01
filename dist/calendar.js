@@ -380,7 +380,6 @@ function () {
         time: '',
         viewMode: 0,
         pickMode: 'single',
-        isLunarCalendar: false,
         MONTHS: [],
         DAYS: [],
         DATES: [],
@@ -2277,21 +2276,6 @@ function () {
       }
 
       return ranges;
-    }
-    /**
-     * 获取日期的节日文本
-     * ========================================================================
-     * @param {Number} month - 月份的数值
-     * @param {Number} date - 日期的数值
-     * @returns {String}
-     */
-
-  }, {
-    key: "getFestival",
-    value: function getFestival(month, date) {
-      var monthProp = month < 10 ? '0' + month : month.toString();
-      var dateProp = date < 10 ? '0' + date : date.toString();
-      return Calendar.defaults.FESTIVALS[monthProp + dateProp] || '';
     }
     /**
      * 判断是否为闰年

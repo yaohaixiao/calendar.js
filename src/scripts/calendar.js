@@ -368,7 +368,6 @@ class Calendar {
       time: '',
       viewMode: 0,
       pickMode: 'single',
-      isLunarCalendar: false,
       MONTHS: [],
       DAYS: [],
       DATES: [],
@@ -2269,20 +2268,6 @@ class Calendar {
     }
 
     return ranges
-  }
-
-  /**
-   * 获取日期的节日文本
-   * ========================================================================
-   * @param {Number} month - 月份的数值
-   * @param {Number} date - 日期的数值
-   * @returns {String}
-   */
-  static getFestival (month, date) {
-    let monthProp = month < 10 ? '0' + month : month.toString()
-    let dateProp = date < 10 ? '0' + date : date.toString()
-
-    return Calendar.defaults.FESTIVALS[monthProp + dateProp] || ''
   }
 
   /**
