@@ -18,6 +18,17 @@ head
             background-color: #fff;
         }
 
+        a:link,
+        a:visited,
+        a:hover{
+            color:#34a6f8;
+            text-decoration: none;
+        }
+
+        a:hover{
+            text-decoration: underline;
+        }
+
         .title {
             margin: 0 2em;
             text-align: center;
@@ -99,6 +110,15 @@ head
             line-height: 150%;
             font-size: 14px;
             font-family: 'Courier New', Consolas, 'Microsoft YaHei UI', Arial, sans-serif;
+        }
+
+        .copyright {
+            margin:0 auto;
+            line-height:150%;
+            text-align:center;
+            font-size:14px;
+            padding: 0 0 1.5em;
+            overflow:hidden;
         }
 body
     h1.title
@@ -316,49 +336,11 @@ body
                             console.log('日历实例：', calendar)
                           }
                         })
-        h2.feature 显示农历日期
-        div.demo
-            div#lunar-calendar.demo-example
-            dov.demo-usage
-                pre.demo-pre
-                    code.demo-code.
-                        new Calendar({
-                          // 设置显示位置
-                          parent: 'lunar-calendar',
-                          // 初始化显示时间（默认选中时间）
-                          time: '2019-6-22',
-                          // viewMode：
-                          // 0 - 日期模式（默认值）
-                          viewMode: 0,
-                          // pickMode：
-                          // single - 单选模式
-                          pickMode: 'single',
-                          // 是否显示农历日期
-                          // true - 显示
-                          // false - 不现实
-                          isLunarCalendar: true,
-                          // 是否显示节日（目前还不支持农历节气）
-                          // true - 显示
-                          // false - 不显示（默认值）
-                          isFestivalsDisplay: true,
-                          // 配置日期选择的事件处理器 onDatePick，参数如下：
-                          // time - 选中的日期时间
-                          // $el - 点击的 DOM 节点
-                          // calendar - 日历控件的实例
-                          onDatePick: function (time, $el, calendar) {
-                            console.log('选择时间：', time)
-                            console.log('选择的 DOM 节点：', $el)
-                            console.log('日历实例：', calendar)
-                          },
-                          // 配置今天选择的事件处理器 onTodayPick，参数如下：
-                          // 1. 先切换到日期试图模式；
-                          // 2. 触发日期选择的业务逻辑；
-                          onTodayPick: function (time, $el, calendar) {
-                            console.log('选择时间：', time)
-                            console.log('选择的 DOM 节点：', $el)
-                            console.log('日历实例：', calendar)
-                          }
-                        })
+    div.copyright
+      p Copyright &copy; 2019
+        |
+        a(href="http://www.yaohaixiao.com/") Yaohaixiao,
+        |  all right reserved.
     script(src="js/calendar.js" type="text/javascript")
     script.
         let calDates = new Calendar({
@@ -525,38 +507,6 @@ body
             console.log('选择时间：' + time)
             console.log('选择的 DOM 节点：' + $el)
             console.log('日历实例：' + calendar)
-          },
-          // 配置今天选择的事件处理器 onTodayPick，参数如下：
-          // 1. 先切换到日期试图模式；
-          // 2. 触发日期选择的业务逻辑；
-          onTodayPick: function (time, $el, calendar) {
-            console.log('选择时间：', time)
-            console.log('选择的 DOM 节点：', $el)
-            console.log('日历实例：', calendar)
-          }
-        })
-
-        let calLunar = new Calendar({
-          // 设置显示位置
-          parent: 'lunar-calendar',
-          // 初始化显示时间（默认选中时间）
-          time: '2019-6-22',
-          // viewMode：
-          // 0 - 日期模式（默认值）
-          viewMode: 0,
-          // pickMode：
-          // single - 单选模式
-          pickMode: 'single',
-          isLunarCalendar: true,
-          isFestivalsDisplay: true,
-          // 配置日期选择的事件处理器 onDatePick，参数如下：
-          // time - 选中的日期时间
-          // $el - 点击的 DOM 节点
-          // calendar - 日历控件的实例
-          onDatePick: function (time, $el, calendar) {
-            console.log('选择时间：', time)
-            console.log('选择的 DOM 节点：', $el)
-            console.log('日历实例：', calendar)
           },
           // 配置今天选择的事件处理器 onTodayPick，参数如下：
           // 1. 先切换到日期试图模式；
