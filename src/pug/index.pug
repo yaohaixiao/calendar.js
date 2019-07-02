@@ -120,6 +120,34 @@ head
             padding: 0 0 1.5em;
             overflow:hidden;
         }
+
+        /*美化chrome滚动条*/
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+            -webkit-border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-track-piece {
+            -webkit-border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:vertical {
+            background-color: rgba(0, 0, 0, .10);
+            -webkit-border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:horizontal {
+            background-color: rgba(0, 0, 0, .10);
+            -webkit-border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar:hover {
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(0, 0, 0, .15);
+        }
 body
     h1.title
         a(href="https://github.com/yaohaixiao/calendar.js") Calendar.js
@@ -338,9 +366,9 @@ body
                           }
                         })
     div.copyright
-      p Copyright &copy; 2019
+      p Copyright &copy; 2019&nbsp;
         a(href="https://github.com/yaohaixiao") Yaohaixiao,
-        | all right reserved.
+        | &nbsp;all right reserved.
     script(src="js/calendar.js" type="text/javascript")
     script.
       let calDates = new Calendar({
