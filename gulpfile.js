@@ -24,18 +24,6 @@ gulp.task('connect', () => {
   })
 })
 
-// 清空字体
-gulp.task('clean:fonts', (cb) => {
-  pump(
-    [
-      gulp.src('docs/css/fonts/*.*'),
-      gulp.src('dist/fonts/*.*'),
-      clean({force: true})
-    ],
-    cb
-  )
-})
-
 // 清空样式
 gulp.task('clean:styles', (cb) => {
   pump(
