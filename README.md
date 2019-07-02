@@ -367,6 +367,18 @@ Type: `Object`
 - show
 - toggle
 
+## 关于农历的计算
+
+起初大致查询了一下关于公历日期和节气的计算，发现较为繁琐，加之时间有限，为确保 calendar.js 的代码简洁，移除了农历计算的方法，不过 wiki 中还是保留者之前查询的一些关于农历的算法，有兴趣的朋友可以参考一下：
+
+- [将儒略日期转化为公历（格里高利历）日期](https://github.com/yaohaixiao/calendar.js/wiki/%E5%B0%86%E5%84%92%E7%95%A5%E6%97%A5%E6%9C%9F%E8%BD%AC%E5%8C%96%E4%B8%BA%E5%85%AC%E5%8E%86%EF%BC%88%E6%A0%BC%E9%87%8C%E9%AB%98%E5%88%A9%E5%8E%86%EF%BC%89%E6%97%A5%E6%9C%9F)
+- [将公历年份转化为农历(天干地支)年份](https://github.com/yaohaixiao/calendar.js/wiki/%E5%B0%86%E5%85%AC%E5%8E%86%E5%B9%B4%E4%BB%BD%E8%BD%AC%E5%8C%96%E4%B8%BA%E5%86%9C%E5%8E%86(%E5%A4%A9%E5%B9%B2%E5%9C%B0%E6%94%AF)%E5%B9%B4%E4%BB%BD)
+- [将公历年份转化为农历对应的生肖年](https://github.com/yaohaixiao/calendar.js/wiki/%E5%B0%86%E5%85%AC%E5%8E%86%E5%B9%B4%E4%BB%BD%E8%BD%AC%E5%8C%96%E4%B8%BA%E5%86%9C%E5%8E%86%E5%AF%B9%E5%BA%94%E7%9A%84%E7%94%9F%E8%82%96%E5%B9%B4)
+- [将公历（格里高利历）日期转化为儒略日期](https://github.com/yaohaixiao/calendar.js/wiki/%E5%B0%86%E5%85%AC%E5%8E%86%EF%BC%88%E6%A0%BC%E9%87%8C%E9%AB%98%E5%88%A9%E5%8E%86%EF%BC%89%E6%97%A5%E6%9C%9F%E8%BD%AC%E5%8C%96%E4%B8%BA%E5%84%92%E7%95%A5%E6%97%A5%E6%9C%9F)
+- [获取公历日期的农历日期](https://github.com/yaohaixiao/calendar.js/wiki/%E8%8E%B7%E5%8F%96%E5%85%AC%E5%8E%86%E6%97%A5%E6%9C%9F%E7%9A%84%E5%86%9C%E5%8E%86%E6%97%A5%E6%9C%9F)
+- [获取某年的第几个农历节气信息](https://github.com/yaohaixiao/calendar.js/wiki/%E8%8E%B7%E5%8F%96%E6%9F%90%E5%B9%B4%E7%9A%84%E7%AC%AC%E5%87%A0%E4%B8%AA%E5%86%9C%E5%8E%86%E8%8A%82%E6%B0%94%E4%BF%A1%E6%81%AF)
+
+
 
 ## License
 
