@@ -242,6 +242,7 @@ gulp.task('compile:scripts', (cb) => {
 
 // 编译所有源文件
 gulp.task('compile', gulp.parallel(
+  'copy',
   'compile:html',
   'compile:styles',
   'compile:scripts'
