@@ -234,6 +234,34 @@ new Calendar({
 })
 ```
 
+### 部件可见的配置
+
+```js
+new Calendar({
+  // 设置显示位置
+  parent: 'visible-view',
+  // 初始化显示时间
+  time: '2019-7-11',
+  // viewMode：
+  // 0 - 日期模式（默认值）
+  viewMode: 0,
+  // 不显示切换按钮
+  hasSwitcher: false,
+  // 不显示页脚
+  hasFooter: false,
+  // 已经设置了不显示页脚，hasClock 也就无需配置了
+  // hasClock: false,
+  // 配置日期选择的事件处理器 onDatePick，参数如下：
+  // time - 选中的日期时间
+  // $el - 点击的 DOM 节点
+  // calendar - 日历控件的实例
+  onDatePick: function (time, $el, calendar) {
+    console.log('选择时间：', time)
+    console.log('选择DOM：', $el)
+    console.log('日历实例：', calendar)
+  }
+})
+```
 
 ## API 
 
