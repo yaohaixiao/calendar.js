@@ -274,6 +274,27 @@ Default: `single`
 * 'range' - 范围选择模式；
 * 'week' - 星期模式； 
 
+#### hasSwitcher
+Type: `Boolean`
+
+Default: `true`
+
+可选，用来指定日历控件是否显示上下切换按钮（需要多日历显示时，可以配置为false）。
+
+#### hasFooter
+Type: `Boolean`
+
+Default: `true`
+
+可选，用来指定日历控件是否显示页脚（当前日期和时间）。
+
+#### hasClock
+Type: `Boolean`
+
+Default: `true`
+
+可选，用来指定日历控件是否显示当前时间。 
+
 
 #### onDatePick
 Type: `Function`
@@ -335,6 +356,8 @@ Type: `Object`
 
 ### Methods
 
+### Public Methods
+
 - initialize
 - render
 - addEventListeners
@@ -366,6 +389,22 @@ Type: `Object`
 - hide
 - show
 - toggle
+
+### Static Methods
+
+- getYear
+- getMonth
+- getDate
+- getDay
+- getToday
+- getYears
+- getWeekRanges
+- getRanges
+- isLeapYear
+- isToday
+- isDatesEqual
+- isEqual
+
 
 ## 关于农历的计算
 

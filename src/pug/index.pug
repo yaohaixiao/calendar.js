@@ -152,7 +152,7 @@ body
     h1.title
         a(href="https://github.com/yaohaixiao/calendar.js") Calendar.js
         sup.version
-          a(href="https://github.com/yaohaixiao/calendar.js/releases") v0.2.0
+          a(href="https://github.com/yaohaixiao/calendar.js/releases") v0.4.0
 
     div.calendar
         h2.feature 日期试图模式
@@ -365,6 +365,36 @@ body
                             console.log('日历实例：', calendar)
                           }
                         })
+        h2.feature 部件可见的配置
+            div.demo
+                div#visible-view.demo-example
+                dov.demo-usage
+                    pre.demo-pre
+                        code.demo-code.
+                            new Calendar({
+                              // 设置显示位置
+                              parent: 'visible-view',
+                              // 初始化显示时间
+                              time: '2019-6-11',
+                              // viewMode：
+                              // 0 - 日期模式（默认值）
+                              viewMode: 0,
+                              // 不显示切换按钮
+                              hasSwitcher: false,
+                              // 不显示页脚
+                              hasFooter: false,
+                              // 已经设置了不显示页脚，hasClock 也就无需配置了
+                              // hasClock: false,
+                              // 配置日期选择的事件处理器 onDatePick，参数如下：
+                              // time - 选中的日期时间
+                              // $el - 点击的 DOM 节点
+                              // calendar - 日历控件的实例
+                              onDatePick: function (time, $el, calendar) {
+                                console.log('选择时间：', time)
+                                console.log('选择DOM：', $el)
+                                console.log('日历实例：', calendar)
+                              }
+                            })
     div.copyright
       p Copyright &copy; 2019&nbsp;
         a(href="https://github.com/yaohaixiao") Yaohaixiao,
@@ -542,6 +572,31 @@ body
         onTodayPick: function (time, $el, calendar) {
           console.log('选择时间：', time)
           console.log('选择的 DOM 节点：', $el)
+          console.log('日历实例：', calendar)
+        }
+      })
+
+      let calVisible = new Calendar({
+        // 设置显示位置
+        parent: 'visible-view',
+        // 初始化显示时间
+        time: '2019-7-11',
+        // viewMode：
+        // 0 - 日期模式（默认值）
+        viewMode: 0,
+        // 不显示切换按钮
+        hasSwitcher: false,
+        // 不显示页脚
+        hasFooter: false,
+        // 已经设置了不显示页脚，hasClock 也就无需配置了
+        // hasClock: false,
+        // 配置日期选择的事件处理器 onDatePick，参数如下：
+        // time - 选中的日期时间
+        // $el - 点击的 DOM 节点
+        // calendar - 日历控件的实例
+        onDatePick: function (time, $el, calendar) {
+          console.log('选择时间：', time)
+          console.log('选择DOM：', $el)
           console.log('日历实例：', calendar)
         }
       })

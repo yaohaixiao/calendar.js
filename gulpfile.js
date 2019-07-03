@@ -63,7 +63,6 @@ gulp.task('clean:html', (cb) => {
 
 // 清空
 gulp.task('clean', gulp.parallel(
-  'clean:fonts',
   'clean:styles',
   'clean:scripts',
   'clean:html'

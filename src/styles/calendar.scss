@@ -107,6 +107,12 @@
   width: 25%;
 }
 
+.cal-md-without-footer{
+  .cal-bd {
+    height: calc((100% / 8) * 7);
+  }
+}
+
 .cal-title,
 .cal-prev,
 .cal-next,
@@ -189,6 +195,7 @@
 
 .cal-year-prev,
 .cal-year-next,
+.cal-month-prev,
 .cal-month-next,
 .cal-date-prev,
 .cal-date-next {

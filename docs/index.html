@@ -150,7 +150,7 @@
   </style>
 </head>
 <body>
-  <h1 class="title"><a href="https://github.com/yaohaixiao/calendar.js">Calendar.js</a><sup class="version"><a href="https://github.com/yaohaixiao/calendar.js/releases">v0.2.0</a></sup></h1>
+  <h1 class="title"><a href="https://github.com/yaohaixiao/calendar.js">Calendar.js</a><sup class="version"><a href="https://github.com/yaohaixiao/calendar.js/releases">v0.4.0</a></sup></h1>
   <div class="calendar">
     <h2 class="feature">日期试图模式</h2>
     <div class="demo">
@@ -362,6 +362,36 @@
 })</code></pre>
       </dov>
     </div>
+    <h2 class="feature">部件可见的配置<div class="demo">
+        <div class="demo-example" id="visible-view"></div>
+        <dov class="demo-usage">
+          <pre class="demo-pre"><code class="demo-code">new Calendar({
+  // 设置显示位置
+  parent: 'visible-view',
+  // 初始化显示时间
+  time: '2019-6-11',
+  // viewMode：
+  // 0 - 日期模式（默认值）
+  viewMode: 0,
+  // 不显示切换按钮
+  hasSwitcher: false,
+  // 不显示页脚
+  hasFooter: false,
+  // 已经设置了不显示页脚，hasClock 也就无需配置了
+  // hasClock: false,
+  // 配置日期选择的事件处理器 onDatePick，参数如下：
+  // time - 选中的日期时间
+  // $el - 点击的 DOM 节点
+  // calendar - 日历控件的实例
+  onDatePick: function (time, $el, calendar) {
+    console.log('选择时间：', time)
+    console.log('选择DOM：', $el)
+    console.log('日历实例：', calendar)
+  }
+})</code></pre>
+        </dov>
+      </div>
+    </h2>
   </div>
   <div class="copyright">
     <p>Copyright &copy; 2019&nbsp;<a href="https://github.com/yaohaixiao">Yaohaixiao,</a>&nbsp;all right reserved.</p>
@@ -539,6 +569,31 @@
       onTodayPick: function(time, $el, calendar) {
         console.log('选择时间：', time)
         console.log('选择的 DOM 节点：', $el)
+        console.log('日历实例：', calendar)
+      }
+    })
+
+    let calVisible = new Calendar({
+      // 设置显示位置
+      parent: 'visible-view',
+      // 初始化显示时间
+      time: '2019-7-11',
+      // viewMode：
+      // 0 - 日期模式（默认值）
+      viewMode: 0,
+      // 不显示切换按钮
+      hasSwitcher: false,
+      // 不显示页脚
+      hasFooter: false,
+      // 已经设置了不显示页脚，hasClock 也就无需配置了
+      // hasClock: false,
+      // 配置日期选择的事件处理器 onDatePick，参数如下：
+      // time - 选中的日期时间
+      // $el - 点击的 DOM 节点
+      // calendar - 日历控件的实例
+      onDatePick: function(time, $el, calendar) {
+        console.log('选择时间：', time)
+        console.log('选择DOM：', $el)
         console.log('日历实例：', calendar)
       }
     })
