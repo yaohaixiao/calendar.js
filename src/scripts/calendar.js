@@ -783,7 +783,7 @@ class Calendar {
           }
         }
 
-        time = year + '-' + month
+        time = year + '-' + month + '-1'
 
         this.setYear(time)
             .setMonth(time)
@@ -797,7 +797,7 @@ class Calendar {
           year = minYear
         }
 
-        this.setYear(year.toString())
+        this.setYear(year + '-1-1')
 
         break
       case 2:
@@ -862,7 +862,7 @@ class Calendar {
           year = maxYear
         }
 
-        this.setYear(year.toString())
+        this.setYear(year + '-1-1')
 
         break
       case 2:
@@ -1077,7 +1077,7 @@ class Calendar {
     const DOM = Calendar.DOM
     let elements = this.getEls()
     let $picked = elements.month
-    let time = $month.getAttribute('data-month')
+    let time = $month.getAttribute('data-month') + '-1'
     let callback = this.get('onMonthPick')
 
     // 点击已经选中的年份
@@ -1122,7 +1122,7 @@ class Calendar {
     const DOM = Calendar.DOM
     let elements = this.getEls()
     let $picked = elements.year
-    let time = $year.getAttribute('data-year')
+    let time = $year.getAttribute('data-year') + '-1-1'
     let callback = this.get('onYearPick')
 
     // 点击已经选中的月份
@@ -2262,7 +2262,7 @@ class Calendar {
    * @returns {{value: (Number|{value, text, fullText}), text: string, fullText: string}}
    */
   static getYear (val) {
-    let time = !val ? new Date() : new Date(val)
+    let time = !val ? new Date() : new Date(Calendar.toAllSupported(val))
     let year = time.getFullYear()
 
     return {
@@ -2279,7 +2279,7 @@ class Calendar {
    * @returns {{value: number, text: string, fullText: string}}
    */
   static getMonth (val) {
-    let time = !val ? new Date() : new Date(val)
+    let time = !val ? new Date() : new Date(Calendar.toAllSupported(val))
     let year = Calendar.getYear(val)
     let month = time.getMonth()
 
@@ -2299,7 +2299,7 @@ class Calendar {
    * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
    */
   static getDate (val) {
-    let time = !val ? new Date() : new Date(val)
+    let time = !val ? new Date() : new Date(Calendar.toAllSupported(val))
     let year = Calendar.getYear(val)
     let month = Calendar.getMonth(val)
     let date = time.getDate()
@@ -2324,7 +2324,7 @@ class Calendar {
    * @returns {{value: number, text: string, fullText: string}}
    */
   static getDay (val) {
-    let time = !val ? new Date() : new Date(val)
+    let time = !val ? new Date() : new Date(Calendar.toAllSupported(val))
     let day = time.getDay()
     let text = Calendar.defaults.DAYS[day]
 
@@ -2507,7 +2507,20 @@ class Calendar {
    * @returns {boolean}
    */
   static isEqual (timeOne, timeTwo) {
-    return new Date(timeOne).getTime() === new Date(timeTwo).getTime()
+    const toAllSupported = Calendar.toAllSupported
+    return new Date(toAllSupported(timeOne)).getTime() === new Date(toAllSupported(timeTwo)).getTime()
+  }
+
+  static toAllSupported(time) {
+    const Utils = Calendar.Utils
+
+    if(Utils.isNumber(time)){
+      return time
+    } else {
+      if(Utils.isString(time)){
+        return time.replace(/-/g, '/')
+      }
+    }
   }
 }
 

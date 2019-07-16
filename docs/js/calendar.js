@@ -807,7 +807,7 @@ function () {
             }
           }
 
-          time = year + '-' + month;
+          time = year + '-' + month + '-1';
           this.setYear(time).setMonth(time);
           break;
 
@@ -819,7 +819,7 @@ function () {
             year = minYear;
           }
 
-          this.setYear(year.toString());
+          this.setYear(year + '-1-1');
           break;
 
         case 2:
@@ -883,7 +883,7 @@ function () {
             year = maxYear;
           }
 
-          this.setYear(year.toString());
+          this.setYear(year + '-1-1');
           break;
 
         case 2:
@@ -1093,7 +1093,7 @@ function () {
       var DOM = Calendar.DOM;
       var elements = this.getEls();
       var $picked = elements.month;
-      var time = $month.getAttribute('data-month');
+      var time = $month.getAttribute('data-month') + '-1';
       var callback = this.get('onMonthPick'); // 点击已经选中的年份
 
       if (DOM.hasClass($month, CLS_PICKED)) {
@@ -1136,7 +1136,7 @@ function () {
       var DOM = Calendar.DOM;
       var elements = this.getEls();
       var $picked = elements.year;
-      var time = $year.getAttribute('data-year');
+      var time = $year.getAttribute('data-year') + '-1-1';
       var callback = this.get('onYearPick'); // 点击已经选中的月份
 
       if (DOM.hasClass($year, CLS_PICKED)) {
@@ -2243,7 +2243,7 @@ function () {
   }], [{
     key: "getYear",
     value: function getYear(val) {
-      var time = !val ? new Date() : new Date(val);
+      var time = !val ? new Date() : new Date(Calendar.toAllSupported(val));
       var year = time.getFullYear();
       return {
         value: year,
@@ -2261,7 +2261,7 @@ function () {
   }, {
     key: "getMonth",
     value: function getMonth(val) {
-      var time = !val ? new Date() : new Date(val);
+      var time = !val ? new Date() : new Date(Calendar.toAllSupported(val));
       var year = Calendar.getYear(val);
       var month = time.getMonth();
       month += 1;
@@ -2281,7 +2281,7 @@ function () {
   }, {
     key: "getDate",
     value: function getDate(val) {
-      var time = !val ? new Date() : new Date(val);
+      var time = !val ? new Date() : new Date(Calendar.toAllSupported(val));
       var year = Calendar.getYear(val);
       var month = Calendar.getMonth(val);
       var date = time.getDate();
@@ -2307,7 +2307,7 @@ function () {
   }, {
     key: "getDay",
     value: function getDay(val) {
-      var time = !val ? new Date() : new Date(val);
+      var time = !val ? new Date() : new Date(Calendar.toAllSupported(val));
       var day = time.getDay();
       var text = Calendar.defaults.DAYS[day];
       return {
@@ -2500,7 +2500,21 @@ function () {
   }, {
     key: "isEqual",
     value: function isEqual(timeOne, timeTwo) {
-      return new Date(timeOne).getTime() === new Date(timeTwo).getTime();
+      var toAllSupported = Calendar.toAllSupported;
+      return new Date(toAllSupported(timeOne)).getTime() === new Date(toAllSupported(timeTwo)).getTime();
+    }
+  }, {
+    key: "toAllSupported",
+    value: function toAllSupported(time) {
+      var Utils = Calendar.Utils;
+
+      if (Utils.isNumber(time)) {
+        return time;
+      } else {
+        if (Utils.isString(time)) {
+          return time.replace(/-/g, '/');
+        }
+      }
     }
   }]);
 
