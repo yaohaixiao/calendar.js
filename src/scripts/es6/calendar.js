@@ -1108,7 +1108,7 @@ class Calendar {
     const CLS_PICKED = this.get('STYLES').PICKED
     let elements = this.getEls()
     let $picked = elements.month
-    let time = $month.getAttribute('data-month') + '-1'
+    let time = $month.getAttribute('data-month')
     let callback = this.get('onMonthPick')
 
     // 点击已经选中的年份
@@ -1152,7 +1152,7 @@ class Calendar {
     const CLS_PICKED = this.get('STYLES').PICKED
     let elements = this.getEls()
     let $picked = elements.year
-    let time = $year.getAttribute('data-year') + '-1-1'
+    let time = $year.getAttribute('data-year')
     let callback = this.get('onYearPick')
 
     // 点击已经选中的月份
@@ -1869,7 +1869,7 @@ class Calendar {
         // 创建月份的 DOM 节点
         $month = createElement('div', {
           className: className,
-          'data-month': (year - 1) + '-' + MONTH
+          'data-month': (year - 1) + '-' + MONTH + '-1'
         }, [
           createElement('span', {
             className: CLS_TEXT
@@ -1893,7 +1893,7 @@ class Calendar {
           // 创建月份的 DOM 节点
           $month = createElement('div', {
             className: className,
-            'data-month': year + '-' + MONTH
+            'data-month': year + '-' + MONTH + '-1'
           }, [
             createElement('span', {
               className: CLS_TEXT
@@ -1914,7 +1914,7 @@ class Calendar {
             // 创建月份的 DOM 节点
             $month = createElement('div', {
               className: className,
-              'data-month': (year + 1) + '-' + MONTH
+              'data-month': (year + 1) + '-' + MONTH + '-1'
             }, [
               createElement('span', {
                 className: CLS_TEXT
@@ -2046,7 +2046,7 @@ class Calendar {
       let isPicked = (year === pickedDate.year)
       let className = CLS_YEAR
       let $year = createElement('div', {
-        'data-year': year
+        'data-year': year + '-1-1'
       }, [
         createElement('span', {
           className: CLS_TEXT

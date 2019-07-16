@@ -1077,7 +1077,7 @@ class Calendar {
     const DOM = Calendar.DOM
     let elements = this.getEls()
     let $picked = elements.month
-    let time = $month.getAttribute('data-month') + '-1'
+    let time = $month.getAttribute('data-month')
     let callback = this.get('onMonthPick')
 
     // 点击已经选中的年份
@@ -1122,7 +1122,7 @@ class Calendar {
     const DOM = Calendar.DOM
     let elements = this.getEls()
     let $picked = elements.year
-    let time = $year.getAttribute('data-year') + '-1-1'
+    let time = $year.getAttribute('data-year')
     let callback = this.get('onYearPick')
 
     // 点击已经选中的月份
@@ -1430,12 +1430,12 @@ class Calendar {
 
     switch (this.get('viewMode')) {
       case 0:
-        // 显示完整的年月日式时间
+        // 显示完整的年月时间
         value = Calendar.getMonth(year + '-' + this.getMonth() + '-1').fullText
         break
       case 1:
-        // 显示年份+月份格式时间
-        value = Calendar.getYear(year + '-1-1').text
+        // 显示年份时间
+        value = Calendar.getYear(year + '-1-1').fullText
         break
       case 2:
         // 显示年代范围格式时间
@@ -1855,7 +1855,7 @@ class Calendar {
         // 创建月份的 DOM 节点
         $month = createElement('div', {
           className: className,
-          'data-month': (year - 1) + '-' + MONTH
+          'data-month': (year - 1) + '-' + MONTH + '-1'
         }, [
           createElement('span', {
             className: CLS_TEXT
@@ -1879,12 +1879,12 @@ class Calendar {
           // 创建月份的 DOM 节点
           $month = createElement('div', {
             className: className,
-            'data-month': year + '-' + MONTH
+            'data-month': year + '-' + MONTH + '-1'
           }, [
             createElement('span', {
               className: CLS_TEXT
             }, [
-              MONTH
+              year + '-' + MONTH
             ])
           ])
         } else {
@@ -1900,7 +1900,7 @@ class Calendar {
             // 创建月份的 DOM 节点
             $month = createElement('div', {
               className: className,
-              'data-month': (year + 1) + '-' + MONTH
+              'data-month': (year + 1) + '-' + MONTH + '-1'
             }, [
               createElement('span', {
                 className: CLS_TEXT
@@ -2036,7 +2036,7 @@ class Calendar {
       let isPicked = (year === pickedDate.year)
       let className = CLS_YEAR
       let $year = createElement('div', {
-        'data-year': year
+        'data-year': year + '-1-1'
       }, [
         createElement('span', {
           className: CLS_TEXT
@@ -2513,12 +2513,30 @@ class Calendar {
 
   static toAllSupported(time) {
     const Utils = Calendar.Utils
+    let date = []
 
     if(Utils.isNumber(time)){
       return time
     } else {
-      if(Utils.isString(time)){
-        return time.replace(/-/g, '/')
+      if(Utils.isString(time)) {
+        if (time.indexOf('-')) {
+          date = time.split('-')
+        } else {
+          if (time.indexOf('/')) {
+            date = time.split('/')
+          }
+        }
+
+        if (date.length === 1) {
+          date.push('1')
+          date.push('1')
+        } else{
+          if (date.length === 2) {
+            date.push('1')
+          }
+        }
+
+        return date.join('-').replace(/-/g, '/')
       }
     }
   }

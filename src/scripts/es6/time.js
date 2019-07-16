@@ -320,11 +320,30 @@ export const isEqual = (timeOne, timeTwo) => {
  *
  */
 export const toAllSupported = (time) => {
+  let date = []
+
   if(isNumber(time)){
     return time
   } else {
-    if(isString(time)){
-      return time.replace(/-/g, '/')
+    if(isString(time)) {
+      if (time.indexOf('-')) {
+        date = time.split('-')
+      } else {
+        if (time.indexOf('/')) {
+          date = time.split('/')
+        }
+      }
+
+      if (date.length === 1) {
+        date.push('1')
+        date.push('1')
+      } else{
+        if (date.length === 2) {
+          date.push('1')
+        }
+      }
+
+      return date.join('-').replace(/-/g, '/')
     }
   }
 }

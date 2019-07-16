@@ -1093,7 +1093,7 @@ function () {
       var DOM = Calendar.DOM;
       var elements = this.getEls();
       var $picked = elements.month;
-      var time = $month.getAttribute('data-month') + '-1';
+      var time = $month.getAttribute('data-month');
       var callback = this.get('onMonthPick'); // 点击已经选中的年份
 
       if (DOM.hasClass($month, CLS_PICKED)) {
@@ -1136,7 +1136,7 @@ function () {
       var DOM = Calendar.DOM;
       var elements = this.getEls();
       var $picked = elements.year;
-      var time = $year.getAttribute('data-year') + '-1-1';
+      var time = $year.getAttribute('data-year');
       var callback = this.get('onYearPick'); // 点击已经选中的月份
 
       if (DOM.hasClass($year, CLS_PICKED)) {
@@ -1426,13 +1426,13 @@ function () {
 
       switch (this.get('viewMode')) {
         case 0:
-          // 显示完整的年月日式时间
+          // 显示完整的年月时间
           value = Calendar.getMonth(year + '-' + this.getMonth() + '-1').fullText;
           break;
 
         case 1:
-          // 显示年份+月份格式时间
-          value = Calendar.getYear(year + '-1-1').text;
+          // 显示年份时间
+          value = Calendar.getYear(year + '-1-1').fullText;
           break;
 
         case 2:
@@ -1849,7 +1849,7 @@ function () {
 
           $month = createElement('div', {
             className: className,
-            'data-month': year - 1 + '-' + MONTH
+            'data-month': year - 1 + '-' + MONTH + '-1'
           }, [createElement('span', {
             className: CLS_TEXT
           }, [MONTH])]);
@@ -1869,10 +1869,10 @@ function () {
 
             $month = createElement('div', {
               className: className,
-              'data-month': year + '-' + MONTH
+              'data-month': year + '-' + MONTH + '-1'
             }, [createElement('span', {
               className: CLS_TEXT
-            }, [MONTH])]);
+            }, [year + '-' + MONTH])]);
           } else {
             // 明年的月份
             if (i > 13 && i <= 15) {
@@ -1885,7 +1885,7 @@ function () {
 
               $month = createElement('div', {
                 className: className,
-                'data-month': year + 1 + '-' + MONTH
+                'data-month': year + 1 + '-' + MONTH + '-1'
               }, [createElement('span', {
                 className: CLS_TEXT
               }, [MONTH])]);
@@ -2021,7 +2021,7 @@ function () {
         var isPicked = year === pickedDate.year;
         var className = CLS_YEAR;
         var $year = createElement('div', {
-          'data-year': year
+          'data-year': year + '-1-1'
         }, [createElement('span', {
           className: CLS_TEXT
         }, [year])]);
@@ -2507,12 +2507,30 @@ function () {
     key: "toAllSupported",
     value: function toAllSupported(time) {
       var Utils = Calendar.Utils;
+      var date = [];
 
       if (Utils.isNumber(time)) {
         return time;
       } else {
         if (Utils.isString(time)) {
-          return time.replace(/-/g, '/');
+          if (time.indexOf('-')) {
+            date = time.split('-');
+          } else {
+            if (time.indexOf('/')) {
+              date = time.split('/');
+            }
+          }
+
+          if (date.length === 1) {
+            date.push('1');
+            date.push('1');
+          } else {
+            if (date.length === 2) {
+              date.push('1');
+            }
+          }
+
+          return date.join('-').replace(/-/g, '/');
         }
       }
     }
