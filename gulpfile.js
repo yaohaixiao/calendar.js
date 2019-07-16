@@ -1,5 +1,9 @@
 const gulp = require('gulp')
 
+const buffer = require('vinyl-buffer')
+const browserify = require('browserify')
+const stream = require('vinyl-source-stream')
+
 const autoprefixer = require('gulp-autoprefixer')
 const babel = require('gulp-babel')
 const clean = require('gulp-clean')
@@ -14,6 +18,7 @@ const sass = require('gulp-sass')
 const sasslint = require('gulp-sass-lint')
 const sourcemaps = require('gulp-sourcemaps')
 const uglify = require('gulp-uglify')
+
 const umd = require('gulp-umd')
 
 // 创建 API 文档 HTTP 服务
@@ -80,8 +85,20 @@ gulp.task('copy:fonts', (cb) => {
   )
 })
 
+// 复制脚本文件
+gulp.task('copy:es6', (cb) => {
+  pump(
+    [
+      gulp.src('src/scripts/es6/*.*'),
+      gulp.dest('dist/es6')
+    ],
+    cb
+  )
+})
+
 gulp.task('copy', gulp.parallel(
-  'copy:fonts'
+  'copy:fonts',
+  'copy:es6'
 ))
 
 // 校验 .pug 文件语法规范
@@ -185,7 +202,59 @@ gulp.task('compile:styles', (cb) => {
   )
 })
 
-// 编辑脚本文件
+// 编译脚本文件,将E6模块转化为UMD模块
+gulp.task('compile:es6:umd', (cb) => {
+  pump(
+    [
+      gulp.src(['src/scripts/es6/*.js']),
+      babel({
+        'plugins': [
+          [
+            '@babel/plugin-transform-modules-umd',
+            {
+              'globals': {
+                './src/scripts/es6/calendar': 'Calendar',
+                './src/scripts/es6/utils': 'Utils',
+                './src/scripts/es6/dom': 'DOM',
+                './src/scripts/es6/delegate': 'Delegate',
+                './src/scripts/es6/static': 'Time'
+              }
+            }
+          ]
+        ]
+      }),
+      gulp.dest('dist/umd')
+    ],
+    cb
+  )
+})
+
+// 编译脚本文件，将ES6模块打包为最终的应用，根据需要调整
+gulp.task('compile:es6:app', (cb) => {
+  pump(
+    [
+      // 输出未压缩版本的 .js 文件
+      browserify({
+        entries: 'src/scripts/es6/calendar.js',
+        debug: true
+      })
+      // 转成node readabel stream流，拥有pipe方法（stream流分小片段传输）
+        .bundle()
+        .on('error', function (error) {
+          console.log(error.toString())
+        }),
+      stream('calendar.js'),
+      buffer(),
+      uglify(),
+      rename({suffix: '.min'}),
+      sourcemaps.write('./'),
+      gulp.dest('dist/app')
+    ],
+    cb
+  )
+})
+
+// 编译脚本文件，将文件编译成浏览器可用的JS代码，也支持UMD模块
 gulp.task('compile:scripts', (cb) => {
   pump(
     [
@@ -221,6 +290,7 @@ gulp.task('compile:scripts', (cb) => {
       uglify(),
       rename({suffix: '.min'}),
       sourcemaps.write('./'),
+      gulp.dest('docs/js'),
       gulp.dest('dist')
     ],
     cb
@@ -232,6 +302,7 @@ gulp.task('compile', gulp.parallel(
   'copy',
   'compile:html',
   'compile:styles',
+  'compile:es6:umd',
   'compile:scripts'
 ))
 

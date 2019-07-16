@@ -1,3 +1,38 @@
+'use strict'
+
+import {
+  isFunction,
+  guid
+} from './utils'
+
+import {
+  getYear,
+  getMonth,
+  getDate,
+  getDay,
+  getToday,
+  getRanges,
+  getWeekRanges,
+  getYears,
+  isDatesEqual,
+  isToday,
+  isLeapYear
+} from './time'
+
+import {
+  createElement,
+  hasClass,
+  addClass,
+  removeClass
+} from './dom'
+
+import {
+  on,
+  off
+} from './delegate'
+
+import 'babel-polyfill'
+
 /**
  * Calendar 类
  */
@@ -197,7 +232,7 @@ class Calendar {
    * @returns {Calendar}
    */
   initialize (options) {
-    let year = Calendar.getYear().value
+    let year = getYear().value
     let pickMode
     let time
     let month
@@ -212,7 +247,7 @@ class Calendar {
 
     time = this.get('time')
     pickMode = this.get('pickMode')
-    month = Calendar.getMonth(time)
+    month = getMonth(time)
     monthText = month.text
 
     // 初始化数据
@@ -239,7 +274,7 @@ class Calendar {
 
         break
       case 'week':
-        dateRanges = Calendar.getWeekRanges(time)
+        dateRanges = getWeekRanges(time)
         startDate = dateRanges[0]
         endDate = dateRanges[dateRanges.length - 1]
 
@@ -281,7 +316,7 @@ class Calendar {
     $header.appendChild(elements.title)
 
     // 配置了显示上下切换按钮
-    if(this.get('hasSwitcher')) {
+    if (this.get('hasSwitcher')) {
       $switcher.appendChild(elements.prev)
       $switcher.appendChild(elements.next)
       $header.appendChild($switcher)
@@ -304,13 +339,13 @@ class Calendar {
     $body.appendChild(elements.years)
 
     // 配置了显示页脚
-    if(this.get('hasFooter')) {
+    if (this.get('hasFooter')) {
       // 绘制页脚
       this._renderFooter()
       $footer.appendChild(elements.today)
 
       // 配置了显示当前时间
-      if(this.get('hasClock')) {
+      if (this.get('hasClock')) {
         $footer.appendChild(elements.time)
       }
     }
@@ -320,7 +355,7 @@ class Calendar {
     $wrap.appendChild($body)
 
     // 配置了显示页脚
-    if(this.get('hasFooter')) {
+    if (this.get('hasFooter')) {
       $wrap.appendChild($footer)
     }
 
@@ -349,29 +384,28 @@ class Calendar {
     const selectorMonth = DOT + STYLES.MONTH
     const selectorYear = DOT + STYLES.YEAR
     const selectorToday = DOT + STYLES.TODAY
-    const Delegate = Calendar.Delegate
     let $wrap = this.getEls().wrap
 
     // 绑定点击标题的事件处理器
-    Delegate.on($wrap, selectorTitle, CLICK, this._titleClick, this)
+    on($wrap, selectorTitle, CLICK, this._titleClick, this)
 
-    if(this.get('hasSwitcher')) {
+    if (this.get('hasSwitcher')) {
       // 绑定点击向上按钮的事件处理器
-      Delegate.on($wrap, selectorPrev, CLICK, this._prevClick, this)
+      on($wrap, selectorPrev, CLICK, this._prevClick, this)
       // 绑定点击向下按钮的事件处理器
-      Delegate.on($wrap, selectorNext, CLICK, this._nextClick, this)
+      on($wrap, selectorNext, CLICK, this._nextClick, this)
     }
 
     // 绑定点击日期的事件处理器
-    Delegate.on($wrap, selectorDate, CLICK, this._dateClick, this)
+    on($wrap, selectorDate, CLICK, this._dateClick, this)
     // 绑定点击月份的事件处理器
-    Delegate.on($wrap, selectorMonth, CLICK, this._monthClick, this)
+    on($wrap, selectorMonth, CLICK, this._monthClick, this)
     // 绑定点击年份的事件处理器
-    Delegate.on($wrap, selectorYear, CLICK, this._yearClick, this)
+    on($wrap, selectorYear, CLICK, this._yearClick, this)
 
-    if(this.get('hasClock')) {
+    if (this.get('hasClock')) {
       // 绑定点击今天的事件处理器
-      Delegate.on($wrap, selectorToday, CLICK, this._todayClick, this)
+      on($wrap, selectorToday, CLICK, this._todayClick, this)
     }
 
     return this
@@ -422,22 +456,21 @@ class Calendar {
    */
   removeEventListeners () {
     const CLICK = 'click'
-    const Delegate = Calendar.Delegate
     let $wrap = this.getEls().wrap
 
-    Delegate.off($wrap, CLICK, this._titleClick)
+    off($wrap, CLICK, this._titleClick)
 
-    if(this.get('hasSwitcher')) {
-      Delegate.off($wrap, CLICK, this._prevClick)
-      Delegate.off($wrap, CLICK, this._nextClick)
+    if (this.get('hasSwitcher')) {
+      off($wrap, CLICK, this._prevClick)
+      off($wrap, CLICK, this._nextClick)
     }
 
-    Delegate.off($wrap, CLICK, this._dateClick)
-    Delegate.off($wrap, CLICK, this._monthClick)
-    Delegate.off($wrap, CLICK, this._yearClick)
+    off($wrap, CLICK, this._dateClick)
+    off($wrap, CLICK, this._monthClick)
+    off($wrap, CLICK, this._yearClick)
 
-    if(this.get('hasClock')) {
-      Delegate.off($wrap, CLICK, this._todayClick)
+    if (this.get('hasClock')) {
+      off($wrap, CLICK, this._todayClick)
     }
 
     return this
@@ -570,7 +603,7 @@ class Calendar {
    * @returns {Calendar}
    */
   setYear (time) {
-    this.data.year = Calendar.getYear(time).value
+    this.data.year = getYear(time).value
 
     return this
   }
@@ -591,7 +624,7 @@ class Calendar {
    * @returns {Calendar}
    */
   setMonth (time) {
-    this.data.month = Calendar.getMonth(time).value
+    this.data.month = getMonth(time).value
 
     return this
   }
@@ -612,7 +645,7 @@ class Calendar {
    * @returns {Calendar}
    */
   setDate (time) {
-    this.data.date = Calendar.getDate(time)
+    this.data.date = getDate(time)
 
     return this
   }
@@ -695,9 +728,6 @@ class Calendar {
   updateView () {
     const STYLES = this.get('STYLES')
     const CLS_HIDDEN = STYLES.HIDDEN
-    const DOM = Calendar.DOM
-    const addClass = DOM.addClass
-    const removeClass = DOM.removeClass
     let elements = this.getEls()
     let $week = elements.week
     let $dates = elements.dates
@@ -797,7 +827,9 @@ class Calendar {
           year = minYear
         }
 
-        this.setYear(year + '-1-1')
+        time = year + '-1-1'
+
+        this.setYear(time)
 
         break
       case 2:
@@ -849,7 +881,7 @@ class Calendar {
           }
         }
 
-        time = year + '-' + month
+        time = year + '-' + month + '-1'
 
         this.setYear(time)
             .setMonth(time)
@@ -862,7 +894,9 @@ class Calendar {
           year = maxYear
         }
 
-        this.setYear(year + '-1-1')
+        time = year + '-1-1'
+
+        this.setYear(time)
 
         break
       case 2:
@@ -904,11 +938,6 @@ class Calendar {
   pickDate ($date) {
     const STYLES = this.get('STYLES')
     const CLS_PICKED = STYLES.PICKED
-    const DOM = Calendar.DOM
-    const hasClass = DOM.hasClass
-    const addClass = DOM.addClass
-    const removeClass = DOM.removeClass
-    const isFunction = Calendar.Utils.isFunction
     let pickMode = this.get('pickMode')
     let elements = this.getEls()
     let time = $date.getAttribute('data-date')
@@ -1040,10 +1069,13 @@ class Calendar {
           break
         case 'week':
           // 获得当前选中日期的星期范围
-          let ranges = Calendar.getWeekRanges(time)
+          let ranges = getWeekRanges(time)
 
           // 清除之前的数据，保存现在的星期日期范围
-          this.data.picked = [ranges[0], ranges[ranges.length - 1]]
+          this.data.picked = [
+            ranges[0],
+            ranges[ranges.length - 1]
+          ]
 
           this.setDate(ranges[ranges.length - 1])
 
@@ -1074,24 +1106,23 @@ class Calendar {
    */
   pickMonth ($month) {
     const CLS_PICKED = this.get('STYLES').PICKED
-    const DOM = Calendar.DOM
     let elements = this.getEls()
     let $picked = elements.month
     let time = $month.getAttribute('data-month') + '-1'
     let callback = this.get('onMonthPick')
 
     // 点击已经选中的年份
-    if (DOM.hasClass($month, CLS_PICKED)) {
+    if (hasClass($month, CLS_PICKED)) {
       // 切换到月份试图模式
       this.update()
     } else {
       // 移除之前选中的年份选中样式
       if ($picked) {
-        DOM.removeClass($picked, CLS_PICKED)
+        removeClass($picked, CLS_PICKED)
       }
 
       // 设置选中样式
-      DOM.addClass($month, CLS_PICKED)
+      addClass($month, CLS_PICKED)
       elements.month = $month
 
       this.setYear(time)
@@ -1100,7 +1131,7 @@ class Calendar {
           .update()
     }
 
-    if (Calendar.Utils.isFunction(callback)) {
+    if (isFunction(callback)) {
       callback(time, $month, this)
     }
 
@@ -1119,24 +1150,23 @@ class Calendar {
    */
   pickYear ($year) {
     const CLS_PICKED = this.get('STYLES').PICKED
-    const DOM = Calendar.DOM
     let elements = this.getEls()
     let $picked = elements.year
     let time = $year.getAttribute('data-year') + '-1-1'
     let callback = this.get('onYearPick')
 
     // 点击已经选中的月份
-    if (DOM.hasClass($year, CLS_PICKED)) {
+    if (hasClass($year, CLS_PICKED)) {
       // 切换到日期试图模式
       this.setYear(time).update(1)
     } else {
       // 移除之前选中的年份选中样式
       if ($picked) {
-        DOM.removeClass($picked, CLS_PICKED)
+        removeClass($picked, CLS_PICKED)
       }
 
       // 设置选中样式
-      DOM.addClass($year, CLS_PICKED)
+      addClass($year, CLS_PICKED)
       elements.year = $year
 
       // 更新年份并切换到月份试图
@@ -1145,7 +1175,7 @@ class Calendar {
           .update(1)
     }
 
-    if (Calendar.Utils.isFunction(callback)) {
+    if (isFunction(callback)) {
       callback(time, $year, this)
     }
 
@@ -1160,7 +1190,7 @@ class Calendar {
    * @returns {Calendar}
    */
   pickToday () {
-    let time = Calendar.getToday().value
+    let time = getToday().value
     let callback = this.get('onTodayPick')
 
     this.setYear(time)
@@ -1169,7 +1199,7 @@ class Calendar {
         ._setYears(time)
         .update()
 
-    if (Calendar.Utils.isFunction(callback)) {
+    if (isFunction(callback)) {
       callback(time, this.getEls().dates.querySelector('[data-date=' + time + ']'), this)
     }
 
@@ -1185,7 +1215,7 @@ class Calendar {
     const CLS_HIDDEN = this.get('STYLES').HIDDEN
     let $wrap = this.getEls().wrap
 
-    Calendar.DOM.addClass($wrap, CLS_HIDDEN)
+    addClass($wrap, CLS_HIDDEN)
 
     return this
   }
@@ -1199,7 +1229,7 @@ class Calendar {
     const CLS_HIDDEN = this.get('STYLES').HIDDEN
     let $wrap = this.getEls().wrap
 
-    Calendar.DOM.removeClass($wrap, CLS_HIDDEN)
+    removeClass($wrap, CLS_HIDDEN)
 
     return this
   }
@@ -1214,7 +1244,7 @@ class Calendar {
 
     let $wrap = this.getEls().wrap
 
-    if (Calendar.DOM.hasClass($wrap, CLS_HIDDEN)) {
+    if (hasClass($wrap, CLS_HIDDEN)) {
       this.show()
     } else {
       this.hide()
@@ -1231,7 +1261,7 @@ class Calendar {
    * @private
    */
   _setYears (time) {
-    this.data.years = Calendar.getYears(time)
+    this.data.years = getYears(time)
 
     return this
   }
@@ -1286,7 +1316,6 @@ class Calendar {
     const SPACE = ' '
     let hasFooter = this.get('hasFooter')
     let elements = this.getEls()
-    let createElement = Calendar.DOM.createElement
     let wrapClassName = CLS_WRAP
     let weekClassName = CLS_WEEK
     let datesClassName = CLS_DATES
@@ -1310,7 +1339,7 @@ class Calendar {
         break
     }
 
-    if(!hasFooter){
+    if (!hasFooter) {
       wrapClassName += SPACE + CLS_WRAP_WITHOUT_FOOTER
     }
 
@@ -1318,7 +1347,7 @@ class Calendar {
 
     // wrap
     elements.wrap = createElement('div', {
-      id: Calendar.Utils.guid('calendar'),
+      id: guid(4, 10),
       className: wrapClassName
     })
     // header
@@ -1334,7 +1363,7 @@ class Calendar {
     ])
 
     // 配置了显示上下切换按钮
-    if(this.get('hasSwitcher')) {
+    if (this.get('hasSwitcher')) {
       elements.switcher = createElement('div', {
         className: CLS_SWITCHER
       })
@@ -1380,7 +1409,7 @@ class Calendar {
     })
 
     // 配置了显示页脚
-    if(hasFooter) {
+    if (hasFooter) {
       // footer
       elements.footer = createElement('div', {
         className: CLS_FOOTER
@@ -1431,11 +1460,11 @@ class Calendar {
     switch (this.get('viewMode')) {
       case 0:
         // 显示完整的年月日式时间
-        value = Calendar.getMonth(year + '-' + this.getMonth()).fullText
+        value = year + '年' + this.getMonth() + '月'
         break
       case 1:
         // 显示年份+月份格式时间
-        value = Calendar.getYear(year.toString()).text
+        value = getYear(year.toString()).text
         break
       case 2:
         // 显示年代范围格式时间
@@ -1460,7 +1489,6 @@ class Calendar {
     const CLS_WEEKEND = STYLES.WEEKEND
     const CLS_TEXT = STYLES.TEXT
     const DAYS = this.get('DAYS')
-    const createElement = Calendar.DOM.createElement
     let fragment = document.createDocumentFragment()
 
     DAYS.forEach((day, i) => {
@@ -1492,14 +1520,13 @@ class Calendar {
    */
   _renderDates () {
     const DATES = this.get('DATES')
-    const isLeapYear = Calendar.isLeapYear
     // fragments
     let fragment = document.createDocumentFragment()
     // current month
     let year = this.getYear()
     let month = this.getMonth()
     let days = DATES[month - 1]
-    let firstDateDay = Calendar.getDay(year + '-' + month + '-' + 1).value
+    let firstDateDay = getDay(year + '-' + month + '-' + 1).value
     // prev month
     let prevYear = month - 2 < 0 ? year - 1 : year
     let prevMonth = month - 2 < 0 ? 12 : month - 1
@@ -1512,8 +1539,7 @@ class Calendar {
     // 如果当前是闰年，上个月是二月份，则闰年二月为29天
     if (isLeapYear(year) && prevMonth === 2) {
       prevDays += 1
-    }
-    else {
+    } else {
       // 如果当前是闰年，当前月份是二月，则本月有29天
       if (isLeapYear(year) && month === 2) {
         days += 1
@@ -1569,12 +1595,11 @@ class Calendar {
    */
   _repaintDates () {
     const CLS_HIDDEN = this.get('STYLES').HIDDEN
-    const DOM = Calendar.DOM
     let $dates = this.getEls().dates
 
-    DOM.addClass($dates, CLS_HIDDEN)
+    addClass($dates, CLS_HIDDEN)
     $dates.innerHTML = ''
-    DOM.removeClass($dates, CLS_HIDDEN)
+    removeClass($dates, CLS_HIDDEN)
 
     this._renderDates()
 
@@ -1606,8 +1631,6 @@ class Calendar {
     const CLS_PICKED_RANGE = STYLES.PICKED_RANGE
     const CLS_WEEKEND = STYLES.WEEKEND
     const CLS_TEXT = STYLES.TEXT
-    const createElement = Calendar.DOM.createElement
-    const isDatesEqual = Calendar.isDatesEqual
     let fragment = document.createDocumentFragment()
     let elements = this.getEls()
     let date = start
@@ -1616,8 +1639,8 @@ class Calendar {
 
     for (; date <= end; date += 1) {
       let fullDate = year + '-' + month + '-' + date
-      let isCurrent = Calendar.isToday(fullDate)
-      let day = Calendar.getDay(fullDate)
+      let isCurrent = isToday(fullDate)
+      let day = getDay(fullDate)
       let $children = [
         createElement('span', {
           className: CLS_TEXT
@@ -1681,7 +1704,7 @@ class Calendar {
 
           // 只有选中了两个节点，才绘制选中日期区间的样式
           if (pickedDates.length === 2) {
-            dateRanges = Calendar.getRanges(pickedDates[0], pickedDates[1])
+            dateRanges = getRanges(pickedDates[0], pickedDates[1])
 
             dateRanges.forEach((picked, i) => {
               let isPicked = isDatesEqual(fullDate, picked)
@@ -1727,10 +1750,6 @@ class Calendar {
     const STYLES = this.get('STYLES')
     const CLS_PICKED = STYLES.PICKED
     const CLS_PICKED_RANGE = STYLES.PICKED_RANGE
-    const DOM = Calendar.DOM
-    const hasClass = DOM.hasClass
-    const removeClass = DOM.removeClass
-    const addClass = DOM.addClass
     let elements = this.getEls()
     let $date = this.elements.date
     let $dates = elements.dates
@@ -1752,7 +1771,7 @@ class Calendar {
 
         break
       case 2:
-        let ranges = Calendar.getRanges(this.data.picked[0], this.data.picked[1])
+        let ranges = getRanges(this.data.picked[0], this.data.picked[1])
 
         ranges.forEach((picked, i) => {
           let $picked = $dates.querySelector('[data-date="' + picked + '"]')
@@ -1781,14 +1800,11 @@ class Calendar {
     const STYLES = this.get('STYLES')
     const CLS_PICKED = STYLES.PICKED
     const CLS_PICKED_RANGE = STYLES.PICKED_RANGE
-    const DOM = Calendar.DOM
-    const removeClass = DOM.removeClass
-    const addClass = DOM.addClass
     let elements = this.getEls()
     let $dates = elements.dates
     let $pickedDates = $dates.querySelectorAll('.' + CLS_PICKED)
     let picked = this.getPicked()
-    let ranges = Calendar.getWeekRanges(picked[0])
+    let ranges = getWeekRanges(picked[0])
 
     // 移除之前选中区域的样式
     $pickedDates.forEach(($picked) => {
@@ -1831,12 +1847,10 @@ class Calendar {
     const CLS_MONTH_NEXT = STYLES.MONTH_NEXT
     const CLS_TEXT = STYLES.TEXT
     const MONTHS = this.get('MONTHS')
-    const DOM = Calendar.DOM
-    const createElement = DOM.createElement
     let fragment = document.createDocumentFragment()
     let elements = this.getEls()
     let year = this.getYear()
-    let today = Calendar.getToday()
+    let today = getToday()
 
     MONTHS.forEach((MONTH, i) => {
       let pickedDate = this.getDate()
@@ -1929,12 +1943,11 @@ class Calendar {
    */
   _repaintMonths () {
     const CLS_HIDDEN = this.get('STYLES').HIDDEN
-    const DOM = Calendar.DOM
     let $months = this.getEls().months
 
-    DOM.addClass($months, CLS_HIDDEN)
+    addClass($months, CLS_HIDDEN)
     $months.innerHTML = ''
-    DOM.removeClass($months, CLS_HIDDEN)
+    removeClass($months, CLS_HIDDEN)
 
     this._renderMonths()
 
@@ -1989,12 +2002,11 @@ class Calendar {
    */
   _repaintYears () {
     const CLS_HIDDEN = this.get('STYLES').HIDDEN
-    const DOM = Calendar.DOM
     let $years = this.getEls().years
 
-    DOM.addClass($years, CLS_HIDDEN)
+    addClass($years, CLS_HIDDEN)
     $years.innerHTML = ''
-    DOM.removeClass($years, CLS_HIDDEN)
+    removeClass($years, CLS_HIDDEN)
 
     this._renderYears()
 
@@ -2022,8 +2034,6 @@ class Calendar {
     const CLS_PICKED = STYLES.PICKED
     const CLS_DISABLED = STYLES.DISABLED
     const CLS_TEXT = STYLES.TEXT
-    const DOM = Calendar.DOM
-    const createElement = DOM.createElement
     let fragment = document.createDocumentFragment()
     let elements = this.getEls()
     let minYear = this.data.minYear
@@ -2032,7 +2042,7 @@ class Calendar {
 
     for (; year <= end; year += 1) {
       let pickedDate = this.getDate()
-      let isCurrent = (year === Calendar.getToday().year)
+      let isCurrent = (year === getToday().year)
       let isPicked = (year === pickedDate.year)
       let className = CLS_YEAR
       let $year = createElement('div', {
@@ -2085,7 +2095,7 @@ class Calendar {
     const CLS_TEXT = STYLES.TEXT
     let elements = this.getEls()
     let $today = elements.today.querySelector('.' + CLS_TEXT)
-    let today = Calendar.getToday()
+    let today = getToday()
     let timer = null
 
     let renderTime = () => {
@@ -2117,9 +2127,9 @@ class Calendar {
     }
 
     $today.innerHTML = '今天：' + today.text
-    Calendar.DOM.setAttribute($today, 'data-date', today.value)
+    $today.setAttribute('data-date', today.value)
 
-    if(this.get('hasClock')) {
+    if (this.get('hasClock')) {
       renderTime()
     }
 
@@ -2178,20 +2188,7 @@ class Calendar {
    * @private
    */
   _dateClick (evt) {
-    let $el = evt.delegateTarget
-    let time = $el.getAttribute('data-date')
-    let picked
-
-    this.pickDate($el)
-
-    picked = this.getPicked()
-
-    console.log('------------- _dateClick -------------')
-    if (this.get('pickMode') === 'single') {
-      console.log(time)
-    } else {
-      console.log(picked)
-    }
+    this.pickDate(evt.delegateTarget)
 
     return this
   }
@@ -2204,14 +2201,7 @@ class Calendar {
    * @private
    */
   _monthClick (evt) {
-    let $month = evt.delegateTarget
-    let time = $month.getAttribute('data-month')
-
-    this.pickMonth($month)
-
-    console.log('------------- _monthClick -------------')
-    console.log(time)
-
+    this.pickMonth(evt.delegateTarget)
     return this
   }
 
@@ -2223,13 +2213,7 @@ class Calendar {
    * @private
    */
   _yearClick (evt) {
-    let $el = evt.delegateTarget
-    let time = $el.getAttribute('data-year')
-
-    this.pickYear($el)
-
-    console.log('------------- _yearClick -------------')
-    console.log(time)
+    this.pickYear(evt.delegateTarget)
 
     return this
   }
@@ -2242,285 +2226,14 @@ class Calendar {
    */
   _todayClick () {
     let elements = this.getEls()
-    let time = Calendar.getToday().text
+    let time = getToday().text
 
     this.pickToday()
 
     // 触发日期选择逻辑
     this.pickDate(elements.dates.querySelector('[data-date="' + time + '"]'))
 
-    console.log('------------- _todayClick -------------')
-    console.log(time)
-
     return this
-  }
-
-  /**
-   * 获得年份信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示年份的字符串或者数字（默认值：今年）
-   * @returns {{value: (Number|{value, text, fullText}), text: string, fullText: string}}
-   */
-  static getYear (val) {
-    let time = !val ? new Date() : new Date(Calendar.toAllSupported(val))
-    let year = time.getFullYear()
-
-    return {
-      value: year,
-      text: year.toString(),
-      fullText: year + '年'
-    }
-  }
-
-  /**
-   * 获取月份信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示月份的字符串或者数字（默认值：本月）
-   * @returns {{value: number, text: string, fullText: string}}
-   */
-  static getMonth (val) {
-    let time = !val ? new Date() : new Date(Calendar.toAllSupported(val))
-    let year = Calendar.getYear(val)
-    let month = time.getMonth()
-
-    month += 1
-
-    return {
-      value: month,
-      text: year.text + '-' + month,
-      fullText: year.fullText + month + '月'
-    }
-  }
-
-  /**
-   * 获取日期信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示日期的字符串或者数字（默认值：今天）
-   * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
-   */
-  static getDate (val) {
-    let time = !val ? new Date() : new Date(Calendar.toAllSupported(val))
-    let year = Calendar.getYear(val)
-    let month = Calendar.getMonth(val)
-    let date = time.getDate()
-    let day = Calendar.getDay(val)
-    let fullDate = year.value + '-' + month.value + '-' + date
-    let text = month.fullText + date + '日'
-
-    return {
-      year: year.value,
-      month: month.value,
-      date: date,
-      day: day.value,
-      text: fullDate,
-      fullText: text + ' ' + day.fullText
-    }
-  }
-
-  /**
-   * 获取星期信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示日期的字符串或者数字（默认值：今天）
-   * @returns {{value: number, text: string, fullText: string}}
-   */
-  static getDay (val) {
-    let time = !val ? new Date() : new Date(Calendar.toAllSupported(val))
-    let day = time.getDay()
-    let text = Calendar.defaults.DAYS[day]
-
-    return {
-      value: day,
-      text: text,
-      fullText: '星期' + text
-    }
-  }
-
-  /**
-   * 获取今天的日期信息
-   * ========================================================================
-   * @returns {{year: (Number|{value, text}), month: number, date: number, day: number, text: string, fullText: string}}
-   */
-  static getToday () {
-    return Calendar.getDate()
-  }
-
-  /**
-   * 获取年代信息
-   * ========================================================================
-   * @param {String|Number} [val] - 表示年份的字符串或者数字（默认值：今年）
-   * @returns {{start: (number|Number|{value, text}), end: (*|number)}}
-   */
-  static getYears (val) {
-    let year = Calendar.getYear(val).value
-    let numbers = year.toString().split('')
-    let lastNumber = parseInt(numbers[numbers.length - 1], 10)
-    let yearsStart = 0
-    let yearsEnd = 0
-
-    if (lastNumber === 0) {
-      yearsStart = year
-      yearsEnd = year + 9
-    } else {
-      if (lastNumber === 9) {
-        yearsStart = year - 9
-        yearsEnd = year
-      } else {
-        yearsStart = year - lastNumber
-        yearsEnd = year + (9 - lastNumber)
-      }
-    }
-
-    return {
-      start: yearsStart,
-      end: yearsEnd
-    }
-  }
-
-  /**
-   * 获取日期所属的整个星期的日期区间信息
-   * ========================================================================
-   * @param {String} time - 表示日期的字符串
-   * @returns {Array}
-   */
-  static getWeekRanges (time) {
-    const DATES = Calendar.defaults.DATES
-    const isLeapYear = Calendar.isLeapYear
-    let day = Calendar.getDay(time).value
-    let begins = time.split('-')
-    let year = parseInt(begins[0], 10)
-    let month = parseInt(begins[1], 10)
-    let date = parseInt(begins[2], 10)
-    let days = DATES[month - 1]
-    let startYear = year
-    let startMonth = month
-    let startDate = date - day
-    let endYear = year
-    let endMonth = month
-    let endDate = date + (6 - day)
-    let prevMonth = 0
-
-    // 闰年2月为29天，默认值为28天，所以需要+1天
-    if (isLeapYear(year) && month === 2) {
-      days += 1
-    }
-
-    if (startDate < 1) {
-      // 上一个月
-      prevMonth = month - 2
-      startMonth -= 1
-
-      if (prevMonth < 0) {
-        startYear -= 1
-        startMonth = 12
-        startDate = DATES[11] + startDate
-      } else {
-        // 开始日期
-        startDate = DATES[prevMonth] + startDate
-      }
-    }
-
-    if (endDate > days) {
-      endMonth += 1
-
-      // 结束日期
-      endDate = endDate - days
-
-      if (prevMonth > 11) {
-        endYear += 1
-        endMonth = 1
-      }
-    }
-
-    return Calendar.getRanges((startYear + '-' + startMonth + '-' + startDate), (endYear + '-' + endMonth + '-' + endDate))
-  }
-
-  /**
-   * 获取两个日期之间的所有日期信息
-   * ========================================================================
-   * @param {String} begin - 表示日期的字符串
-   * @param {String} end - 表示日期的字符串
-   * @returns {Array}
-   */
-  static getRanges (begin, end) {
-    const ONE_DAY_TO_SECONDS = 24 * 60 * 60 * 1000
-    let ranges = []
-    let begins = begin.split('-')
-    let ends = end.split('-')
-    let beginTime = new Date()
-    let endTime = new Date()
-    let beginNumber
-    let endNumber
-    let timeNumber
-
-    beginTime.setUTCFullYear(parseInt(begins[0], 10), parseInt(begins[1], 10) - 1, parseInt(begins[2], 10))
-    endTime.setUTCFullYear(parseInt(ends[0], 10), parseInt(ends[1], 10) - 1, parseInt(ends[2], 10))
-
-    beginNumber = beginTime.getTime()
-    endNumber = endTime.getTime()
-    timeNumber = beginNumber
-
-    for (; timeNumber <= endNumber; timeNumber += ONE_DAY_TO_SECONDS) {
-      ranges.push(Calendar.getDate(timeNumber).text)
-    }
-
-    return ranges
-  }
-
-  /**
-   * 判断是否为闰年
-   * ========================================================================
-   * @param {Number} year - 年份数值
-   * @returns {boolean}
-   */
-  static isLeapYear (year) {
-    return ((year % 4 === 0) || (year % 400 === 0)) && (year % 100 !== 0)
-  }
-
-  /**
-   * 判断是否为今天
-   * ========================================================================
-   * @param {String|Number} time - 表示日期的字符串或者数字
-   * @returns {*}
-   */
-  static isToday (time) {
-    return Calendar.isDatesEqual(time)
-  }
-
-  /**
-   * 判断两个日期是否相等
-   * ========================================================================
-   * @param {String|Number} dateOne - 表示日期的字符串或者数字
-   * @param {String|Number} [dateTwo] - 表示日期的字符串或者数字（默认值：今天）
-   * @returns {boolean}
-   */
-  static isDatesEqual (dateOne, dateTwo) {
-    const getDate = Calendar.getDate
-
-    return Calendar.isEqual(getDate(dateOne).text, getDate(dateTwo).text)
-  }
-
-  /**
-   * 判断两个时间是否相等
-   * ========================================================================
-   * @param {String|Number} timeOne - 表示日期的字符串或者数字
-   * @param {String|Number} timeTwo - 表示日期的字符串或者数字
-   * @returns {boolean}
-   */
-  static isEqual (timeOne, timeTwo) {
-    const toAllSupported = Calendar.toAllSupported
-    return new Date(toAllSupported(timeOne)).getTime() === new Date(toAllSupported(timeTwo)).getTime()
-  }
-
-  static toAllSupported(time) {
-    const Utils = Calendar.Utils
-
-    if(Utils.isNumber(time)){
-      return time
-    } else {
-      if(Utils.isString(time)){
-        return time.replace(/-/g, '/')
-      }
-    }
   }
 }
 
@@ -2530,7 +2243,7 @@ class Calendar {
  */
 Calendar.defaults = {
   parent: 'calendar',
-  time: '',
+  time: getDate().text,
   // 0 - 日期显示模式（默认值）
   // 1 - 月份显示模式
   // 2 - 年代显示模式
@@ -2595,9 +2308,9 @@ Calendar.defaults = {
     TITLE: 'cal-title',
     SWITCHER: 'cal-switcher',
     PREV: 'cal-prev',
-    ICON_PREV: 'icon-angle-up',
+    ICON_PREV: 'icon-cheveron-up',
     NEXT: 'cal-next',
-    ICON_NEXT: 'icon-angle-down',
+    ICON_NEXT: 'icon-cheveron-down',
     BODY: 'cal-bd',
     WEEK: 'cal-week',
     WEEKEND: 'cal-weekend',
@@ -2629,335 +2342,4 @@ Calendar.defaults = {
   }
 }
 
-/**
- * 常用的工具方法
- * ========================================================================
- */
-Calendar.Utils = {
-  uuid: 0,
-  isString: (o) => {
-    return typeof o === 'string'
-  },
-  isNumber: (o) => {
-    return typeof o === 'number'
-  },
-  isArray: (o) => {
-    if (Array.isArray) {
-      return Array.isArray(o)
-    } else {
-      return Object.prototype.toString.apply(o) === '[object Array]'
-    }
-  },
-  isFunction: (o) => {
-    return (typeof o === 'function') || Object.prototype.toString.apply(o) === '[object Function]'
-  },
-  isElement: (o) => {
-    return o && o.nodeName && o.tagName && o.nodeType === 1
-  },
-  guid: (prefix) => {
-    let Utils = Calendar.Utils
-
-    Utils.uuid += 1
-
-    return prefix ? prefix + '-' + Utils.uuid : 'guid-' + Utils.uuid
-  },
-  trim: (str) => {
-    return str.replace(/^\s+/g, '').replace(/\s+$/g, '')
-  },
-  stripTags: (str) => {
-    return str.replace(/<\/?[^>]+(>|$)/g, '')
-  }
-}
-
-/**
- * DOM 操作相关的工具方法
- * ========================================================================
- */
-Calendar.DOM = {
-  /**
-   * 创建 DOM 节点，并添加属性和子节点
-   * ========================================================================
-   * @param {String} tagName - 标签名称
-   * @param {Object} attributes - 属性对象
-   * @param {Array} [children] - 子节点数组
-   * @returns {HTMLElement}
-   */
-  createElement: (tagName, attributes, children) => {
-    const Utils = Calendar.Utils
-    let element = document.createElement(tagName)
-
-    for (let attr in attributes) {
-      if (attributes.hasOwnProperty(attr)) {
-        Calendar.DOM.setAttribute(element, attr, attributes[attr])
-      }
-    }
-
-    if (Utils.isArray(children)) {
-      children.forEach((child) => {
-        let childNode
-
-        if (Utils.isElement(child)) {
-          childNode = child
-        } else {
-          if (Utils.isString(child) || Utils.isNumber(child)) {
-            let text = Utils.isString(child) ? Utils.trim(Utils.stripTags(child)) : child.toString()
-
-            childNode = document.createTextNode(text)
-          }
-        }
-
-        element.appendChild(childNode)
-      })
-    }
-
-    return element
-  },
-  /**
-   * 给 DOM 节点设置属性/值
-   * ========================================================================
-   * @param {HTMLElement} el - DOM 节点
-   * @param {String} attr - 属性名称
-   * @param {String|Number|Boolean} value - 属性值
-   */
-  setAttribute: (el, attr, value) => {
-    let tagName = el.tagName.toLowerCase()
-
-    switch (attr) {
-      case 'style':
-        el.style.cssText = value
-        break
-      case 'value':
-        if (tagName === 'input' || tagName === 'textarea') {
-          el.value = value
-        } else {
-          el.setAttribute(attr, value)
-        }
-        break
-      case 'className':
-        el.className = value
-        break
-      default:
-        el.setAttribute(attr, value)
-        break
-    }
-  },
-  /**
-   * 检测 DOM 节点是否包含名为 className 的样式
-   * ========================================================================
-   * @param {HTMLElement} el - DOM 节点
-   * @param {String} className - 样式名称
-   * @returns {*}
-   */
-  hasClass (el, className) {
-    let allClass = el.className
-
-    if (!allClass) {
-      return false
-    }
-
-    return allClass.match(new RegExp('(\\s|^)' + className + '(\\s|$)'))
-  },
-  /**
-   * 给 DOM 节点添加名为 className 的样式
-   * ========================================================================
-   * @param {HTMLElement} el - DOM 节点
-   * @param {String} className - 样式名称
-   * @returns {Boolean}
-   */
-  addClass (el, className) {
-    let allClass = el.className
-
-    if (Calendar.DOM.hasClass(el, className)) {
-      return false
-    }
-
-    allClass += allClass.length > 0 ? ' ' + className : className
-
-    el.className = allClass
-  },
-  /**
-   * 移除 DOM 节点的 className 样式
-   * ========================================================================
-   * @param {HTMLElement} el - DOM 节点
-   * @param {String} className - 样式名称
-   * @returns {Boolean}
-   */
-  removeClass (el, className) {
-    let allClass = el.className
-
-    if (!allClass || !Calendar.DOM.hasClass(el, className)) {
-      return false
-    }
-
-    allClass = Calendar.Utils.trim(allClass.replace(className, ''))
-
-    el.className = allClass
-  }
-}
-
-/**
- * 代理事件
- * ========================================================
- * 说明：代码修改至 Nicolas Gallagher 的 delegate.js
- * 项目 GitHub 地址：https://github.com/necolas/delegate.js
- * ========================================================
- */
-Calendar.Delegate = {
-  /**
-   * 绑定代理事件
-   * ========================================================================
-   * @param {HTMLElement} el - 绑定代理事件的 DOM 节点
-   * @param {String} selector - 触发 el 代理事件的 DOM 节点的选择器
-   * @param {String} type - 事件类型
-   * @param {Function} callback - 绑定事件的回调函数
-   * @param {Object} [context] - callback 回调函数的 this 上下文（默认值：el）
-   * @param {Boolean} [capture] - 是否采用事件捕获（默认值：false - 事件冒泡）
-   * @param {Boolean} [once] - 是否只触发一次（默认值：false - 事件冒泡）
-   */
-  on (el, selector, type, callback, context, capture, /* private */ once) {
-    const Delegate = Calendar.Delegate
-    const wrapper = function (e) {
-      let delegateTarget = Delegate.getDelegateTarget(el, e.target, selector)
-
-      e.delegateTarget = delegateTarget
-
-      if (delegateTarget) {
-        if (once === true) {
-          Delegate.off(el, type, wrapper)
-        }
-        callback.call(context || el, e)
-      }
-    }
-
-    if (type === 'mouseenter' || type === 'mouseleave') {
-      capture = true
-    }
-
-    callback._delegateWrapper = callback
-    el.addEventListener(type, wrapper, capture || false)
-
-    return callback
-  },
-  /**
-   * 绑定只触发一次的事件
-   * ========================================================================
-   * @param {HTMLElement} el - 绑定代理事件的 DOM 节点
-   * @param {String} selector - 触发 el 代理事件的 DOM 节点的选择器
-   * @param {String} type - 事件类型
-   * @param {Function} callback - 绑定事件的回调函数
-   * @param {Object} [context] - callback 回调函数的 this 上下文（默认值：el）
-   * @param {Boolean} [capture] - 是否采用事件捕获（默认值：false - 事件冒泡）
-   */
-  once (el, type, selector, callback, context, capture) {
-    Calendar.Delegate.on(el, type, selector, callback, context, capture, true)
-  },
-  /**
-   * 取消事件绑定
-   * ========================================================================
-   * @param {HTMLElement} el - 取消绑定（代理）事件的 DOM 节点
-   * @param {String} type - 事件类型
-   * @param {Function} callback - 绑定事件的回调函数
-   * @param {Boolean} [capture] - 是否采用事件捕获（默认值：false - 事件冒泡）
-   */
-  off (el, type, callback, capture) {
-    if (callback._delegateWrapper) {
-      callback = callback._delegateWrapper
-      delete callback._delegateWrapper
-    }
-
-    if (type === 'mouseenter' || type === 'mouseleave') {
-      capture = true
-    }
-
-    el.removeEventListener(type, callback, capture || false)
-  },
-  /**
-   * 停止事件（阻止默认行为和阻止事件的捕获或冒泡）
-   * ========================================================================
-   * @param {Event} evt - 事件对象
-   */
-  stop (evt) {
-    const Delegate = Calendar.Delegate
-
-    Delegate.stopPropagation(evt)
-    Delegate.preventDefault(evt)
-  },
-  /**
-   * 终止事件在传播过程的捕获或冒泡
-   * ========================================================================
-   * @param {Event} evt - 事件对象
-   */
-  stopPropagation (evt) {
-    let event = window.event
-
-    if (evt.stopPropagation) {
-      evt.stopPropagation()
-    } else {
-      event.cancelBubble = true
-    }
-  },
-  /**
-   * 阻止事件的默认行为
-   * ========================================================================
-   * @param {Event} evt - 事件对象
-   */
-  preventDefault (evt) {
-    let event = window.event
-
-    if (evt.preventDefault) {
-      evt.preventDefault()
-    } else {
-      event.returnValue = false
-    }
-  },
-  /**
-   * 通过 className 获得事件代理节点的事件代理目标节点
-   * ========================================================================
-   * @param {HTMLElement} el - 绑定事件代理的节点
-   * @param target - （触发事件后）事件的目标对象
-   * @param selector - 目标节点的类选择器
-   * @returns {HTMLElement|Null}
-   */
-  getDelegateTarget (el, target, selector) {
-    while (target && target !== el) {
-      if (Calendar.DOM.hasClass(target, selector.replace('.', ''))) {
-        return target
-      }
-
-      target = target.parentElement
-    }
-
-    return null
-  }
-}
-
-// 为了处理不兼容 Object.assign
-if (!Calendar.Utils.isFunction(Object.assign)) {
-  // Must be writable: true, enumerable: false, configurable: true
-  Object.defineProperty(Object, "assign", {
-    value: function assign(target, varArgs) { // .length of function is 2
-      'use strict';
-      if (target == null) { // TypeError if undefined or null
-        throw new TypeError('Cannot convert undefined or null to object');
-      }
-
-      let to = Object(target);
-
-      for (let index = 1; index < arguments.length; index++) {
-        let nextSource = arguments[index];
-
-        if (nextSource != null) { // Skip over if undefined or null
-          for (let nextKey in nextSource) {
-            // Avoid bugs when hasOwnProperty is shadowed
-            if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-              to[nextKey] = nextSource[nextKey];
-            }
-          }
-        }
-      }
-      return to;
-    },
-    writable: true,
-    configurable: true
-  });
-}
+export default Calendar
