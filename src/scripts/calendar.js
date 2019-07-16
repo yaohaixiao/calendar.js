@@ -849,7 +849,7 @@ class Calendar {
           }
         }
 
-        time = year + '-' + month
+        time = year + '-' + month + '-1'
 
         this.setYear(time)
             .setMonth(time)
@@ -1431,11 +1431,11 @@ class Calendar {
     switch (this.get('viewMode')) {
       case 0:
         // 显示完整的年月日式时间
-        value = Calendar.getMonth(year + '-' + this.getMonth()).fullText
+        value = Calendar.getMonth(year + '-' + this.getMonth() + '-1').fullText
         break
       case 1:
         // 显示年份+月份格式时间
-        value = Calendar.getYear(year.toString()).text
+        value = Calendar.getYear(year + '-1-1').text
         break
       case 2:
         // 显示年代范围格式时间
