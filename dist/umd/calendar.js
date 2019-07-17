@@ -1093,7 +1093,7 @@
         var CLS_PICKED = this.get('STYLES').PICKED;
         var elements = this.getEls();
         var $picked = elements.month;
-        var time = $month.getAttribute('data-month') + '-1';
+        var time = $month.getAttribute('data-month');
         var callback = this.get('onMonthPick'); // 点击已经选中的年份
 
         if ((0, _dom.hasClass)($month, CLS_PICKED)) {
@@ -1135,7 +1135,7 @@
         var CLS_PICKED = this.get('STYLES').PICKED;
         var elements = this.getEls();
         var $picked = elements.year;
-        var time = $year.getAttribute('data-year') + '-1-1';
+        var time = $year.getAttribute('data-year');
         var callback = this.get('onYearPick'); // 点击已经选中的月份
 
         if ((0, _dom.hasClass)($year, CLS_PICKED)) {
@@ -1833,7 +1833,7 @@
 
             $month = (0, _dom.createElement)('div', {
               className: className,
-              'data-month': year - 1 + '-' + MONTH
+              'data-month': year - 1 + '-' + MONTH + '-1'
             }, [(0, _dom.createElement)('span', {
               className: CLS_TEXT
             }, [MONTH])]);
@@ -1853,7 +1853,7 @@
 
               $month = (0, _dom.createElement)('div', {
                 className: className,
-                'data-month': year + '-' + MONTH
+                'data-month': year + '-' + MONTH + '-1'
               }, [(0, _dom.createElement)('span', {
                 className: CLS_TEXT
               }, [MONTH])]);
@@ -1869,7 +1869,7 @@
 
                 $month = (0, _dom.createElement)('div', {
                   className: className,
-                  'data-month': year + 1 + '-' + MONTH
+                  'data-month': year + 1 + '-' + MONTH + '-1'
                 }, [(0, _dom.createElement)('span', {
                   className: CLS_TEXT
                 }, [MONTH])]);
@@ -2001,7 +2001,7 @@
           var isPicked = year === pickedDate.year;
           var className = CLS_YEAR;
           var $year = (0, _dom.createElement)('div', {
-            'data-year': year
+            'data-year': year + '-1-1'
           }, [(0, _dom.createElement)('span', {
             className: CLS_TEXT
           }, [year])]);

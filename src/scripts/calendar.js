@@ -2532,11 +2532,19 @@ class Calendar {
           date.push('1')
         } else{
           if (date.length === 2) {
-            date.push('1')
+            // 例如：'2019-1'
+            if (date[0].length === 4) {
+              date.push('1')
+            } else {
+              // 例如：'1-2019'
+              if (data[1].length === 4) {
+                date.unshift('1')
+              }
+            }
           }
         }
 
-        return date.join('-').replace(/-/g, '/')
+        return date.join('/')
       }
     }
   }

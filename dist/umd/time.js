@@ -342,11 +342,38 @@
   _exports.isEqual = isEqual;
 
   var toAllSupported = function toAllSupported(time) {
+    var date = [];
+
     if ((0, _utils.isNumber)(time)) {
       return time;
     } else {
       if ((0, _utils.isString)(time)) {
-        return time.replace(/-/g, '/');
+        if (time.indexOf('-')) {
+          date = time.split('-');
+        } else {
+          if (time.indexOf('/')) {
+            date = time.split('/');
+          }
+        }
+
+        if (date.length === 1) {
+          date.push('1');
+          date.push('1');
+        } else {
+          if (date.length === 2) {
+            // 例如：'2019-1'
+            if (date[0].length === 4) {
+              date.push('1');
+            } else {
+              // 例如：'1-2019'
+              if (data[1].length === 4) {
+                date.unshift('1');
+              }
+            }
+          }
+        }
+
+        return date.join('/');
       }
     }
   };
