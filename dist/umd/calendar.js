@@ -10,26 +10,23 @@
     factory(mod.exports, global.utils, global.time, global.dom, global.delegate, global.babelPolyfill);
     global.calendar = mod.exports;
   }
-})(this, function (_exports, _utils, _time, _dom, _delegate, _babelPolyfill) {
+})(typeof globalThis !== "undefined" ? globalThis : typeof self !== "undefined" ? self : this, function (_exports, _utils, _time, _dom, _delegate, _babelPolyfill) {
   'use strict';
 
   Object.defineProperty(_exports, "__esModule", {
     value: true
   });
   _exports["default"] = void 0;
-
+  function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
   function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-  function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
-
-  function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
-
+  function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
+  function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
+  function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+  function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
   /**
    * Calendar 类
    */
-  var Calendar =
-  /*#__PURE__*/
-  function () {
+  var Calendar = /*#__PURE__*/function () {
     /**
      * 构造函数
      * ========================================================================
@@ -59,7 +56,6 @@
      */
     function Calendar(options) {
       _classCallCheck(this, Calendar);
-
       /**
        * Calendar 控件的配置属性
        * ========================================================================
@@ -134,12 +130,12 @@
         DATES: [],
         // 日历控件的样式常量
         STYLES: {}
-        /**
-         * Calendar 控件相关的 DOM 节点属性
-         * ========================================================================
-         */
-
       };
+
+      /**
+       * Calendar 控件相关的 DOM 节点属性
+       * ========================================================================
+       */
       this.elements = {
         // 显示日历控件的父节点
         parent: null,
@@ -171,12 +167,12 @@
         today: null,
         // 日历控件的当前时间显示节点
         time: null
-        /**
-         * Calendar 控件相关的数据属性
-         * ========================================================================
-         */
-
       };
+
+      /**
+       * Calendar 控件相关的数据属性
+       * ========================================================================
+       */
       this.data = {
         // 日历可以显示的最小年份
         minYear: 0,
@@ -202,14 +198,16 @@
           fullText: ''
         },
         // 多选（multiple/range/week）模式下，选中的日期数据
-        picked: [] // 执行初始化操作
-        // 绘制界面
-        // 绑定事件处理器
-
+        picked: []
       };
+
+      // 执行初始化操作
+      // 绘制界面
+      // 绑定事件处理器
       this.initialize(options).render().addEventListeners();
       return this;
     }
+
     /**
      * 初始化方法
      * ========================================================================
@@ -221,8 +219,6 @@
      * @see this.attributes
      * @returns {Calendar}
      */
-
-
     _createClass(Calendar, [{
       key: "initialize",
       value: function initialize(options) {
@@ -233,52 +229,54 @@
         var monthText;
         var dateRanges;
         var startDate;
-        var endDate; // 初始化配置
+        var endDate;
 
+        // 初始化配置
         this.set(Calendar.defaults).set(options);
         time = this.get('time');
         pickMode = this.get('pickMode');
         month = (0, _time.getMonth)(time);
-        monthText = month.text; // 初始化数据
+        monthText = month.text;
 
-        this.setYear(time).setMonth(time).setDate(time)._setYears(time); // 初始化（多选模式）选中的时间
+        // 初始化数据
+        this.setYear(time).setMonth(time).setDate(time)._setYears(time);
 
-
+        // 初始化（多选模式）选中的时间
         switch (pickMode) {
           case 'multiple':
             this.data.picked.push(this.getDate().text);
             break;
-
           case 'range':
             startDate = monthText + '-' + 1;
-            endDate = monthText + '-' + this.get('DATES')[month.value - 1]; // 默认选中整个月
+            endDate = monthText + '-' + this.get('DATES')[month.value - 1];
 
+            // 默认选中整个月
             this.data.picked = [startDate, endDate];
             break;
-
           case 'week':
             dateRanges = (0, _time.getWeekRanges)(time);
             startDate = dateRanges[0];
-            endDate = dateRanges[dateRanges.length - 1]; // 默认选中配置日期所在的那个星期
+            endDate = dateRanges[dateRanges.length - 1];
 
+            // 默认选中配置日期所在的那个星期
             this.data.picked = [startDate, endDate];
             break;
-        } // 设置日历控件可以显示的年份范围
+        }
 
-
+        // 设置日历控件可以显示的年份范围
         this.data.minYear = year - 100;
-        this.data.maxYear = year + 100; // 创建控件相关的 DOM 节点
+        this.data.maxYear = year + 100;
 
+        // 创建控件相关的 DOM 节点
         this._createElements();
-
         return this;
       }
+
       /**
        * 绘制日历控件界面的方法
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "render",
       value: function render() {
@@ -288,66 +286,69 @@
         var $switcher = elements.switcher;
         var $body = elements.body;
         var $footer = elements.footer;
-        var $fragment = document.createDocumentFragment(); // 绘制头部
+        var $fragment = document.createDocumentFragment();
 
+        // 绘制头部
         this._renderTitle();
+        $header.appendChild(elements.title);
 
-        $header.appendChild(elements.title); // 配置了显示上下切换按钮
-
+        // 配置了显示上下切换按钮
         if (this.get('hasSwitcher')) {
           $switcher.appendChild(elements.prev);
           $switcher.appendChild(elements.next);
           $header.appendChild($switcher);
-        } // 绘制星期栏
+        }
 
-
+        // 绘制星期栏
         this._renderDays();
+        $body.appendChild(elements.week);
 
-        $body.appendChild(elements.week); // 绘制日期
-
+        // 绘制日期
         this._renderDates();
+        $body.appendChild(elements.dates);
 
-        $body.appendChild(elements.dates); // 绘制月份
-
+        // 绘制月份
         this._renderMonths();
+        $body.appendChild(elements.months);
 
-        $body.appendChild(elements.months); // 绘制年代
-
+        // 绘制年代
         this._renderYears();
+        $body.appendChild(elements.years);
 
-        $body.appendChild(elements.years); // 配置了显示页脚
-
+        // 配置了显示页脚
         if (this.get('hasFooter')) {
           // 绘制页脚
           this._renderFooter();
+          $footer.appendChild(elements.today);
 
-          $footer.appendChild(elements.today); // 配置了显示当前时间
-
+          // 配置了显示当前时间
           if (this.get('hasClock')) {
             $footer.appendChild(elements.time);
           }
-        } // 将主体模块绘制出来
+        }
 
-
+        // 将主体模块绘制出来
         $wrap.appendChild($header);
-        $wrap.appendChild($body); // 配置了显示页脚
+        $wrap.appendChild($body);
 
+        // 配置了显示页脚
         if (this.get('hasFooter')) {
           $wrap.appendChild($footer);
-        } // 将控件零时保存在文档碎片中
+        }
 
+        // 将控件零时保存在文档碎片中
+        $fragment.appendChild($wrap);
 
-        $fragment.appendChild($wrap); // 一次性绘制出整个日历控件
-
+        // 一次性绘制出整个日历控件
         elements.parent.appendChild($fragment);
         return this;
       }
+
       /**
        * 给日历控件相关的 DOM 节点绑定事件处理器
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "addEventListeners",
       value: function addEventListeners() {
@@ -361,31 +362,30 @@
         var selectorMonth = DOT + STYLES.MONTH;
         var selectorYear = DOT + STYLES.YEAR;
         var selectorToday = DOT + STYLES.TODAY;
-        var $wrap = this.getEls().wrap; // 绑定点击标题的事件处理器
+        var $wrap = this.getEls().wrap;
 
+        // 绑定点击标题的事件处理器
         (0, _delegate.on)($wrap, selectorTitle, CLICK, this._titleClick, this);
-
         if (this.get('hasSwitcher')) {
           // 绑定点击向上按钮的事件处理器
-          (0, _delegate.on)($wrap, selectorPrev, CLICK, this._prevClick, this); // 绑定点击向下按钮的事件处理器
-
+          (0, _delegate.on)($wrap, selectorPrev, CLICK, this._prevClick, this);
+          // 绑定点击向下按钮的事件处理器
           (0, _delegate.on)($wrap, selectorNext, CLICK, this._nextClick, this);
-        } // 绑定点击日期的事件处理器
+        }
 
-
-        (0, _delegate.on)($wrap, selectorDate, CLICK, this._dateClick, this); // 绑定点击月份的事件处理器
-
-        (0, _delegate.on)($wrap, selectorMonth, CLICK, this._monthClick, this); // 绑定点击年份的事件处理器
-
+        // 绑定点击日期的事件处理器
+        (0, _delegate.on)($wrap, selectorDate, CLICK, this._dateClick, this);
+        // 绑定点击月份的事件处理器
+        (0, _delegate.on)($wrap, selectorMonth, CLICK, this._monthClick, this);
+        // 绑定点击年份的事件处理器
         (0, _delegate.on)($wrap, selectorYear, CLICK, this._yearClick, this);
-
         if (this.get('hasClock')) {
           // 绑定点击今天的事件处理器
           (0, _delegate.on)($wrap, selectorToday, CLICK, this._todayClick, this);
         }
-
         return this;
       }
+
       /**
        * 重启日历控件
        * ========================================================================
@@ -402,13 +402,13 @@
        * @see this.attributes
        * @returns {Calendar}
        */
-
     }, {
       key: "reload",
       value: function reload(options) {
         this.destroy().initialize(options).render().addEventListeners();
         return this;
       }
+
       /**
        * 销毁日历控件
        * ========================================================================
@@ -419,47 +419,42 @@
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "destroy",
       value: function destroy() {
         this.removeEventListeners().hide().remove().reset();
         return this;
       }
+
       /**
        * 移除所有绑定的事件处理器
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "removeEventListeners",
       value: function removeEventListeners() {
         var CLICK = 'click';
         var $wrap = this.getEls().wrap;
         (0, _delegate.off)($wrap, CLICK, this._titleClick);
-
         if (this.get('hasSwitcher')) {
           (0, _delegate.off)($wrap, CLICK, this._prevClick);
           (0, _delegate.off)($wrap, CLICK, this._nextClick);
         }
-
         (0, _delegate.off)($wrap, CLICK, this._dateClick);
         (0, _delegate.off)($wrap, CLICK, this._monthClick);
         (0, _delegate.off)($wrap, CLICK, this._yearClick);
-
         if (this.get('hasClock')) {
           (0, _delegate.off)($wrap, CLICK, this._todayClick);
         }
-
         return this;
       }
+
       /**
        * 移除所有 DOM 节点
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "remove",
       value: function remove() {
@@ -467,12 +462,12 @@
         elements.parent.removeChild(elements.wrap);
         return this;
       }
+
       /**
        * 重置所有属性
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "reset",
       value: function reset() {
@@ -530,25 +525,25 @@
         };
         return this;
       }
+
       /**
        * 获取配置信息
        * ========================================================================
        * @param {String} attr - 配置属性名称
        * @returns {*} - 返回对应属性的值
        */
-
     }, {
       key: "get",
       value: function get(attr) {
         return this.attributes[attr];
       }
+
       /**
        * 设置配置信息
        * ========================================================================
        * @param {Object} [options] - 配置信息对象
        * @returns {Calendar}
        */
-
     }, {
       key: "set",
       value: function set() {
@@ -556,29 +551,30 @@
         Object.assign(this.attributes, options);
         return this;
       }
+
       /**
        * 获取日历控件所有相关的 DOM 节点的对象
        * ========================================================================
        * @see Calendar.elements
        * @returns {Object}
        */
-
     }, {
       key: "getEls",
       value: function getEls() {
         return this.elements;
       }
+
       /**
        * 获取日历控件当前显示的年份信息
        * ========================================================================
        * @returns {Number} - 返回日历控件当前显示的年份
        */
-
     }, {
       key: "getYear",
       value: function getYear() {
         return this.data.year;
       }
+
       /**
        * 设置日历控件当前的年份
        * ========================================================================
@@ -587,83 +583,83 @@
        *                                 数字格式：  1546300800000
        * @returns {Calendar}
        */
-
     }, {
       key: "setYear",
       value: function setYear(time) {
         this.data.year = (0, _time.getYear)(time).value;
         return this;
       }
+
       /**
        * 获得日历控件当前显示的月份信息
        * ========================================================================
        * @returns {Number} - 返回日历控件当前显示的月份
        */
-
     }, {
       key: "getMonth",
       value: function getMonth() {
         return this.data.month;
       }
+
       /**
        * 设置日历控件当前显示的月份
        * ========================================================================
        * @param {String|Number} [time] - 表示月份的字符串或数字（默认值：本月）
        * @returns {Calendar}
        */
-
     }, {
       key: "setMonth",
       value: function setMonth(time) {
         this.data.month = (0, _time.getMonth)(time).value;
         return this;
       }
+
       /**
        * 获取日历控件当前选中的日期
        * ========================================================================
        * @returns {Object} - 返回日历控件当前选中的日期
        */
-
     }, {
       key: "getDate",
       value: function getDate() {
         return this.data.date;
       }
+
       /**
        * 设置日历控件当前选中的日期
        * ========================================================================
        * @param {String|Number} [time] - 表示日期的字符串或者数字（默认值：今天）
        * @returns {Calendar}
        */
-
     }, {
       key: "setDate",
       value: function setDate(time) {
         this.data.date = (0, _time.getDate)(time);
         return this;
       }
+
       /**
        * 获取日历控件当前显示的年份所在的年代信息
        * ========================================================================
        * @returns {Object} - 返回当前所在年代信息
        */
-
     }, {
       key: "getYears",
       value: function getYears() {
         return this.data.years;
       }
+
       /**
        * 获取日历控件在多选（multiple/range/week）模式下选中的日期信息
        * ========================================================================
        * @returns {Array} - 返回选中的日期信息
        */
-
     }, {
       key: "getPicked",
       value: function getPicked() {
         return this.data.picked;
       }
+
       /**
        * 根据试图显示模式
        * ========================================================================
@@ -676,7 +672,6 @@
        *                            2 - 年代显示模式
        * @returns {Calendar}
        */
-
     }, {
       key: "update",
       value: function update() {
@@ -684,6 +679,7 @@
         this.updateViewMode(viewMode).updateView();
         return this;
       }
+
       /**
        * 更新试图显示模式的配置信息
        * ========================================================================
@@ -691,13 +687,11 @@
        * @see this.update
        * @returns {Calendar}
        */
-
     }, {
       key: "updateViewMode",
       value: function updateViewMode() {
         var viewMode = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : 0;
         var mode = viewMode;
-
         if (mode > 2) {
           mode = 2;
         } else {
@@ -705,12 +699,12 @@
             mode = 0;
           }
         }
-
         this.set({
           viewMode: mode
         });
         return this;
       }
+
       /**
        * 更新日历控件的显示内容
        * ========================================================================
@@ -725,7 +719,6 @@
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "updateView",
       value: function updateView() {
@@ -736,46 +729,42 @@
         var $dates = elements.dates;
         var $months = elements.months;
         var $years = elements.years;
-
         this._renderTitle();
-
         switch (this.get('viewMode')) {
           // 日期显示模式
           case 0:
             (0, _dom.addClass)($months, CLS_HIDDEN);
             (0, _dom.addClass)($years, CLS_HIDDEN);
             (0, _dom.removeClass)($week, CLS_HIDDEN);
-            (0, _dom.removeClass)($dates, CLS_HIDDEN); // 重新绘制日期
+            (0, _dom.removeClass)($dates, CLS_HIDDEN);
 
+            // 重新绘制日期
             this._repaintDates();
-
             break;
           // 月份显示模式
-
           case 1:
             (0, _dom.addClass)($week, CLS_HIDDEN);
             (0, _dom.addClass)($dates, CLS_HIDDEN);
             (0, _dom.addClass)($years, CLS_HIDDEN);
-            (0, _dom.removeClass)($months, CLS_HIDDEN); // 重新绘制月份
+            (0, _dom.removeClass)($months, CLS_HIDDEN);
 
+            // 重新绘制月份
             this._repaintMonths();
-
             break;
           // 年份显示模式
-
           case 2:
             (0, _dom.addClass)($week, CLS_HIDDEN);
             (0, _dom.addClass)($dates, CLS_HIDDEN);
             (0, _dom.addClass)($months, CLS_HIDDEN);
-            (0, _dom.removeClass)($years, CLS_HIDDEN); // 重新绘制年份
+            (0, _dom.removeClass)($years, CLS_HIDDEN);
 
+            // 重新绘制年份
             this._repaintYears();
-
             break;
         }
-
         return this;
       }
+
       /**
        * 向上翻页
        * ========================================================================
@@ -785,7 +774,6 @@
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "prev",
       value: function prev() {
@@ -794,56 +782,52 @@
         var year = this.getYear();
         var month = this.getMonth();
         var minYear = this.data.minYear;
-        var time; // 针对显示模式，处理相应的翻页逻辑
+        var time;
 
+        // 针对显示模式，处理相应的翻页逻辑
         switch (this.get('viewMode')) {
           // 日期显示模式
           case 0:
             // 切换月份
-            month -= 1; // 到了上一年，切换年份
+            month -= 1;
 
+            // 到了上一年，切换年份
             if (month < 1) {
               month = 12;
-              year -= 1; // 确保不小于最小可以显示的年份
+              year -= 1;
 
+              // 确保不小于最小可以显示的年份
               if (year < minYear) {
                 year = minYear;
               }
             }
-
             time = year + '-' + month + '-1';
             this.setYear(time).setMonth(time);
             break;
-
           case 1:
             // 切换年份
             year -= 1;
-
             if (year < minYear) {
               year = minYear;
             }
-
             time = year + '-1-1';
             this.setYear(time);
             break;
-
           case 2:
             // 切换年代
             startYear -= 10;
-
             if (startYear < minYear) {
               startYear = minYear + 9;
             }
-
             this._setYears(startYear.toString());
-
             break;
-        } // 更新显示内容
+        }
 
-
+        // 更新显示内容
         this.updateView();
         return this;
       }
+
       /**
        * 向下翻页
        * ========================================================================
@@ -853,7 +837,6 @@
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "next",
       value: function next() {
@@ -863,50 +846,39 @@
         var month = this.getMonth();
         var maxYear = this.data.maxYear;
         var time;
-
         switch (this.get('viewMode')) {
           case 0:
             month += 1;
-
             if (month > 12) {
               month = 1;
               year += 1;
-
               if (year > maxYear) {
                 year = maxYear;
               }
             }
-
             time = year + '-' + month + '-1';
             this.setYear(time).setMonth(time);
             break;
-
           case 1:
             year += 1;
-
             if (year > maxYear) {
               year = maxYear;
             }
-
             time = year + '-1-1';
             this.setYear(time);
             break;
-
           case 2:
             startYear += 10;
-
             if (startYear > maxYear) {
               startYear = maxYear - 9;
             }
-
             this._setYears(startYear.toString());
-
             break;
         }
-
         this.updateView();
         return this;
       }
+
       /**
        * 选择日期
        * ========================================================================
@@ -926,7 +898,6 @@
        * @param {HTMLElement} $date - 选中的日期 DOM 节点
        * @returns {*}
        */
-
     }, {
       key: "pickDate",
       value: function pickDate($date) {
@@ -937,8 +908,9 @@
         var time = $date.getAttribute('data-date');
         var callback = this.get('onDatePick');
         var $picked = null;
-        var pickedDates; // 选择了选中状态的日期
+        var pickedDates;
 
+        // 选择了选中状态的日期
         if ((0, _dom.hasClass)($date, CLS_PICKED)) {
           switch (pickMode) {
             // 单选/星期选择模式
@@ -946,136 +918,118 @@
             case 'week':
               return false;
             // 多选模式
-
             case 'multiple':
               // 取消选中样式
-              (0, _dom.removeClass)($date, CLS_PICKED); // 移除选中的日期信息
+              (0, _dom.removeClass)($date, CLS_PICKED);
+              // 移除选中的日期信息
+              this._removePicked(time);
 
-              this._removePicked(time); // 设置最后一个选中的时间为当前选中日期
-
-
+              // 设置最后一个选中的时间为当前选中日期
               pickedDates = this.getPicked();
               this.setDate(pickedDates[pickedDates.length - 1]);
-
               if ((0, _utils.isFunction)(callback)) {
                 callback(pickedDates, $date, this);
               }
-
               break;
-
             case 'range':
               // 清除之前选中的数据
-              this.data.picked = []; // 将当前选中的日期数据保存起来
-
+              this.data.picked = [];
+              // 将当前选中的日期数据保存起来
               this.data.picked.push(time);
-              this.setDate(time); // 绘制选中样式
+              this.setDate(time);
 
+              // 绘制选中样式
               elements.date = $date;
-
               this._updateDateRanges();
-
               if ((0, _utils.isFunction)(callback)) {
                 callback(this.getPicked(), $date, this);
               }
-
               break;
           }
         } else {
-          this.setYear(time).setMonth(time); // 选择了未选中状态的日期
+          this.setYear(time).setMonth(time);
 
+          // 选择了未选中状态的日期
           switch (pickMode) {
             case 'single':
-              $picked = elements.date; // 移除之前选中日期的选中样式
+              $picked = elements.date;
 
+              // 移除之前选中日期的选中样式
               if ($picked) {
                 (0, _dom.removeClass)($picked, CLS_PICKED);
-              } // 设置当前选中日期的选中样式
+              }
 
-
+              // 设置当前选中日期的选中样式
               (0, _dom.addClass)($date, CLS_PICKED);
               elements.date = $date;
               this.setDate(time);
-
               if ((0, _utils.isFunction)(callback)) {
                 callback(time, $date, this);
               }
-
               break;
-
             case 'multiple':
               // 保存选中的日期，并对选中时间排序
               this.data.picked.push(time);
-              this.data.picked.sort(); // 设置最晚的那个日期为当前选中日期
+              this.data.picked.sort();
 
+              // 设置最晚的那个日期为当前选中日期
               pickedDates = this.getPicked();
               this.setDate(pickedDates[pickedDates.length - 1]);
               (0, _dom.addClass)($date, CLS_PICKED);
-
               if ((0, _utils.isFunction)(callback)) {
                 callback(this.getPicked(), $date, this);
               }
-
               break;
-
             case 'range':
               // 根据已经选中的日期长度，处理数据的保存
               switch (this.data.picked.length) {
                 case 0:
                 case 1:
                   // 保存选中的日期
-                  this.data.picked.push(time); // 如果选择两个不同的日期，则完成了范围选择，需要对日期排序
+                  this.data.picked.push(time);
 
+                  // 如果选择两个不同的日期，则完成了范围选择，需要对日期排序
                   if (this.data.picked.length === 2) {
                     this.data.picked.sort();
-                  } // 设置选中日期范围的最后一天为当前选中日期
+                  }
 
-
+                  // 设置选中日期范围的最后一天为当前选中日期
                   pickedDates = this.getPicked();
                   this.setDate(pickedDates[pickedDates.length - 1]);
                   elements.date = $date;
-
                   this._updateDateRanges();
-
                   if ((0, _utils.isFunction)(callback)) {
                     callback(pickedDates, $date, this);
                   }
-
                   break;
-
                 case 2:
                   // 之前已经选中了一个日期范围，现在需要清除之前的数据
-                  this.data.picked = []; // 保存第一个日期点
-
+                  this.data.picked = [];
+                  // 保存第一个日期点
                   this.data.picked.push(time);
                   elements.date = $date;
-
                   this._updateDateRanges();
-
                   break;
               }
-
               break;
-
             case 'week':
               // 获得当前选中日期的星期范围
-              var ranges = (0, _time.getWeekRanges)(time); // 清除之前的数据，保存现在的星期日期范围
+              var ranges = (0, _time.getWeekRanges)(time);
 
+              // 清除之前的数据，保存现在的星期日期范围
               this.data.picked = [ranges[0], ranges[ranges.length - 1]];
               this.setDate(ranges[ranges.length - 1]);
               elements.date = $date;
-
               this._updateWeekRanges();
-
               if ((0, _utils.isFunction)(callback)) {
                 callback(this.getPicked(), $date, this);
               }
-
               break;
           }
         }
-
         return this;
       }
+
       /**
        * 选择月份
        * ========================================================================
@@ -1086,7 +1040,6 @@
        * @param {HTMLElement} $month - 选中的月份 DOM 节点
        * @returns {Calendar}
        */
-
     }, {
       key: "pickMonth",
       value: function pickMonth($month) {
@@ -1094,8 +1047,9 @@
         var elements = this.getEls();
         var $picked = elements.month;
         var time = $month.getAttribute('data-month');
-        var callback = this.get('onMonthPick'); // 点击已经选中的年份
+        var callback = this.get('onMonthPick');
 
+        // 点击已经选中的年份
         if ((0, _dom.hasClass)($month, CLS_PICKED)) {
           // 切换到月份试图模式
           this.update();
@@ -1103,21 +1057,19 @@
           // 移除之前选中的年份选中样式
           if ($picked) {
             (0, _dom.removeClass)($picked, CLS_PICKED);
-          } // 设置选中样式
+          }
 
-
+          // 设置选中样式
           (0, _dom.addClass)($month, CLS_PICKED);
           elements.month = $month;
-
           this.setYear(time).setMonth(time)._setYears(time).update();
         }
-
         if ((0, _utils.isFunction)(callback)) {
           callback(time, $month, this);
         }
-
         return this;
       }
+
       /**
        * 选择年份
        * ========================================================================
@@ -1128,7 +1080,6 @@
        * @param {HTMLElement} $year - 选中的年份 DOM 节点
        * @returns {Calendar}
        */
-
     }, {
       key: "pickYear",
       value: function pickYear($year) {
@@ -1136,8 +1087,9 @@
         var elements = this.getEls();
         var $picked = elements.year;
         var time = $year.getAttribute('data-year');
-        var callback = this.get('onYearPick'); // 点击已经选中的月份
+        var callback = this.get('onYearPick');
 
+        // 点击已经选中的月份
         if ((0, _dom.hasClass)($year, CLS_PICKED)) {
           // 切换到日期试图模式
           this.setYear(time).update(1);
@@ -1145,21 +1097,21 @@
           // 移除之前选中的年份选中样式
           if ($picked) {
             (0, _dom.removeClass)($picked, CLS_PICKED);
-          } // 设置选中样式
+          }
 
-
+          // 设置选中样式
           (0, _dom.addClass)($year, CLS_PICKED);
-          elements.year = $year; // 更新年份并切换到月份试图
+          elements.year = $year;
 
+          // 更新年份并切换到月份试图
           this.setYear(time)._setYears(time).update(1);
         }
-
         if ((0, _utils.isFunction)(callback)) {
           callback(time, $year, this);
         }
-
         return this;
       }
+
       /**
        * 选择今天
        * ========================================================================
@@ -1167,27 +1119,23 @@
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "pickToday",
       value: function pickToday() {
-        var time = (0, _time.getToday)().value;
+        var time = (0, _time.getToday)().text;
         var callback = this.get('onTodayPick');
-
         this.setYear(time).setMonth(time).setDate(time)._setYears(time).update();
-
         if ((0, _utils.isFunction)(callback)) {
           callback(time, this.getEls().dates.querySelector('[data-date=' + time + ']'), this);
         }
-
         return this;
       }
+
       /**
        * 隐藏日历控件
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "hide",
       value: function hide() {
@@ -1196,12 +1144,12 @@
         (0, _dom.addClass)($wrap, CLS_HIDDEN);
         return this;
       }
+
       /**
        * 显示日历控件
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "show",
       value: function show() {
@@ -1210,26 +1158,25 @@
         (0, _dom.removeClass)($wrap, CLS_HIDDEN);
         return this;
       }
+
       /**
        * 隐藏/显示之间切换
        * ========================================================================
        * @returns {Calendar}
        */
-
     }, {
       key: "toggle",
       value: function toggle() {
         var CLS_HIDDEN = this.get('STYLES').HIDDEN;
         var $wrap = this.getEls().wrap;
-
         if ((0, _dom.hasClass)($wrap, CLS_HIDDEN)) {
           this.show();
         } else {
           this.hide();
         }
-
         return this;
       }
+
       /**
        * 设置当前的年代信息
        * ========================================================================
@@ -1237,13 +1184,13 @@
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_setYears",
       value: function _setYears(time) {
         this.data.years = (0, _time.getYears)(time);
         return this;
       }
+
       /**
        * （多选模式）移除选中的日期
        * ========================================================================
@@ -1251,26 +1198,23 @@
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_removePicked",
       value: function _removePicked(time) {
         var pickedDates = this.getPicked();
         var index = pickedDates.indexOf(time);
-
         if (index > -1) {
           pickedDates.splice(index, 1);
         }
-
         return this;
       }
+
       /**
        * 绘制日历控件的各个主要 DOM 节点
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_createElements",
       value: function _createElements() {
@@ -1304,37 +1248,33 @@
         var datesClassName = CLS_DATES;
         var monthsClassName = CLS_MONTHS;
         var yearsClassName = CLS_YEARS;
-
         switch (this.get('viewMode')) {
           case 0:
             monthsClassName += SPACE + CLS_HIDDEN;
             yearsClassName += SPACE + CLS_HIDDEN;
             break;
-
           case 1:
             weekClassName += SPACE + CLS_HIDDEN;
             datesClassName += SPACE + CLS_HIDDEN;
             yearsClassName += SPACE + CLS_HIDDEN;
             break;
-
           case 2:
             weekClassName += SPACE + CLS_HIDDEN;
             datesClassName += SPACE + CLS_HIDDEN;
             monthsClassName += SPACE + CLS_HIDDEN;
             break;
         }
-
         if (!hasFooter) {
           wrapClassName += SPACE + CLS_WRAP_WITHOUT_FOOTER;
         }
+        elements.parent = document.getElementById(this.get('parent'));
 
-        elements.parent = document.getElementById(this.get('parent')); // wrap
-
+        // wrap
         elements.wrap = (0, _dom.createElement)('div', {
           id: (0, _utils.guid)(4, 10),
           className: wrapClassName
-        }); // header
-
+        });
+        // header
         elements.header = (0, _dom.createElement)('div', {
           className: CLS_HEADER
         });
@@ -1342,8 +1282,9 @@
           className: CLS_TITLE
         }, [(0, _dom.createElement)('span', {
           className: CLS_TEXT
-        })]); // 配置了显示上下切换按钮
+        })]);
 
+        // 配置了显示上下切换按钮
         if (this.get('hasSwitcher')) {
           elements.switcher = (0, _dom.createElement)('div', {
             className: CLS_SWITCHER
@@ -1362,9 +1303,9 @@
           }, [(0, _dom.createElement)('i', {
             className: CLS_ICON_NEXT
           })])]);
-        } // body
+        }
 
-
+        // body
         elements.body = (0, _dom.createElement)('div', {
           className: CLS_BODY
         });
@@ -1379,8 +1320,9 @@
         });
         elements.years = (0, _dom.createElement)('div', {
           className: yearsClassName
-        }); // 配置了显示页脚
+        });
 
+        // 配置了显示页脚
         if (hasFooter) {
           // footer
           elements.footer = (0, _dom.createElement)('div', {
@@ -1392,8 +1334,9 @@
             className: CLS_TODAY
           }, [(0, _dom.createElement)('span', {
             className: CLS_TEXT
-          })])]); // 配置了显示当前时间
+          })])]);
 
+          // 配置了显示当前时间
           if (this.get('hasClock')) {
             elements.time = (0, _dom.createElement)('div', {
               className: CLS_FOOTER_TIME
@@ -1404,16 +1347,15 @@
             })])]);
           }
         }
-
         return this;
       }
+
       /**
        * 绘制日历控件的标题
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_renderTitle",
       value: function _renderTitle() {
@@ -1421,34 +1363,30 @@
         var years = this.getYears();
         var year = this.getYear();
         var value = '';
-
         switch (this.get('viewMode')) {
           case 0:
             // 显示完整的年月日式时间
             value = year + '年' + this.getMonth() + '月';
             break;
-
           case 1:
             // 显示年份+月份格式时间
             value = (0, _time.getYear)(year.toString()).text;
             break;
-
           case 2:
             // 显示年代范围格式时间
             value = years.start + ' - ' + years.end;
             break;
         }
-
         $title.innerHTML = value;
         return this;
       }
+
       /**
        * 绘制日历控件的星期栏
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_renderDays",
       value: function _renderDays() {
@@ -1459,45 +1397,48 @@
         var DAYS = this.get('DAYS');
         var fragment = document.createDocumentFragment();
         DAYS.forEach(function (day, i) {
-          var className = i === 0 || i === DAYS.length - 1 ? CLS_DAY + ' ' + CLS_WEEKEND : CLS_DAY; // 先将创建的星期几的 DOM 节点保存到文档碎片
+          var className = i === 0 || i === DAYS.length - 1 ? CLS_DAY + ' ' + CLS_WEEKEND : CLS_DAY;
 
+          // 先将创建的星期几的 DOM 节点保存到文档碎片
           fragment.appendChild((0, _dom.createElement)('div', {
             className: className
           }, [(0, _dom.createElement)('span', {
             className: CLS_TEXT
           }, [day])]));
-        }); // 然后一次性添加到页面，性能会更好
+        });
 
+        // 然后一次性添加到页面，性能会更好
         this.getEls().week.appendChild(fragment);
         return this;
       }
+
       /**
        * 绘制日历控件的日期信息
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_renderDates",
       value: function _renderDates() {
-        var DATES = this.get('DATES'); // fragments
-
-        var fragment = document.createDocumentFragment(); // current month
-
+        var DATES = this.get('DATES');
+        // fragments
+        var fragment = document.createDocumentFragment();
+        // current month
         var year = this.getYear();
         var month = this.getMonth();
         var days = DATES[month - 1];
-        var firstDateDay = (0, _time.getDay)(year + '-' + month + '-' + 1).value; // prev month
-
+        var firstDateDay = (0, _time.getDay)(year + '-' + month + '-' + 1).value;
+        // prev month
         var prevYear = month - 2 < 0 ? year - 1 : year;
         var prevMonth = month - 2 < 0 ? 12 : month - 1;
-        var prevDays = DATES[prevMonth - 1]; // next month
-
+        var prevDays = DATES[prevMonth - 1];
+        // next month
         var nextYear = month === 12 ? year + 1 : year;
         var nextMonth = month === 12 ? 1 : month + 1;
-        var nextDays; // 如果当前是闰年，上个月是二月份，则闰年二月为29天
+        var nextDays;
 
+        // 如果当前是闰年，上个月是二月份，则闰年二月为29天
         if ((0, _time.isLeapYear)(year) && prevMonth === 2) {
           prevDays += 1;
         } else {
@@ -1506,9 +1447,9 @@
             days += 1;
           }
         }
+        nextDays = 42 - (firstDateDay + days);
 
-        nextDays = 42 - (firstDateDay + days); // 绘制上个月月底的最后几天
-
+        // 绘制上个月月底的最后几天
         if (firstDateDay !== 0) {
           fragment.appendChild(this._getDatesFragment({
             year: prevYear,
@@ -1518,9 +1459,9 @@
             isPrev: true,
             isNext: false
           }));
-        } // 绘制本月的日期
+        }
 
-
+        // 绘制本月的日期
         fragment.appendChild(this._getDatesFragment({
           year: year,
           month: month,
@@ -1528,8 +1469,9 @@
           end: days,
           isPrev: false,
           isNext: false
-        })); // 绘制下个月月头的几天
+        }));
 
+        // 绘制下个月月头的几天
         if (nextDays > 0) {
           fragment.appendChild(this._getDatesFragment({
             year: nextYear,
@@ -1540,17 +1482,16 @@
             isNext: true
           }));
         }
-
         this.getEls().dates.appendChild(fragment);
         return this;
       }
+
       /**
        * 重绘日历控件的日期信息
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_repaintDates",
       value: function _repaintDates() {
@@ -1559,11 +1500,10 @@
         (0, _dom.addClass)($dates, CLS_HIDDEN);
         $dates.innerHTML = '';
         (0, _dom.removeClass)($dates, CLS_HIDDEN);
-
         this._renderDates();
-
         return this;
       }
+
       /**
        * 获得绘制日期信息时的文档碎片
        * ========================================================================
@@ -1577,18 +1517,16 @@
        * @returns {DocumentFragment}
        * @private
        */
-
     }, {
       key: "_getDatesFragment",
       value: function _getDatesFragment(options) {
         var _this = this;
-
         var year = options.year,
-            month = options.month,
-            start = options.start,
-            end = options.end,
-            isPrev = options.isPrev,
-            isNext = options.isNext;
+          month = options.month,
+          start = options.start,
+          end = options.end,
+          isPrev = options.isPrev,
+          isNext = options.isNext;
         var SPACE = ' ';
         var STYLES = this.get('STYLES');
         var CLS_DATE = STYLES.DATE;
@@ -1604,7 +1542,6 @@
         var date = start;
         var pickMode = this.get('pickMode');
         var pickedDates = this.getPicked();
-
         var _loop = function _loop() {
           var fullDate = year + '-' + month + '-' + date;
           var isCurrent = (0, _time.isToday)(fullDate);
@@ -1613,70 +1550,62 @@
             className: CLS_TEXT
           }, [date])];
           var className = '';
-          var $date = void 0;
+          var $date;
           $date = (0, _dom.createElement)('div', {
             'data-date': fullDate
           }, $children);
           className += CLS_DATE;
-
           if (isPrev) {
             className += SPACE + CLS_DATE_PREV;
           } else {
             if (isNext) {
               className += SPACE + CLS_DATE_NEXT;
             }
-          } // 当前（今天）的日期
+          }
 
-
+          // 当前（今天）的日期
           if (isCurrent) {
             className += SPACE + CLS_CURRENT;
-          } // 周末
+          }
 
-
+          // 周末
           if (day.value === 0 || day.value === 6) {
             className += SPACE + CLS_WEEKEND;
           }
-
           switch (pickMode) {
             // 单选模式
             case 'single':
               var pickedDate = _this.getDate().text;
-
               var isPickedDate = (0, _time.isDatesEqual)(fullDate, pickedDate);
-
               if (isPickedDate) {
                 className += SPACE + CLS_PICKED;
                 elements.date = $date;
               }
-
               break;
             // 多选模式
-
             case 'multiple':
               pickedDates.forEach(function (picked) {
                 var isPicked = (0, _time.isDatesEqual)(fullDate, picked);
-
                 if (isPicked) {
                   className += SPACE + CLS_PICKED;
                 }
               });
               break;
             // 区间模式
-
             case 'range':
             case 'week':
-              var dateRanges = []; // 只有选中了两个节点，才绘制选中日期区间的样式
+              var dateRanges = [];
 
+              // 只有选中了两个节点，才绘制选中日期区间的样式
               if (pickedDates.length === 2) {
                 dateRanges = (0, _time.getRanges)(pickedDates[0], pickedDates[1]);
                 dateRanges.forEach(function (picked, i) {
                   var isPicked = (0, _time.isDatesEqual)(fullDate, picked);
-
                   if (!isPicked) {
                     return false;
-                  } // 设置中间日期的样式
+                  }
 
-
+                  // 设置中间日期的样式
                   if (i !== 0 && i !== dateRanges.length - 1) {
                     className += SPACE + CLS_PICKED;
                     className += SPACE + CLS_PICKED_RANGE;
@@ -1691,27 +1620,23 @@
                   className += SPACE + CLS_PICKED;
                 }
               }
-
               break;
           }
-
           $date.className = className;
           fragment.appendChild($date);
         };
-
         for (; date <= end; date += 1) {
           _loop();
         }
-
         return fragment;
       }
+
       /**
        * 绘制选中的日期区间选中样式
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_updateDateRanges",
       value: function _updateDateRanges() {
@@ -1722,44 +1647,43 @@
         var $date = this.elements.date;
         var $dates = elements.dates;
         var $pickedDates = $dates.querySelectorAll('.' + CLS_PICKED);
-
         switch (this.data.picked.length) {
           case 1:
             // 移除之前的选中样式
             $pickedDates.forEach(function ($picked) {
               (0, _dom.removeClass)($picked, CLS_PICKED);
-
               if ((0, _dom.hasClass)($picked, CLS_PICKED_RANGE)) {
                 (0, _dom.removeClass)($picked, CLS_PICKED_RANGE);
               }
-            }); // 绘制选中的第一个端点的选中样式
+            });
 
+            // 绘制选中的第一个端点的选中样式
             (0, _dom.addClass)($date, CLS_PICKED);
             break;
-
           case 2:
             var ranges = (0, _time.getRanges)(this.data.picked[0], this.data.picked[1]);
             ranges.forEach(function (picked, i) {
-              var $picked = $dates.querySelector('[data-date="' + picked + '"]'); // 绘制中间区域的选中样式
+              var $picked = $dates.querySelector('[data-date="' + picked + '"]');
 
+              // 绘制中间区域的选中样式
               if (i > 0 && i < ranges.length - 1) {
                 (0, _dom.addClass)($picked, CLS_PICKED);
                 (0, _dom.addClass)($picked, CLS_PICKED_RANGE);
               }
-            }); // 绘制选中的第二个端点的选中样式
+            });
 
+            // 绘制选中的第二个端点的选中样式
             (0, _dom.addClass)($date, CLS_PICKED);
         }
-
         return this;
       }
+
       /**
        * 绘制选中的星期区间
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_updateWeekRanges",
       value: function _updateWeekRanges() {
@@ -1770,16 +1694,19 @@
         var $dates = elements.dates;
         var $pickedDates = $dates.querySelectorAll('.' + CLS_PICKED);
         var picked = this.getPicked();
-        var ranges = (0, _time.getWeekRanges)(picked[0]); // 移除之前选中区域的样式
+        var ranges = (0, _time.getWeekRanges)(picked[0]);
 
+        // 移除之前选中区域的样式
         $pickedDates.forEach(function ($picked) {
           (0, _dom.removeClass)($picked, CLS_PICKED_RANGE);
           (0, _dom.removeClass)($picked, CLS_PICKED);
-        }); // 设置新的选中区域的样式
+        });
 
+        // 设置新的选中区域的样式
         ranges.forEach(function (picked, i) {
-          var $picked = $dates.querySelector('[data-date="' + picked + '"]'); // 绘制中间区域
+          var $picked = $dates.querySelector('[data-date="' + picked + '"]');
 
+          // 绘制中间区域
           if (i > 0 && i < ranges.length - 1) {
             (0, _dom.addClass)($picked, CLS_PICKED);
             (0, _dom.addClass)($picked, CLS_PICKED_RANGE);
@@ -1792,18 +1719,17 @@
         });
         return this;
       }
+
       /**
        * 绘制日历控件的月份信息
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_renderMonths",
       value: function _renderMonths() {
         var _this2 = this;
-
         var SPACE = ' ';
         var STYLES = this.get('STYLES');
         var CLS_CURRENT = STYLES.CURRENT;
@@ -1819,18 +1745,19 @@
         var today = (0, _time.getToday)();
         MONTHS.forEach(function (MONTH, i) {
           var pickedDate = _this2.getDate();
-
           var className = CLS_MONTH;
-          var $month; // 去年的月份
+          var $month;
 
+          // 去年的月份
           if (i < 2) {
-            className += SPACE + CLS_MONTH_PREV; // 判断是否被选中了
+            className += SPACE + CLS_MONTH_PREV;
 
+            // 判断是否被选中了
             if (year - 1 === pickedDate.year && MONTH === pickedDate.month) {
               className += SPACE + CLS_PICKED;
-            } // 创建月份的 DOM 节点
+            }
 
-
+            // 创建月份的 DOM 节点
             $month = (0, _dom.createElement)('div', {
               className: className,
               'data-month': year - 1 + '-' + MONTH + '-1'
@@ -1843,14 +1770,14 @@
               // 判断是否为今天
               if (year === today.year && MONTH === today.month) {
                 className += ' ' + CLS_CURRENT;
-              } // 判断是否被选中了
+              }
 
-
+              // 判断是否被选中了
               if (year === pickedDate.year && MONTH === pickedDate.month) {
                 className += SPACE + CLS_PICKED;
-              } // 创建月份的 DOM 节点
+              }
 
-
+              // 创建月份的 DOM 节点
               $month = (0, _dom.createElement)('div', {
                 className: className,
                 'data-month': year + '-' + MONTH + '-1'
@@ -1860,13 +1787,14 @@
             } else {
               // 明年的月份
               if (i > 13 && i <= 15) {
-                className += SPACE + CLS_MONTH_NEXT; // 判断是否被选中了
+                className += SPACE + CLS_MONTH_NEXT;
 
+                // 判断是否被选中了
                 if (year + 1 === pickedDate.year && MONTH === pickedDate.month) {
                   className += SPACE + CLS_PICKED;
-                } // 创建月份的 DOM 节点
+                }
 
-
+                // 创建月份的 DOM 节点
                 $month = (0, _dom.createElement)('div', {
                   className: className,
                   'data-month': year + 1 + '-' + MONTH + '-1'
@@ -1875,21 +1803,21 @@
                 }, [MONTH])]);
               }
             }
-          } // 将所有月份 DOM 节点缓存到文档碎片中
+          }
 
-
+          // 将所有月份 DOM 节点缓存到文档碎片中
           fragment.appendChild($month);
         });
         elements.months.appendChild(fragment);
         return this;
       }
+
       /**
        * 重绘日历控件的月份信息
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_repaintMonths",
       value: function _repaintMonths() {
@@ -1898,18 +1826,16 @@
         (0, _dom.addClass)($months, CLS_HIDDEN);
         $months.innerHTML = '';
         (0, _dom.removeClass)($months, CLS_HIDDEN);
-
         this._renderMonths();
-
         return this;
       }
+
       /**
        * 绘制日历控件的年份信息
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_renderYears",
       value: function _renderYears() {
@@ -1942,13 +1868,13 @@
         this.getEls().years.appendChild(fragment);
         return this;
       }
+
       /**
        * 重绘日历控件的年份信息
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_repaintYears",
       value: function _repaintYears() {
@@ -1957,11 +1883,10 @@
         (0, _dom.addClass)($years, CLS_HIDDEN);
         $years.innerHTML = '';
         (0, _dom.removeClass)($years, CLS_HIDDEN);
-
         this._renderYears();
-
         return this;
       }
+
       /**
        * 获取绘制年份信息的文档碎片
        * ========================================================================
@@ -1973,14 +1898,13 @@
        * @returns {DocumentFragment}
        * @private
        */
-
     }, {
       key: "_getYearsFragment",
       value: function _getYearsFragment(options) {
         var start = options.start,
-            end = options.end,
-            isPrev = options.isPrev,
-            isNext = options.isNext;
+          end = options.end,
+          isPrev = options.isPrev,
+          isNext = options.isNext;
         var STYLES = this.get('STYLES');
         var CLS_YEAR = STYLES.YEAR;
         var CLS_YEAR_PREV = STYLES.YEAR_PREV;
@@ -1994,7 +1918,6 @@
         var minYear = this.data.minYear;
         var maxYear = this.data.maxYear;
         var year = start;
-
         for (; year <= end; year += 1) {
           var pickedDate = this.getDate();
           var isCurrent = year === (0, _time.getToday)().year;
@@ -2005,7 +1928,6 @@
           }, [(0, _dom.createElement)('span', {
             className: CLS_TEXT
           }, [year])]);
-
           if (isPrev) {
             className += ' ' + CLS_YEAR_PREV;
           } else {
@@ -2013,33 +1935,28 @@
               className += ' ' + CLS_YEAR_NEXT;
             }
           }
-
           if (isCurrent) {
             className += ' ' + CLS_CURRENT;
           }
-
           if (isPicked) {
             className += ' ' + CLS_PICKED;
             elements.year = $year;
           }
-
           if (year < minYear || year > maxYear) {
             className += ' ' + CLS_DISABLED;
           }
-
           $year.className = className;
           fragment.appendChild($year);
         }
-
         return fragment;
       }
+
       /**
        * 绘制日历控件的页脚
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_renderFooter",
       value: function _renderFooter() {
@@ -2049,89 +1966,79 @@
         var $today = elements.today.querySelector('.' + CLS_TEXT);
         var today = (0, _time.getToday)();
         var timer = null;
-
         var renderTime = function renderTime() {
           var $time = elements.time.querySelector('.' + CLS_TEXT);
           var time = new Date();
           var hours = time.getHours();
           var minutes = time.getMinutes();
           var seconds = time.getSeconds();
-
           if (timer) {
             clearTimeout(timer);
           }
-
           if (hours < 10) {
             hours = '0' + hours;
           }
-
           if (minutes < 10) {
             minutes = '0' + minutes;
           }
-
           if (seconds < 10) {
             seconds = '0' + seconds;
           }
-
           $time.innerHTML = hours + ':' + minutes + ':' + seconds;
           timer = setTimeout(renderTime, 1000);
         };
-
         $today.innerHTML = '今天：' + today.text;
         $today.setAttribute('data-date', today.value);
-
         if (this.get('hasClock')) {
           renderTime();
         }
-
         return this;
       }
+
       /**
        * 点击标题的事件处理器
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_titleClick",
       value: function _titleClick() {
         var viewMode = this.get('viewMode');
         viewMode += 1;
-
         if (viewMode > 2) {
           viewMode = 2;
         }
-
         this.update(viewMode);
         return this;
       }
+
       /**
        * 点击向上翻页的事件处理器
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_prevClick",
       value: function _prevClick() {
         this.prev();
         return this;
       }
+
       /**
        * 点击向下翻页的事件处理起
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_nextClick",
       value: function _nextClick() {
         this.next();
         return this;
       }
+
       /**
        * 点击日期的事件处理器
        * ========================================================================
@@ -2139,13 +2046,13 @@
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_dateClick",
       value: function _dateClick(evt) {
         this.pickDate(evt.delegateTarget);
         return this;
       }
+
       /**
        * 点击月份的事件处理器
        * ========================================================================
@@ -2153,13 +2060,13 @@
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_monthClick",
       value: function _monthClick(evt) {
         this.pickMonth(evt.delegateTarget);
         return this;
       }
+
       /**
        * 点击年份的事件处理器
        * ========================================================================
@@ -2167,40 +2074,37 @@
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_yearClick",
       value: function _yearClick(evt) {
         this.pickYear(evt.delegateTarget);
         return this;
       }
+
       /**
        * 点击今天的事件处理器
        * ========================================================================
        * @returns {Calendar}
        * @private
        */
-
     }, {
       key: "_todayClick",
       value: function _todayClick() {
         var elements = this.getEls();
         var time = (0, _time.getToday)().text;
-        this.pickToday(); // 触发日期选择逻辑
+        this.pickToday();
 
+        // 触发日期选择逻辑
         this.pickDate(elements.dates.querySelector('[data-date="' + time + '"]'));
         return this;
       }
     }]);
-
     return Calendar;
   }();
   /**
    * 日历控件默认的配置信息
    * ========================================================================
    */
-
-
   Calendar.defaults = {
     parent: 'calendar',
     time: (0, _time.getDate)().text,
