@@ -1160,7 +1160,7 @@ class Calendar {
    * @returns {Calendar}
    */
   pickToday () {
-    let time = Calendar.getToday().value
+    let time = Calendar.getToday().text
     let callback = this.get('onTodayPick')
 
     this.setYear(time)
